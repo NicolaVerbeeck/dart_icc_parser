@@ -1,0 +1,6 @@
+include: package:extra_pedantic/analysis_options.yaml
+
+linter:
+  rules:
+    prefer_relative_imports: false
+    prefer_asserts_with_message: false
