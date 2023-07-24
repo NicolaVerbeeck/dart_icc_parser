@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:icc_parser/src/types/built_in.dart';
 import 'package:meta/meta.dart';
@@ -9,24 +10,46 @@ class IccCLUT {
   final int inputChannelCount;
   final int outputChannelCount;
   final int numGridPoints;
-  final int bytesPerPoint;
   final List<int> gridPoints;
   final List<int> dimensionSize;
   final List<double> data;
   final List<int> maxGridPoints;
-  final List<int> offsets;
+  final List<int> _offsets;
 
   const IccCLUT({
     required this.inputChannelCount,
     required this.outputChannelCount,
     required this.numGridPoints,
-    required this.bytesPerPoint,
     required this.gridPoints,
     required this.dimensionSize,
     required this.data,
     required this.maxGridPoints,
-    required this.offsets,
-  });
+    required final List<int> offsets,
+  }) : _offsets = offsets;
+
+  factory IccCLUT.fromBytesWithHeader(
+    final ByteData data, {
+    required final int inputChannelCount,
+    required final int outputChannelCount,
+    final int offset = 0,
+  }) {
+    // Skip 16-inputChannelCount bytes as we will never need them
+    final gridPoints = List.generate(
+      inputChannelCount,
+      (final i) => Unsigned8Number.fromBytes(data, offset: offset + i).value,
+    );
+    final precision =
+        Unsigned8Number.fromBytes(data, offset: offset + 16).value;
+    // 3 reserved bytes
+    return IccCLUT._internalFromBytes(
+      data,
+      inputChannelCount: inputChannelCount,
+      outputChannelCount: outputChannelCount,
+      precision: precision,
+      gridPoints: gridPoints,
+      offset: offset + 20,
+    );
+  }
 
   factory IccCLUT.fromBytes(
     final ByteData data, {
@@ -34,15 +57,32 @@ class IccCLUT {
     required final int inputChannelCount,
     required final int outputChannelCount,
     required final int precision,
-    required final int bytesPerPoint,
     final int offset = 0,
   }) {
     final gridPoints = List.filled(inputChannelCount, 0);
-    final dimensionSize = List.filled(inputChannelCount, 0);
-    final maxGridPoints = List.filled(inputChannelCount, 0);
     for (var i = 0; i < inputChannelCount; i++) {
       gridPoints[i] = numGridPoints;
     }
+    return IccCLUT._internalFromBytes(
+      data,
+      inputChannelCount: inputChannelCount,
+      outputChannelCount: outputChannelCount,
+      precision: precision,
+      gridPoints: gridPoints,
+      offset: offset,
+    );
+  }
+
+  factory IccCLUT._internalFromBytes(
+    final ByteData data, {
+    required final int inputChannelCount,
+    required final int outputChannelCount,
+    required final int precision,
+    required final List<int> gridPoints,
+    final int offset = 0,
+  }) {
+    final dimensionSize = List.filled(inputChannelCount, 0);
+    final maxGridPoints = List.filled(inputChannelCount, 0);
 
     var i = inputChannelCount - 1;
     dimensionSize[i] = outputChannelCount;
@@ -70,54 +110,20 @@ class IccCLUT {
     }
     final offsets = List.filled(1 << inputChannelCount, 0);
 
-    // Helper fields for interpolation
-    final int _n001;
-    final int _n010;
-    final int _n100;
-    final int _n110;
-
-    if (inputChannelCount == 1) {
-      offsets[1] = _n001 = dimensionSize[0];
-    } else if (inputChannelCount == 2) {
-      offsets[1] = _n001 = dimensionSize[0];
-      offsets[2] = _n010 = dimensionSize[1];
-      offsets[3] = _n001 + _n010;
-    } else if (inputChannelCount == 3) {
-      offsets[1] = _n001 = dimensionSize[0];
-      offsets[2] = _n010 = dimensionSize[1];
-      offsets[3] = _n001 + _n010;
-      offsets[4] = _n100 = dimensionSize[2];
-      offsets[5] = _n100 + _n001;
-      offsets[6] = _n110 = _n100 + _n010;
-      offsets[7] = _n110 + _n001;
-    } else if (inputChannelCount == 4) {
-      offsets[1] = dimensionSize[0];
-      offsets[2] = dimensionSize[1];
-      offsets[3] = offsets[2] + offsets[1];
-      offsets[4] = dimensionSize[2];
-      offsets[5] = offsets[4] + offsets[1];
-      offsets[6] = offsets[4] + offsets[2];
-      offsets[7] = offsets[4] + offsets[3];
-      offsets[8] = dimensionSize[3];
-      offsets[9] = offsets[8] + offsets[1];
-      offsets[10] = offsets[8] + offsets[2];
-      offsets[11] = offsets[8] + offsets[3];
-      offsets[12] = offsets[8] + offsets[4];
-      offsets[13] = offsets[8] + offsets[5];
-      offsets[14] = offsets[8] + offsets[6];
-      offsets[15] = offsets[8] + offsets[7];
-    }
-
+    _buildOffsetTable(
+      offsets: offsets,
+      inputChannelCount: inputChannelCount,
+      dimensionSize: dimensionSize,
+    );
     return IccCLUT(
       inputChannelCount: inputChannelCount,
       outputChannelCount: outputChannelCount,
       numGridPoints: totalNumGridPoints,
-      bytesPerPoint: bytesPerPoint,
       gridPoints: gridPoints,
-      dimensionSize: dimensionSize,
-      data: dataPoints,
-      maxGridPoints: maxGridPoints,
-      offsets: offsets,
+      dimensionSize: UnmodifiableListView(dimensionSize),
+      data: UnmodifiableListView(dataPoints),
+      maxGridPoints: UnmodifiableListView(maxGridPoints),
+      offsets: UnmodifiableListView(offsets),
     );
   }
 
@@ -190,7 +196,7 @@ class IccCLUT {
     for (var i = 0; i < outputChannelCount; ++i) {
       var value = 0.0;
       for (var j = 0; j < 16; ++j) {
-        value += data[p + offsets[j]] * dF[j];
+        value += data[p + _offsets[j]] * dF[j];
       }
       dest[i] = value;
       ++p;
@@ -235,7 +241,7 @@ class IccCLUT {
     final nt = 1.0 - t;
     final nu = 1.0 - u;
 
-    var offset = ix * offsets[1] + iy * offsets[2] + iz * offsets[4];
+    var offset = ix * _offsets[1] + iy * _offsets[2] + iz * _offsets[4];
 
     final dF0 = ns * nt * nu;
     final dF1 = ns * nt * u;
@@ -249,14 +255,14 @@ class IccCLUT {
     var pv = 0.0;
 
     for (var i = 0; i < outputChannelCount; i++) {
-      pv = data[offset + 0] * dF0 +
-          data[offset + offsets[1]] * dF1 +
-          data[offset + offsets[2]] * dF2 +
-          data[offset + offsets[3]] * dF3 +
-          data[offset + offsets[4]] * dF4 +
-          data[offset + offsets[5]] * dF5 +
-          data[offset + offsets[6]] * dF6 +
-          data[offset + offsets[7]] * dF7;
+      pv = data[offset] * dF0 +
+          data[offset + _offsets[1]] * dF1 +
+          data[offset + _offsets[2]] * dF2 +
+          data[offset + _offsets[3]] * dF3 +
+          data[offset + _offsets[4]] * dF4 +
+          data[offset + _offsets[5]] * dF5 +
+          data[offset + _offsets[6]] * dF6 +
+          data[offset + _offsets[7]] * dF7;
 
       dest[i] = pv;
       ++offset;
@@ -295,46 +301,90 @@ class IccCLUT {
       t = 1.0;
     }
 
-    var offset = ix * offsets[1] + iy * offsets[2] + iz * offsets[4];
+    var offset = ix * _offsets[1] + iy * _offsets[2] + iz * _offsets[4];
     for (var i = 0; i < outputChannelCount; ++i) {
       if (t < u) {
         if (t > v) {
-          dest[i] = data[offset + 0] +
-              t * (data[offset + offsets[6]] - data[offset + offsets[2]]) +
-              u * (data[offset + offsets[2]] - data[offset + 0]) +
-              v * (data[offset + offsets[7]] - data[offset + offsets[6]]);
+          dest[i] = data[offset] +
+              t * (data[offset + _offsets[6]] - data[offset + _offsets[2]]) +
+              u * (data[offset + _offsets[2]] - data[offset]) +
+              v * (data[offset + _offsets[7]] - data[offset + _offsets[6]]);
         } else if (u < v) {
-          dest[i] = data[offset + 0] +
-              t * (data[offset + offsets[7]] - data[offset + offsets[3]]) +
-              u * (data[offset + offsets[3]] - data[offset + offsets[1]]) +
-              v * (data[offset + offsets[1]] - data[offset + 0]);
+          dest[i] = data[offset] +
+              t * (data[offset + _offsets[7]] - data[offset + _offsets[3]]) +
+              u * (data[offset + _offsets[3]] - data[offset + _offsets[1]]) +
+              v * (data[offset + _offsets[1]] - data[offset]);
         } else {
-          dest[i] = data[offset + 0] +
-              t * (data[offset + offsets[7]] - data[offset + offsets[3]]) +
-              u * (data[offset + offsets[2]] - data[offset + 0]) +
-              v * (data[offset + offsets[3]] - data[offset + offsets[2]]);
+          dest[i] = data[offset] +
+              t * (data[offset + _offsets[7]] - data[offset + _offsets[3]]) +
+              u * (data[offset + _offsets[2]] - data[offset]) +
+              v * (data[offset + _offsets[3]] - data[offset + _offsets[2]]);
         }
       } else {
         if (t < v) {
-          dest[i] = data[offset + 0] +
-              t * (data[offset + offsets[5]] - data[offset + offsets[1]]) +
-              u * (data[offset + offsets[7]] - data[offset + offsets[5]]) +
-              v * (data[offset + offsets[1]] - data[offset + 0]);
+          dest[i] = data[offset] +
+              t * (data[offset + _offsets[5]] - data[offset + _offsets[1]]) +
+              u * (data[offset + _offsets[7]] - data[offset + _offsets[5]]) +
+              v * (data[offset + _offsets[1]] - data[offset]);
         } else if (u < v) {
-          dest[i] = data[offset + 0] +
-              t * (data[offset + offsets[4]] - data[offset + 0]) +
-              u * (data[offset + offsets[7]] - data[offset + offsets[5]]) +
-              v * (data[offset + offsets[5]] - data[offset + offsets[4]]);
+          dest[i] = data[offset] +
+              t * (data[offset + _offsets[4]] - data[offset]) +
+              u * (data[offset + _offsets[7]] - data[offset + _offsets[5]]) +
+              v * (data[offset + _offsets[5]] - data[offset + _offsets[4]]);
         } else {
-          dest[i] = data[offset + 0] +
-              t * (data[offset + offsets[4]] - data[offset + 0]) +
-              u * (data[offset + offsets[6]] - data[offset + offsets[4]]) +
-              v * (data[offset + offsets[7]] - data[offset + offsets[6]]);
+          dest[i] = data[offset] +
+              t * (data[offset + _offsets[4]] - data[offset]) +
+              u * (data[offset + _offsets[6]] - data[offset + _offsets[4]]) +
+              v * (data[offset + _offsets[7]] - data[offset + _offsets[6]]);
         }
       }
       ++offset;
     }
     return dest;
+  }
+
+  static void _buildOffsetTable({
+    required final List<int> offsets,
+    required final int inputChannelCount,
+    required final List<int> dimensionSize,
+  }) {
+    // Helper fields for interpolation
+    final int _n001;
+    final int _n010;
+    final int _n100;
+    final int _n110;
+
+    if (inputChannelCount == 1) {
+      offsets[1] = _n001 = dimensionSize[0];
+    } else if (inputChannelCount == 2) {
+      offsets[1] = _n001 = dimensionSize[0];
+      offsets[2] = _n010 = dimensionSize[1];
+      offsets[3] = _n001 + _n010;
+    } else if (inputChannelCount == 3) {
+      offsets[1] = _n001 = dimensionSize[0];
+      offsets[2] = _n010 = dimensionSize[1];
+      offsets[3] = _n001 + _n010;
+      offsets[4] = _n100 = dimensionSize[2];
+      offsets[5] = _n100 + _n001;
+      offsets[6] = _n110 = _n100 + _n010;
+      offsets[7] = _n110 + _n001;
+    } else if (inputChannelCount == 4) {
+      offsets[1] = dimensionSize[0];
+      offsets[2] = dimensionSize[1];
+      offsets[3] = offsets[2] + offsets[1];
+      offsets[4] = dimensionSize[2];
+      offsets[5] = offsets[4] + offsets[1];
+      offsets[6] = offsets[4] + offsets[2];
+      offsets[7] = offsets[4] + offsets[3];
+      offsets[8] = dimensionSize[3];
+      offsets[9] = offsets[8] + offsets[1];
+      offsets[10] = offsets[8] + offsets[2];
+      offsets[11] = offsets[8] + offsets[3];
+      offsets[12] = offsets[8] + offsets[4];
+      offsets[13] = offsets[8] + offsets[5];
+      offsets[14] = offsets[8] + offsets[6];
+      offsets[15] = offsets[8] + offsets[7];
+    }
   }
 }
 
