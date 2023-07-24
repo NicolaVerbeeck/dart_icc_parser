@@ -1,12 +1,28 @@
 import 'dart:typed_data';
 
+import 'package:icc_parser/src/tag/curve/icc_curve.dart';
 import 'package:icc_parser/src/tag/lut/icc_clut.dart';
+import 'package:icc_parser/src/tag/lut/icc_mbb.dart';
 import 'package:icc_parser/src/types/built_in.dart';
+import 'package:meta/meta.dart';
 
-class ICCTagLutAToB {
-  ICCTagLutAToB();
+@immutable
+class IccTagLutAToB extends IccMBB {
+  static const _isInputMatrix = false;
 
-  factory ICCTagLutAToB.fromBytes(
+  const IccTagLutAToB({
+    required super.inputChannelCount,
+    required super.outputChannelCount,
+    required super.aCurves,
+    required super.clut,
+    required super.matrix,
+    required super.bCurves,
+    required super.mCurves,
+  }) : super(
+          isInputMatrix: _isInputMatrix,
+        );
+
+  factory IccTagLutAToB.fromBytes(
     final ByteData data, {
     final int offset = 0,
   }) {
@@ -29,8 +45,14 @@ class ICCTagLutAToB {
     final offsetToFirstACurve =
         Unsigned32Number.fromBytes(data, offset: offset + 28);
 
+    List<IccCurve>? bCurves;
+
     if (offsetToFirstBCurve.value != 0) {
-      // Load b curves
+      bCurves = _readBCurves(
+        data,
+        offset: offset + offsetToFirstBCurve.value,
+        channelCount: outputChannelCount.value,
+      );
     }
     if (offsetToMatrix.value != 0) {
       // Load matrix
@@ -51,6 +73,34 @@ class ICCTagLutAToB {
       // Load a curves
     }
 
-    return ICCTagLutAToB();
+    return IccTagLutAToB();
+  }
+
+  static List<IccCurve>? _readBCurves(
+    final ByteData data, {
+    required final int offset,
+    required final int channelCount,
+  }) {
+    final bCurves = <IccCurve>[];
+
+    var subOffset = 0;
+    for (var i = 0; i < channelCount; ++i) {
+      final offsetToCurve = Unsigned32Number.fromBytes(
+        data,
+        offset: offset + subOffset,
+      );
+
+
+      if (offsetToCurve.value != 0) {
+        bCurves.add(
+          IccCurve.fromBytes(
+            data,
+            offset: offset + offsetToCurve.value,
+          ),
+        );
+      }
+    }
+
+    return bCurves.isEmpty ? null : bCurves;
   }
 }

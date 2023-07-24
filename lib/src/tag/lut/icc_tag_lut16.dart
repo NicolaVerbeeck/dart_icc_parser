@@ -50,7 +50,6 @@ class IccTagLut16 {
       inputChannelCount: inputChannelCount.value,
       outputChannelCount: outputChannelCount.value,
       precision: 2,
-      bytesPerPoint: 2,
     );
 
     final outputCurves = <IccCurve>[
