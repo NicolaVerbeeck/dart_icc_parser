@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:icc_parser/src/types/built_in.dart';
+import 'package:icc_parser/src/types/primitive.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -25,7 +25,8 @@ final class ICCProfileHeader {
 
   DeviceClass get resolvedDeviceClass => _resolveDeviceClass(deviceClass);
 
-  ColorSpaceSignature get resolvedColorSpace => _resolveColorSpace(colorSpace);
+  ColorSpaceSignature get resolvedColorSpace =>
+      intToColorSpaceSignature(colorSpace);
 
   PlatformSignature get resolvedPlatform => _resolvePlatform(platform);
 
@@ -49,7 +50,8 @@ final class ICCProfileHeader {
     required this.profileID,
   });
 
-  factory ICCProfileHeader.fromBytes(final ByteData bytes, {final int offset = 0}) {
+  factory ICCProfileHeader.fromBytes(final ByteData bytes,
+      {final int offset = 0}) {
     return ICCProfileHeader(
       size: Unsigned32Number.fromBytes(bytes, offset: offset),
       cmmType: bytes.buffer.asUint8List(offset + 4, 4),
@@ -111,61 +113,13 @@ DeviceClass _resolveDeviceClass(final Unsigned32Number deviceClass) {
   }
 }
 
-ColorSpaceSignature _resolveColorSpace(final Unsigned32Number colorSpace) {
-  switch (colorSpace.value) {
-    case 0x58595A20:
-      return ColorSpaceSignature.xyz;
-    case 0x4C616220:
-      return ColorSpaceSignature.lab;
-    case 0x4C757620:
-      return ColorSpaceSignature.luv;
-    case 0x59436272:
-      return ColorSpaceSignature.ycbr;
-    case 0x59787920:
-      return ColorSpaceSignature.yxy;
-    case 0x52474220:
-      return ColorSpaceSignature.rgb;
-    case 0x47524159:
-      return ColorSpaceSignature.gray;
-    case 0x48535620:
-      return ColorSpaceSignature.hsv;
-    case 0x484C5320:
-      return ColorSpaceSignature.hls;
-    case 0x434D594B:
-      return ColorSpaceSignature.cmyk;
-    case 0x434D5920:
-      return ColorSpaceSignature.cmy;
-    case 0x32434C52:
-      return ColorSpaceSignature.clr_2;
-    case 0x33434C52:
-      return ColorSpaceSignature.clr_3;
-    case 0x34434C52:
-      return ColorSpaceSignature.clr_4;
-    case 0x35434C52:
-      return ColorSpaceSignature.clr_5;
-    case 0x36434C52:
-      return ColorSpaceSignature.clr_6;
-    case 0x37434C52:
-      return ColorSpaceSignature.clr_7;
-    case 0x38434C52:
-      return ColorSpaceSignature.clr_8;
-    case 0x39434C52:
-      return ColorSpaceSignature.clr_9;
-    case 0x41434C52:
-      return ColorSpaceSignature.clr_10;
-    case 0x42434C52:
-      return ColorSpaceSignature.clr_11;
-    case 0x43434C52:
-      return ColorSpaceSignature.clr_12;
-    case 0x44434C52:
-      return ColorSpaceSignature.clr_13;
-    case 0x45434C52:
-      return ColorSpaceSignature.clr_14;
-    case 0x46434C52:
-      return ColorSpaceSignature.clr_15;
-    default:
-      throw Exception('Unknown color space');
-  }
+ColorSpaceSignature intToColorSpaceSignature(
+  final Unsigned32Number colorSpace,
+) {
+  final rawValue = colorSpace.value;
+  return ColorSpaceSignature.values.firstWhere(
+    (final element) => element.code == rawValue,
+  );
 }
 
 PlatformSignature _resolvePlatform(final Unsigned32Number platform) {
@@ -197,31 +151,99 @@ enum DeviceClass {
 }
 
 enum ColorSpaceSignature {
-  xyz,
-  lab,
-  luv,
-  ycbr,
-  yxy,
-  rgb,
-  gray,
-  hsv,
-  hls,
-  cmyk,
-  cmy,
-  clr_2,
-  clr_3,
-  clr_4,
-  clr_5,
-  clr_6,
-  clr_7,
-  clr_8,
-  clr_9,
-  clr_10,
-  clr_11,
-  clr_12,
-  clr_13,
-  clr_14,
-  clr_15,
+/* 'XYZ ' */
+  icSigXYZData(0x58595A20),
+  /* 'Lab ' */
+  icSigLabData(0x4C616220),
+  /* 'Luv ' */
+  icSigLuvData(0x4C757620),
+  /* 'YCbr' */
+  icSigYCbCrData(0x59436272),
+  /* 'Yxy ' */
+  icSigYxyData(0x59787920),
+  /* 'RGB ' */
+  icSigRgbData(0x52474220),
+  /* 'GRAY' */
+  icSigGrayData(0x47524159),
+  /* 'HSV ' */
+  icSigHsvData(0x48535620),
+  /* 'HLS ' */
+  icSigHlsData(0x484C5320),
+  /* 'CMYK' */
+  icSigCmykData(0x434D594B),
+  /* 'CMY ' */
+  icSigCmyData(0x434D5920),
+  /* '1CLR' */
+  icSig1colorData(0x31434C52),
+  /* '2CLR' */
+  icSig2colorData(0x32434C52),
+  /* '3CLR' */
+  icSig3colorData(0x33434C52),
+  /* '4CLR' */
+  icSig4colorData(0x34434C52),
+  /* '5CLR' */
+  icSig5colorData(0x35434C52),
+  /* '6CLR' */
+  icSig6colorData(0x36434C52),
+  /* '7CLR' */
+  icSig7colorData(0x37434C52),
+  /* '8CLR' */
+  icSig8colorData(0x38434C52),
+  /* '9CLR' */
+  icSig9colorData(0x39434C52),
+  /* 'ACLR' */
+  icSig10colorData(0x41434C52),
+  /* 'BCLR' */
+  icSig11colorData(0x42434C52),
+  /* 'CCLR' */
+  icSig12colorData(0x43434C52),
+  /* 'DCLR' */
+  icSig13colorData(0x44434C52),
+  /* 'ECLR' */
+  icSig14colorData(0x45434C52),
+  /* 'FCLR' */
+  icSig15colorData(0x46434C52),
+  /* 'nmcl' */
+  icSigNamedData(0x6e6d636c),
+  /* '1CLR' */
+  icSigMCH1Data(0x31434C52),
+  /* '2CLR' */
+  icSigMCH2Data(0x32434C52),
+  /* '3CLR' */
+  icSigMCH3Data(0x33434C52),
+  /* '4CLR' */
+  icSigMCH4Data(0x34434C52),
+  /* '5CLR' */
+  icSigMCH5Data(0x35434C52),
+  /* '6CLR' */
+  icSigMCH6Data(0x36434C52),
+  /* '7CLR' */
+  icSigMCH7Data(0x37434C52),
+  /* '8CLR' */
+  icSigMCH8Data(0x38434C52),
+  /* '9CLR' */
+  icSigMCH9Data(0x39434C52),
+  /* 'ACLR' */
+  icSigMCHAData(0x41434C52),
+  /* 'BCLR' */
+  icSigMCHBData(0x42434C52),
+  /* 'CCLR' */
+  icSigMCHCData(0x43434C52),
+  /* 'DCLR' */
+  icSigMCHDData(0x44434C52),
+  /* 'ECLR' */
+  icSigMCHEData(0x45434C52),
+  /* 'FCLR' */
+  icSigMCHFData(0x46434C52),
+  /* "nc0000" */
+  icSigNChannelData(0x6e630000),
+  /* "mc0000" */
+  icSigSrcMCSChannelData(0x6d630000),
+  ;
+
+  final int code;
+
+  const ColorSpaceSignature(this.code);
 }
 
 enum PlatformSignature {

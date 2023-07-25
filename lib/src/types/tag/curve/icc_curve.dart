@@ -1,12 +1,33 @@
+import 'package:icc_parser/src/types/tag/curve/icc_tag_curve.dart';
+import 'package:icc_parser/src/types/tag/curve/icc_tag_parametric_curve.dart';
+import 'package:icc_parser/src/types/tag/icc_tag.dart';
+import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
-abstract class IccCurve {
-  static const curveType = 0x63757276;
-  static const parametricCurveType = 0x70617261;
-
+abstract class IccCurve implements IccTag {
   bool get isIdentity => false;
 
   const IccCurve();
+
+  factory IccCurve.fromBytes(
+    final DataStream data, {
+    required final int size,
+  }) {
+    final pos = data.position;
+    final signature = data.readUnsigned32Number().value;
+    data.seek(pos);
+
+    if (signature == KnownTagType.icSigCurveType.code) {
+      return IccTagCurve.fromBytes(data);
+    } else if (signature == KnownTagType.icSigParametricCurveType.code) {
+      return IccTagParametricCurve.fromBytes(
+        data,
+        size: size,
+      );
+    }
+    throw Exception('Unsupported curve type: $signature');
+  }
 
   double apply(final double value);
 

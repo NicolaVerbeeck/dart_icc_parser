@@ -1,12 +1,13 @@
-import 'package:icc_parser/src/tag/curve/icc_curve.dart';
-import 'package:icc_parser/src/tag/icc_matrix.dart';
-import 'package:icc_parser/src/tag/lut/icc_clut.dart';
+import 'package:icc_parser/src/types/icc_matrix.dart';
+import 'package:icc_parser/src/types/tag/clut/icc_clut.dart';
+import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
+import 'package:icc_parser/src/types/tag/icc_tag.dart';
 import 'package:meta/meta.dart';
 
 /// Multi-dimensional Black Box (MBB) base class for lut8, lut16,
 /// lutA2B and lutB2A tag types.
 @immutable
-abstract class IccMBB {
+abstract class IccMBB implements IccTag {
   const IccMBB({
     required this.inputChannelCount,
     required this.outputChannelCount,
@@ -23,6 +24,8 @@ abstract class IccMBB {
   final bool isInputMatrix;
 
   bool get isInputB => isInputMatrix;
+
+  bool get useLegacyPCS => false;
 
   final List<IccCurve>? aCurves;
   final IccCLUT? clut;

@@ -1,9 +1,9 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
-import 'package:icc_parser/icc_parser.dart';
-import 'package:icc_parser/src/tag/curve/icc_curve.dart';
+import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
+import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:icc_parser/src/utils/num_utils.dart';
 import 'package:meta/meta.dart';
 
@@ -15,26 +15,23 @@ final class IccTagCurve extends IccCurve {
 
   const IccTagCurve(this.curve);
 
-  factory IccTagCurve.fromBytes(
-    final ByteData data, {
-    final int offset = 0,
-  }) {
-    final signature = Unsigned32Number.fromBytes(data, offset: offset).value;
-    assert(signature == IccCurve.curveType);
+  factory IccTagCurve.fromBytes(final DataStream data) {
+    final signature = data.readUnsigned32Number().value;
+    assert(signature == KnownTagType.icSigCurveType.code);
 
-    final numEntries =
-        Unsigned32Number.fromBytes(data, offset: offset + 8).value;
+    data.skip(4);
 
+    final numEntries = data.readUnsigned32Number().value;
+
+    return IccTagCurve.fromBytesWithSize(data, numEntries);
+  }
+
+  factory IccTagCurve.fromBytesWithSize(
+      final DataStream data, final int numEntries) {
     final curveData = List.generate(
       numEntries,
-      (final i) =>
-          Unsigned16Number.fromBytes(
-            data,
-            offset: offset + 12 + i * 2,
-          ).value /
-          65535,
+      (_) => data.readUnsigned16Number().value / 65535,
     );
-
     return IccTagCurve(UnmodifiableListView(curveData));
   }
 

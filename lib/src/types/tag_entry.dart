@@ -1,13 +1,14 @@
 import 'dart:typed_data';
 
-import 'package:icc_parser/src/tag/known_tags.dart';
-import 'package:icc_parser/src/tag/tag_type.dart';
-import 'package:icc_parser/src/types/built_in.dart';
+import 'package:icc_parser/icc_parser.dart';
+import 'package:icc_parser/src/types/tag/icc_tag.dart';
+import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
-/// ICC tag
+/// ICC tag entry in the [IccTagTable]
 @immutable
-final class ICCTag {
+final class IccTagEntry {
   /// Tag signature
   final Unsigned32Number signature;
 
@@ -19,34 +20,39 @@ final class ICCTag {
 
   KnownTag? get knownTag => tagFromInt(signature);
 
-  TagType? tagType(final ByteData bytes, {final int offset = 0}) {
+  KnownTagType? tagType(final ByteData bytes, {final int offset = 0}) {
     return tagTypeFromInt(
       Unsigned32Number.fromBytes(bytes, offset: offset + this.offset.value),
     );
   }
 
   /// Creates ICC tag with the given [signature], [offset] and [elementSize].
-  const ICCTag({
+  const IccTagEntry({
     required this.signature,
     required this.offset,
     required this.elementSize,
   });
 
-  /// Creates a new [ICCTag] from the given [bytes] starting at [offset].
+  /// Creates a new [IccTagEntry] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 12 bytes starting at [offset].
-  factory ICCTag.fromBytes(final ByteData bytes, {final int offset = 0}) {
+  factory IccTagEntry.fromBytes(final ByteData bytes, {final int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 12);
-    return ICCTag(
+    return IccTagEntry(
       signature: Unsigned32Number.fromBytes(bytes, offset: offset),
       offset: Unsigned32Number.fromBytes(bytes, offset: offset + 4),
       elementSize: Unsigned32Number.fromBytes(bytes, offset: offset + 8),
     );
   }
 
+  IccTag read(final DataStream data) {
+    data.seek(offset.value);
+    return IccTag.fromBytes(data, size: elementSize.value);
+  }
+
   @override
   bool operator ==(final Object other) =>
       identical(this, other) ||
-      other is ICCTag &&
+      other is IccTagEntry &&
           runtimeType == other.runtimeType &&
           signature == other.signature &&
           offset == other.offset &&

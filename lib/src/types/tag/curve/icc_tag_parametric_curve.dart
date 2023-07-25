@@ -1,8 +1,8 @@
 import 'dart:math';
-import 'dart:typed_data';
 
-import 'package:icc_parser/src/tag/curve/icc_curve.dart';
-import 'package:icc_parser/src/types/built_in.dart';
+import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
+import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -18,26 +18,23 @@ final class IccTagParametricCurve extends IccCurve {
   });
 
   factory IccTagParametricCurve.fromBytes(
-    final ByteData data, {
+    final DataStream data, {
     required final int size,
-    final int offset = 0,
   }) {
-    final signature = Unsigned32Number.fromBytes(data, offset: offset).value;
-    assert(signature == IccCurve.parametricCurveType);
+    final signature = data.readUnsigned32Number().value;
+    assert(signature == KnownTagType.icSigParametricCurveType.code);
 
-    final functionType =
-        Unsigned16Number.fromBytes(data, offset: offset + 8).value;
+    data.skip(4);
+    final functionType = data.readUnsigned16Number().value;
+    data.skip(2);
 
+    // 12 is the size of the header, 2 is the size of each parameter
     final fallBack = (size - 12) ~/ 2;
 
     final numberOfParameters =
         _numberOfParametersForFunction(functionType, fallBack);
-    final dParam = List.generate(
-        numberOfParameters,
-        (final i) =>
-            Signed15Fixed16Number.fromBytes(data, offset: offset + 10 + i * 2)
-                .value /
-            65536.0);
+    final dParam = List.generate(numberOfParameters,
+        (_) => data.readSigned15Fixed16Number().value / 65536.0);
 
     return IccTagParametricCurve(
       functionType: functionType,

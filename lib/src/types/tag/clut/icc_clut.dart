@@ -1,8 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:collection/collection.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:icc_parser/src/types/built_in.dart';
+import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -28,36 +26,36 @@ class IccCLUT {
   }) : _offsets = offsets;
 
   factory IccCLUT.fromBytesWithHeader(
-    final ByteData data, {
+    final DataStream data, {
     required final int inputChannelCount,
     required final int outputChannelCount,
-    final int offset = 0,
   }) {
     // Skip 16-inputChannelCount bytes as we will never need them
     final gridPoints = List.generate(
       inputChannelCount,
-      (final i) => Unsigned8Number.fromBytes(data, offset: offset + i).value,
+      (final i) => data.readUnsigned8Number().value,
     );
-    final precision =
-        Unsigned8Number.fromBytes(data, offset: offset + 16).value;
+    data.skip(16 - inputChannelCount);
+
+    final precision = data.readUnsigned8Number().value;
     // 3 reserved bytes
+    data.skip(3);
+
     return IccCLUT._internalFromBytes(
       data,
       inputChannelCount: inputChannelCount,
       outputChannelCount: outputChannelCount,
       precision: precision,
       gridPoints: gridPoints,
-      offset: offset + 20,
     );
   }
 
   factory IccCLUT.fromBytes(
-    final ByteData data, {
+    final DataStream data, {
     required final int numGridPoints,
     required final int inputChannelCount,
     required final int outputChannelCount,
     required final int precision,
-    final int offset = 0,
   }) {
     final gridPoints = List.filled(inputChannelCount, 0);
     for (var i = 0; i < inputChannelCount; i++) {
@@ -69,18 +67,17 @@ class IccCLUT {
       outputChannelCount: outputChannelCount,
       precision: precision,
       gridPoints: gridPoints,
-      offset: offset,
     );
   }
 
   factory IccCLUT._internalFromBytes(
-    final ByteData data, {
+    final DataStream data, {
     required final int inputChannelCount,
     required final int outputChannelCount,
     required final int precision,
     required final List<int> gridPoints,
-    final int offset = 0,
   }) {
+    // Init lists
     final dimensionSize = List.filled(inputChannelCount, 0);
     final maxGridPoints = List.filled(inputChannelCount, 0);
 
@@ -97,11 +94,12 @@ class IccCLUT {
 
     final num = totalNumGridPoints * outputChannelCount;
 
+    // Read raw data
     final divisor = precision == 1 ? 255.0 : 65535.0;
     for (var i = 0; i < num; i++) {
       final raw = precision == 1
-          ? Unsigned8Number.fromBytes(data, offset: offset + i * num).value
-          : Unsigned16Number.fromBytes(data, offset: offset + (i * 2)).value;
+          ? data.readUnsigned8Number().value
+          : data.readUnsigned16Number().value;
       dataPoints[i] = raw / divisor;
     }
 
