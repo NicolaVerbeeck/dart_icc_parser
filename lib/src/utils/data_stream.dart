@@ -11,14 +11,14 @@ class DataStream {
   int get position => _position;
 
   DataStream({
-    required final ByteData data,
-    required final int length,
-    required final int offset,
+    required ByteData data,
+    required int length,
+    required int offset,
   })  : _data = data,
         _length = length,
         _offset = offset;
 
-  void seek(final int position) {
+  void seek(int position) {
     assert(position >= 0, 'Position must be greater than or equal to 0');
     assert(position < _length, 'Position must be less than $_length');
     _position = position;
@@ -51,12 +51,12 @@ class DataStream {
     return value;
   }
 
-  void skip(final int numberOfBytes) {
+  void skip(int numberOfBytes) {
     seek(position + numberOfBytes);
   }
 
   /// Operation to make sure read position is evenly divisible by 4
-  void sync32(final int offset) {
+  void sync32(int offset) {
     final updatedOffset = offset & 0x3;
     final pos = ((position - updatedOffset + 3) >> 2) << 2;
     seek(pos + updatedOffset);

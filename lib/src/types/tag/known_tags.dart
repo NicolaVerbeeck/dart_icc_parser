@@ -260,10 +260,10 @@ enum KnownTag {
   const KnownTag(this.code);
 }
 
-KnownTag? tagFromInt(final Unsigned32Number value) {
+KnownTag? tagFromInt(Unsigned32Number value) {
   final rawValue = value.value;
   final index =
-      KnownTag.values.indexWhere((final element) => element.code == rawValue);
+      KnownTag.values.indexWhere((element) => element.code == rawValue);
   if (index < 0) return null;
   return KnownTag.values[index];
 }

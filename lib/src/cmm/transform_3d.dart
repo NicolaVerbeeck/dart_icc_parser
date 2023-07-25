@@ -29,7 +29,7 @@ final class IccTransform3DLut extends IccTransform {
 
   void begin() {}
 
-  List<double> apply(final List<double> source) {
+  List<double> apply(List<double> source) {
     final sourcePixel = adjustPCS(source);
     final pixel = [...sourcePixel];
     if (tag.isInputMatrix) {
@@ -97,7 +97,7 @@ final class IccTransform3DLut extends IccTransform {
     List<IccCurve>? bCurves,
     List<IccCurve>? mCurves,
     IccMatrix? matrix,
-  }) _begin(final IccMBB tag) {
+  }) _begin(IccMBB tag) {
     assert(tag.inputChannelCount == 3);
     // TODO parent begin...
 

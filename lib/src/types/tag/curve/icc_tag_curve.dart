@@ -15,7 +15,7 @@ final class IccTagCurve extends IccCurve {
 
   const IccTagCurve(this.curve);
 
-  factory IccTagCurve.fromBytes(final DataStream data) {
+  factory IccTagCurve.fromBytes(DataStream data) {
     final signature = data.readUnsigned32Number().value;
     assert(signature == KnownTagType.icSigCurveType.code);
 
@@ -26,8 +26,7 @@ final class IccTagCurve extends IccCurve {
     return IccTagCurve.fromBytesWithSize(data, numEntries);
   }
 
-  factory IccTagCurve.fromBytesWithSize(
-      final DataStream data, final int numEntries) {
+  factory IccTagCurve.fromBytesWithSize(DataStream data, int numEntries) {
     final curveData = List.generate(
       numEntries,
       (_) => data.readUnsigned16Number().value / 65535,
@@ -53,7 +52,7 @@ final class IccTagCurve extends IccCurve {
   }
 
   @override
-  double apply(final double value) {
+  double apply(double value) {
     var v = value;
     if (v < 0.0) {
       v = 0;

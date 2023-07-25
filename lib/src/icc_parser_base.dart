@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_final_parameters
+
 import 'dart:typed_data';
 
 import 'package:icc_parser/src/types/icc_profile_header.dart';

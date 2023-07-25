@@ -1,7 +1,9 @@
 import 'package:icc_parser/src/cmm/icc_pcs.dart';
 import 'package:icc_parser/src/icc_parser_base.dart';
 import 'package:icc_parser/src/types/icc_profile_header.dart';
+import 'package:meta/meta.dart';
 
+@immutable
 abstract class IccTransform {
   final IccProfile profile;
 
@@ -12,7 +14,7 @@ abstract class IccTransform {
   final List<double> pcsScale;
   final List<double> pcsOffset;
 
-  IccTransform({
+  const IccTransform({
     required this.profile,
     required this.doAdjustPCS,
     required this.isInput,
@@ -22,21 +24,21 @@ abstract class IccTransform {
     required this.pcsOffset,
   });
 
-  List<double> checkSourceAbsolute(final List<double> source) {
+  List<double> checkSourceAbsolute(List<double> source) {
     if (doAdjustPCS && !isInput && srcPCSConversion) {
       return adjustPCS(source);
     }
     return source;
   }
 
-  List<double> checkDestinationAbsolute(final List<double> source) {
+  List<double> checkDestinationAbsolute(List<double> source) {
     if (doAdjustPCS && isInput && dstPCSConversion) {
       return adjustPCS(source);
     }
     return source;
   }
 
-  List<double> adjustPCS(final List<double> source) {
+  List<double> adjustPCS(List<double> source) {
     assert(source.length == 3);
 
     final space = intToColorSpaceSignature(profile.header.pcs);

@@ -50,8 +50,7 @@ final class ICCProfileHeader {
     required this.profileID,
   });
 
-  factory ICCProfileHeader.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory ICCProfileHeader.fromBytes(ByteData bytes, {int offset = 0}) {
     return ICCProfileHeader(
       size: Unsigned32Number.fromBytes(bytes, offset: offset),
       cmmType: bytes.buffer.asUint8List(offset + 4, 4),
@@ -92,7 +91,7 @@ final class ICCProfileHeader {
   }
 }
 
-DeviceClass _resolveDeviceClass(final Unsigned32Number deviceClass) {
+DeviceClass _resolveDeviceClass(Unsigned32Number deviceClass) {
   switch (deviceClass.value) {
     case 0x73636E72:
       return DeviceClass.input;
@@ -114,15 +113,15 @@ DeviceClass _resolveDeviceClass(final Unsigned32Number deviceClass) {
 }
 
 ColorSpaceSignature intToColorSpaceSignature(
-  final Unsigned32Number colorSpace,
+  Unsigned32Number colorSpace,
 ) {
   final rawValue = colorSpace.value;
   return ColorSpaceSignature.values.firstWhere(
-    (final element) => element.code == rawValue,
+    (element) => element.code == rawValue,
   );
 }
 
-PlatformSignature _resolvePlatform(final Unsigned32Number platform) {
+PlatformSignature _resolvePlatform(Unsigned32Number platform) {
   switch (platform.value) {
     case 0x4150504C:
       return PlatformSignature.apple;

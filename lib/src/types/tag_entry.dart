@@ -20,7 +20,7 @@ final class IccTagEntry {
 
   KnownTag? get knownTag => tagFromInt(signature);
 
-  KnownTagType? tagType(final ByteData bytes, {final int offset = 0}) {
+  KnownTagType? tagType(ByteData bytes, {int offset = 0}) {
     return tagTypeFromInt(
       Unsigned32Number.fromBytes(bytes, offset: offset + this.offset.value),
     );
@@ -35,7 +35,7 @@ final class IccTagEntry {
 
   /// Creates a new [IccTagEntry] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 12 bytes starting at [offset].
-  factory IccTagEntry.fromBytes(final ByteData bytes, {final int offset = 0}) {
+  factory IccTagEntry.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 12);
     return IccTagEntry(
       signature: Unsigned32Number.fromBytes(bytes, offset: offset),
@@ -44,13 +44,13 @@ final class IccTagEntry {
     );
   }
 
-  IccTag read(final DataStream data) {
+  IccTag read(DataStream data) {
     data.seek(offset.value);
     return IccTag.fromBytes(data, size: elementSize.value);
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is IccTagEntry &&
           runtimeType == other.runtimeType &&

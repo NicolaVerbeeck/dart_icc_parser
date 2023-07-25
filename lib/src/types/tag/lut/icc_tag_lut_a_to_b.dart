@@ -17,14 +17,14 @@ class IccTagLutAToB extends IccMBB {
     required super.matrix,
     required super.bCurves,
     required super.mCurves,
-    final bool isInputMatrix = _isInputMatrix,
+    bool isInputMatrix = _isInputMatrix,
   }) : super(
           isInputMatrix: isInputMatrix,
         );
 
   factory IccTagLutAToB.fromBytes(
-    final DataStream data, {
-    required final int size,
+    DataStream data, {
+    required int size,
   }) {
     return readFromBytes(
       data,
@@ -35,9 +35,9 @@ class IccTagLutAToB extends IccMBB {
 
   @protected
   static IccTagLutAToB readFromBytes(
-    final DataStream data, {
-    required final int size,
-    required final bool isInputMatrix,
+    DataStream data, {
+    required int size,
+    required bool isInputMatrix,
   }) {
     final start = data.position;
     final end = start + size;
@@ -122,10 +122,10 @@ class IccTagLutAToB extends IccMBB {
   }
 
   static List<IccCurve>? _readCurves(
-    final DataStream data, {
-    required final int end,
-    required final int channelCount,
-    required final int nextOffset,
+    DataStream data, {
+    required int end,
+    required int channelCount,
+    required int nextOffset,
   }) {
     if (channelCount == 0) return null;
 

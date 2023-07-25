@@ -18,8 +18,8 @@ final class IccTagParametricCurve extends IccCurve {
   });
 
   factory IccTagParametricCurve.fromBytes(
-    final DataStream data, {
-    required final int size,
+    DataStream data, {
+    required int size,
   }) {
     final signature = data.readUnsigned32Number().value;
     assert(signature == KnownTagType.icSigParametricCurveType.code);
@@ -44,7 +44,7 @@ final class IccTagParametricCurve extends IccCurve {
   }
 
   @override
-  double apply(final double value) {
+  double apply(double value) {
     double a;
     double b;
 
@@ -83,8 +83,8 @@ final class IccTagParametricCurve extends IccCurve {
   }
 
   static int _numberOfParametersForFunction(
-    final int functionType,
-    final int fallBack,
+    int functionType,
+    int fallBack,
   ) {
     var numberOfParameters = fallBack;
     switch (functionType) {

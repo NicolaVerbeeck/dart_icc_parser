@@ -11,8 +11,8 @@ abstract class IccCurve implements IccTag {
   const IccCurve();
 
   factory IccCurve.fromBytes(
-    final DataStream data, {
-    required final int size,
+    DataStream data, {
+    required int size,
   }) {
     final pos = data.position;
     final signature = data.readUnsigned32Number().value;
@@ -29,9 +29,9 @@ abstract class IccCurve implements IccTag {
     throw Exception('Unsupported curve type: $signature');
   }
 
-  double apply(final double value);
+  double apply(double value);
 
-  double find(final double value) => findValue(
+  double find(double value) => findValue(
         value: value,
         p0: 0,
         v0: apply(0),
@@ -41,11 +41,11 @@ abstract class IccCurve implements IccTag {
 
   @protected
   double findValue({
-    required final double value,
-    required final double p0,
-    required final double v0,
-    required final double p1,
-    required final double v1,
+    required double value,
+    required double p0,
+    required double v0,
+    required double p1,
+    required double v1,
   }) {
     if (value <= v0) {
       return p0;

@@ -15,15 +15,14 @@ final class Float32Number {
 
   /// Creates a new [Float32Number] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 4 bytes starting at [offset].
-  factory Float32Number.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory Float32Number.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 4);
     final value = bytes.getFloat32(offset);
     return Float32Number(value);
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is Float32Number &&
           runtimeType == other.runtimeType &&
@@ -75,8 +74,7 @@ final class DateTimeNumber {
 
   /// Creates a new [DateTimeNumber] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 12 bytes starting at [offset].
-  factory DateTimeNumber.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory DateTimeNumber.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 12);
     return DateTimeNumber(
       year: bytes.getUint16(offset),
@@ -89,7 +87,7 @@ final class DateTimeNumber {
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is DateTimeNumber &&
           runtimeType == other.runtimeType &&
@@ -133,8 +131,7 @@ final class PositionNumber {
 
   /// Creates a new [PositionNumber] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 4 bytes starting at [offset].
-  factory PositionNumber.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory PositionNumber.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 4);
     return PositionNumber(
       offset: bytes.getUint32(offset),
@@ -143,7 +140,7 @@ final class PositionNumber {
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is PositionNumber &&
           runtimeType == other.runtimeType &&
@@ -177,8 +174,7 @@ final class Response16Number {
 
   /// Creates a new [Response16Number] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 4 bytes starting at [offset].
-  factory Response16Number.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory Response16Number.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 4);
     return Response16Number(
       number: bytes.getUint16(offset),
@@ -188,7 +184,7 @@ final class Response16Number {
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is Response16Number &&
           runtimeType == other.runtimeType &&
@@ -224,8 +220,7 @@ final class Signed15Fixed16Number {
 
   /// Creates a new [Signed15Fixed16Number] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 4 bytes starting at [offset].
-  factory Signed15Fixed16Number.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory Signed15Fixed16Number.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 4);
     return Signed15Fixed16Number(
       integerPart: bytes.getInt16(offset),
@@ -234,7 +229,7 @@ final class Signed15Fixed16Number {
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is Signed15Fixed16Number &&
           runtimeType == other.runtimeType &&
@@ -271,8 +266,7 @@ final class Unsigned16Fixed16Number {
 
   /// Creates a new [Unsigned16Fixed16Number] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 4 bytes starting at [offset].
-  factory Unsigned16Fixed16Number.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory Unsigned16Fixed16Number.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 4);
     return Unsigned16Fixed16Number(
       integerPart: bytes.getUint16(offset),
@@ -281,7 +275,7 @@ final class Unsigned16Fixed16Number {
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is Unsigned16Fixed16Number &&
           runtimeType == other.runtimeType &&
@@ -317,8 +311,7 @@ final class Unsigned1Fixed15Number {
 
   /// Creates a new [Unsigned1Fixed15Number] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 2 bytes starting at [offset].
-  factory Unsigned1Fixed15Number.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory Unsigned1Fixed15Number.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 2);
     final raw = bytes.getUint16(offset);
 
@@ -329,7 +322,7 @@ final class Unsigned1Fixed15Number {
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is Unsigned1Fixed15Number &&
           runtimeType == other.runtimeType &&
@@ -365,8 +358,7 @@ final class Unsigned8Fixed8Number {
 
   /// Creates a new [Unsigned8Fixed8Number] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 2 bytes starting at [offset].
-  factory Unsigned8Fixed8Number.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory Unsigned8Fixed8Number.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 2);
     return Unsigned8Fixed8Number(
       integerPart: bytes.getUint8(offset),
@@ -375,7 +367,7 @@ final class Unsigned8Fixed8Number {
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is Unsigned8Fixed8Number &&
           runtimeType == other.runtimeType &&
@@ -402,14 +394,13 @@ final class Unsigned16Number {
 
   /// Creates a new [Unsigned16Number] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 2 bytes starting at [offset].
-  factory Unsigned16Number.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory Unsigned16Number.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 2);
     return Unsigned16Number(bytes.getUint16(offset));
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is Unsigned16Number &&
           runtimeType == other.runtimeType &&
@@ -435,14 +426,13 @@ final class Unsigned32Number {
 
   /// Creates a new [Unsigned32Number] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 4 bytes starting at [offset].
-  factory Unsigned32Number.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory Unsigned32Number.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 4);
     return Unsigned32Number(bytes.getUint32(offset));
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is Unsigned32Number &&
           runtimeType == other.runtimeType &&
@@ -469,8 +459,7 @@ final class Unsigned64Number {
 
   /// Creates a new [Unsigned64Number] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 8 bytes starting at [offset].
-  factory Unsigned64Number.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory Unsigned64Number.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 8);
 
     final value = Int64.fromBytesBigEndian(bytes.buffer.asUint8List(offset));
@@ -478,7 +467,7 @@ final class Unsigned64Number {
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is Unsigned64Number &&
           runtimeType == other.runtimeType &&
@@ -504,14 +493,13 @@ final class Unsigned8Number {
 
   /// Creates a new [Unsigned8Number] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 1 byte starting at [offset].
-  factory Unsigned8Number.fromBytes(final ByteData bytes,
-      {final int offset = 0}) {
+  factory Unsigned8Number.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 1);
     return Unsigned8Number(bytes.getUint8(offset));
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is Unsigned8Number &&
           runtimeType == other.runtimeType &&
@@ -548,7 +536,7 @@ final class XYZNumber {
 
   /// Creates a new [XYZNumber] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 12 bytes starting at [offset].
-  factory XYZNumber.fromBytes(final ByteData bytes, {final int offset = 0}) {
+  factory XYZNumber.fromBytes(ByteData bytes, {int offset = 0}) {
     assert(bytes.lengthInBytes >= offset + 12);
     return XYZNumber(
       x: Signed15Fixed16Number.fromBytes(bytes, offset: offset),
@@ -558,13 +546,13 @@ final class XYZNumber {
   }
 
   ///Creates a new [XYZNumber] from the given [xyz] list
-  factory XYZNumber.fromValues(final List<Signed15Fixed16Number> xyz) {
+  factory XYZNumber.fromValues(List<Signed15Fixed16Number> xyz) {
     assert(xyz.length == 3);
     return XYZNumber(x: xyz[0], y: xyz[1], z: xyz[2]);
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is XYZNumber &&
           runtimeType == other.runtimeType &&

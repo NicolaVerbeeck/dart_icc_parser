@@ -10,7 +10,7 @@ final class IccMatrix {
 
   const IccMatrix(this.matrix) : assert(matrix.length == 12);
 
-  factory IccMatrix.fromBytes(final DataStream stream) {
+  factory IccMatrix.fromBytes(DataStream stream) {
     final matrix = List.generate(
       12,
       (_) => stream.readSigned15Fixed16Number().value,
@@ -37,7 +37,7 @@ final class IccMatrix {
     return true;
   }
 
-  void apply(final List<double> pixel) {
+  void apply(List<double> pixel) {
     final a = pixel[0];
     final b = pixel[1];
     final c = pixel[2];

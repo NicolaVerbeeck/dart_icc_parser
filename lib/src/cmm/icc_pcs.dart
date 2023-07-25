@@ -2,18 +2,18 @@ abstract class IccPCS {
   static const icD50XYZ = [0.9642, 1.0000, 0.8249];
 
   static void lab2ToXyz({
-    required final List<double> source,
-    required final List<double> dest,
-    required final bool noClip,
+    required List<double> source,
+    required List<double> dest,
+    required bool noClip,
   }) {
     lab2ToLab4(source: source, dest: dest, noClip: noClip);
     labToXyz(source: dest, dest: dest, noClip: noClip);
   }
 
   static void lab2ToLab4({
-    required final List<double> source,
-    required final List<double> dest,
-    required final bool noClip,
+    required List<double> source,
+    required List<double> dest,
+    required bool noClip,
   }) {
     const factor = 65535.0 / 65280.0;
     if (noClip) {
@@ -28,18 +28,18 @@ abstract class IccPCS {
   }
 
   static void xyzToLab2({
-    required final List<double> source,
-    required final List<double> dest,
-    required final bool noClip,
+    required List<double> source,
+    required List<double> dest,
+    required bool noClip,
   }) {
     xyzToLab(source: source, dest: dest, noClip: noClip);
     lab4ToLab2(source: dest, dest: dest);
   }
 
   static void labToXyz({
-    required final List<double> source,
-    required final List<double> dest,
-    required final bool noClip,
+    required List<double> source,
+    required List<double> dest,
+    required bool noClip,
   }) {
     final List<double> lab = [...source];
     icLabFromPcs(lab);
@@ -57,13 +57,13 @@ abstract class IccPCS {
     }
   }
 
-  static void icLabFromPcs(final List<double> pixel) {
+  static void icLabFromPcs(List<double> pixel) {
     pixel[0] *= 100;
     pixel[1] = (pixel[1] * 255.0) - 128.0;
     pixel[2] = (pixel[2] * 255.0) - 128.0;
   }
 
-  static void icLabToXYZ(final List<double> pixel) {
+  static void icLabToXYZ(List<double> pixel) {
     const whitePoint = icD50XYZ;
 
     final fy = (pixel[0] + 16.0) / 116.0;
@@ -73,9 +73,9 @@ abstract class IccPCS {
   }
 
   static void xyzToLab({
-    required final List<double> source,
-    required final List<double> dest,
-    required final bool noClip,
+    required List<double> source,
+    required List<double> dest,
+    required bool noClip,
   }) {
     final xyz = List.filled(3, 0.0);
     if (!noClip) {
@@ -93,7 +93,7 @@ abstract class IccPCS {
     icLabToPcs(xyz);
   }
 
-  static double icICubeth(final double v) {
+  static double icICubeth(double v) {
     if (v > 0.20689303448275862068965517241379) {
       return v * v * v;
     } else if (v > 16.0 / 116.0) {
@@ -103,21 +103,21 @@ abstract class IccPCS {
     }
   }
 
-  static void icXyzToPcs(final List<double> pixel) {
+  static void icXyzToPcs(List<double> pixel) {
     const factor = 32768.0 / 65535.0;
     pixel[0] *= factor;
     pixel[1] *= factor;
     pixel[2] *= factor;
   }
 
-  static void icXyzFromPcs(final List<double> xyz) {
+  static void icXyzFromPcs(List<double> xyz) {
     const factor = 65535.0 / 32768.0;
     xyz[0] *= factor;
     xyz[1] *= factor;
     xyz[2] *= factor;
   }
 
-  static void icXYZtoLab(final List<double> lab) {
+  static void icXYZtoLab(List<double> lab) {
     const whitePoint = icD50XYZ;
 
     final xn = icICubeth(lab[0] / whitePoint[0]);
@@ -129,15 +129,15 @@ abstract class IccPCS {
     lab[2] = 200.0 * (yn - zn);
   }
 
-  static void icLabToPcs(final List<double> lab) {
+  static void icLabToPcs(List<double> lab) {
     lab[0] /= 100.0;
     lab[1] = (lab[1] + 128.0) / 255.0;
     lab[2] = (lab[2] + 128.0) / 255.0;
   }
 
   static void lab4ToLab2({
-    required final List<double> source,
-    required final List<double> dest,
+    required List<double> source,
+    required List<double> dest,
   }) {
     const factor = 65280.0 / 65535.0;
     dest[0] = source[0] * factor;

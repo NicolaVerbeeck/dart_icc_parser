@@ -26,7 +26,7 @@ final class IccTagLut8 extends IccMBB {
           matrix: null,
         );
 
-  factory IccTagLut8.fromBytes(final DataStream data) {
+  factory IccTagLut8.fromBytes(DataStream data) {
     final signature = data.readUnsigned32Number();
     assert(signature.value == 0x6D667431);
     // 4 reserved bytes

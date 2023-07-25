@@ -22,18 +22,18 @@ class IccCLUT {
     required this.dimensionSize,
     required this.data,
     required this.maxGridPoints,
-    required final List<int> offsets,
+    required List<int> offsets,
   }) : _offsets = offsets;
 
   factory IccCLUT.fromBytesWithHeader(
-    final DataStream data, {
-    required final int inputChannelCount,
-    required final int outputChannelCount,
+    DataStream data, {
+    required int inputChannelCount,
+    required int outputChannelCount,
   }) {
     // Skip 16-inputChannelCount bytes as we will never need them
     final gridPoints = List.generate(
       inputChannelCount,
-      (final i) => data.readUnsigned8Number().value,
+      (i) => data.readUnsigned8Number().value,
     );
     data.skip(16 - inputChannelCount);
 
@@ -51,11 +51,11 @@ class IccCLUT {
   }
 
   factory IccCLUT.fromBytes(
-    final DataStream data, {
-    required final int numGridPoints,
-    required final int inputChannelCount,
-    required final int outputChannelCount,
-    required final int precision,
+    DataStream data, {
+    required int numGridPoints,
+    required int inputChannelCount,
+    required int outputChannelCount,
+    required int precision,
   }) {
     final gridPoints = List.filled(inputChannelCount, 0);
     for (var i = 0; i < inputChannelCount; i++) {
@@ -71,11 +71,11 @@ class IccCLUT {
   }
 
   factory IccCLUT._internalFromBytes(
-    final DataStream data, {
-    required final int inputChannelCount,
-    required final int outputChannelCount,
-    required final int precision,
-    required final List<int> gridPoints,
+    DataStream data, {
+    required int inputChannelCount,
+    required int outputChannelCount,
+    required int precision,
+    required List<int> gridPoints,
   }) {
     // Init lists
     final dimensionSize = List.filled(inputChannelCount, 0);
@@ -125,7 +125,7 @@ class IccCLUT {
     );
   }
 
-  List<double> interpolate4d(final List<double> source) {
+  List<double> interpolate4d(List<double> source) {
     final dest = List.filled(outputChannelCount, 0.0);
     final mw = maxGridPoints[0];
     final mx = maxGridPoints[1];
@@ -203,7 +203,7 @@ class IccCLUT {
     return dest;
   }
 
-  List<double> interpolate3d(final List<double> source) {
+  List<double> interpolate3d(List<double> source) {
     final dest = List.filled(outputChannelCount, 0.0);
 
     final mx = maxGridPoints[0];
@@ -268,7 +268,7 @@ class IccCLUT {
     return dest;
   }
 
-  List<double> interpolate3dTetra(final List<double> source) {
+  List<double> interpolate3dTetra(List<double> source) {
     final dest = List.filled(outputChannelCount, 0.0);
     final mx = maxGridPoints[0];
     final my = maxGridPoints[1];
@@ -342,9 +342,9 @@ class IccCLUT {
   }
 
   static void _buildOffsetTable({
-    required final List<int> offsets,
-    required final int inputChannelCount,
-    required final List<int> dimensionSize,
+    required List<int> offsets,
+    required int inputChannelCount,
+    required List<int> dimensionSize,
   }) {
     // Helper fields for interpolation
     final int _n001;
@@ -387,7 +387,7 @@ class IccCLUT {
 }
 
 extension _NumExt on num {
-  double clampDouble(final double min, final double max) {
+  double clampDouble(double min, double max) {
     return clamp(min, max).toDouble();
   }
 }

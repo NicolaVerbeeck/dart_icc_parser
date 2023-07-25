@@ -8,8 +8,8 @@ import 'package:icc_parser/src/utils/data_stream.dart';
 
 abstract interface class IccTag {
   factory IccTag.fromBytes(
-    final DataStream stream, {
-    required final int size,
+    DataStream stream, {
+    required int size,
   }) {
     final pos = stream.position;
     final signature = stream.readUnsigned32Number();

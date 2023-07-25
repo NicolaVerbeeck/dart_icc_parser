@@ -14,14 +14,14 @@ class IccTagLutBToA extends IccTagLutAToB {
     required super.matrix,
     required super.bCurves,
     required super.mCurves,
-    final bool isInputMatrix = _isInputMatrix,
+    bool isInputMatrix = _isInputMatrix,
   }) : super(
           isInputMatrix: isInputMatrix,
         );
 
   factory IccTagLutBToA.fromBytes(
-    final DataStream data, {
-    required final int size,
+    DataStream data, {
+    required int size,
   }) {
     final parent = IccTagLutAToB.readFromBytes(
       data,

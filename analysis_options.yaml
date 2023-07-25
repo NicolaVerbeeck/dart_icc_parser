@@ -4,3 +4,6 @@ linter:
   rules:
     prefer_relative_imports: false
     prefer_asserts_with_message: false
+    parameter_assignments: true
+    prefer_final_parameters: false
+    avoid_final_parameters: true

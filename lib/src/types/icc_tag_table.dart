@@ -22,7 +22,7 @@ final class IccTagTable
 
   /// Creates a new [IccTagTable] from the given [bytes] starting at [offset].
   /// [bytes] must hold at least 4 bytes starting at [offset].
-  factory IccTagTable.fromBytes(final ByteData bytes, {final int offset = 0}) {
+  factory IccTagTable.fromBytes(ByteData bytes, {int offset = 0}) {
     final tagCount = Unsigned32Number.fromBytes(bytes, offset: offset);
     final tagTable = <IccTagEntry>[];
     for (var i = 0; i < tagCount.value; ++i) {
@@ -33,18 +33,17 @@ final class IccTagTable
   }
 
   @override
-  IccTagEntry operator [](final int index) => tags[index];
+  IccTagEntry operator [](int index) => tags[index];
 
   @override
-  void operator []=(final int index, final IccTagEntry value) =>
+  void operator []=(int index, IccTagEntry value) =>
       throw ArgumentError('ICCTagTable is immutable');
 
   @override
-  set length(final int newLength) =>
-      throw ArgumentError('ICCTagTable is immutable');
+  set length(int newLength) => throw ArgumentError('ICCTagTable is immutable');
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       other is IccTagTable &&
           runtimeType == other.runtimeType &&
