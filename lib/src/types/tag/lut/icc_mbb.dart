@@ -7,8 +7,8 @@ import 'package:meta/meta.dart';
 /// Multi-dimensional Black Box (MBB) base class for lut8, lut16,
 /// lutA2B and lutB2A tag types.
 @immutable
-abstract class IccMBB implements IccTag {
-  const IccMBB({
+abstract class ColorProfileMBB implements ColorProfileTag {
+  const ColorProfileMBB({
     required this.inputChannelCount,
     required this.outputChannelCount,
     required this.isInputMatrix,
@@ -27,9 +27,9 @@ abstract class IccMBB implements IccTag {
 
   bool get useLegacyPCS => false;
 
-  final List<IccCurve>? aCurves;
-  final IccCLUT? clut;
-  final IccMatrix? matrix;
-  final List<IccCurve>? bCurves;
-  final List<IccCurve>? mCurves;
+  final List<ColorProfileCurve>? aCurves;
+  final ColorProfileCLUT? clut;
+  final ColorProfileMatrix? matrix;
+  final List<ColorProfileCurve>? bCurves;
+  final List<ColorProfileCurve>? mCurves;
 }

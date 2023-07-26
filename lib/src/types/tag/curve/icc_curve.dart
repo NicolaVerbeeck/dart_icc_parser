@@ -5,12 +5,12 @@ import 'package:icc_parser/src/types/tag/tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
-abstract class IccCurve implements IccTag {
+abstract class ColorProfileCurve implements ColorProfileTag {
   bool get isIdentity;
 
-  const IccCurve();
+  const ColorProfileCurve();
 
-  factory IccCurve.fromBytes(
+  factory ColorProfileCurve.fromBytes(
     DataStream data, {
     required int size,
   }) {
@@ -18,10 +18,10 @@ abstract class IccCurve implements IccTag {
     final signature = data.readUnsigned32Number().value;
     data.seek(pos);
 
-    if (signature == KnownTagType.icSigCurveType.code) {
-      return IccTagCurve.fromBytes(data);
-    } else if (signature == KnownTagType.icSigParametricCurveType.code) {
-      return IccTagParametricCurve.fromBytes(
+    if (signature == ColorProfileTagType.icSigCurveType.code) {
+      return ColorProfileTagCurve.fromBytes(data);
+    } else if (signature == ColorProfileTagType.icSigParametricCurveType.code) {
+      return ColorProfileTagParametricCurve.fromBytes(
         data,
         size: size,
       );

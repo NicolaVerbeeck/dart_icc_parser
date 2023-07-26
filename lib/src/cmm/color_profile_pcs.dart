@@ -1,5 +1,11 @@
-abstract class IccPCS {
-  static const icD50XYZ = [0.9642, 1.0000, 0.8249];
+/// Utility class for converting between Lab and XYZ color spaces from various
+/// versions
+abstract class ColorProfilePCSUtils {
+
+  ColorProfilePCSUtils._();
+
+  /// The D50 XYZ values used in the ICC PCS
+  static const _icD50XYZ = [0.9642, 1.0000, 0.8249];
 
   static void lab2ToXyz({
     required List<double> source,
@@ -64,7 +70,7 @@ abstract class IccPCS {
   }
 
   static void icLabToXYZ(List<double> pixel) {
-    const whitePoint = icD50XYZ;
+    const whitePoint = _icD50XYZ;
 
     final fy = (pixel[0] + 16.0) / 116.0;
     pixel[0] = icICubeth(pixel[1] / 500.0 + fy) * whitePoint[0];
@@ -118,7 +124,7 @@ abstract class IccPCS {
   }
 
   static void icXYZtoLab(List<double> lab) {
-    const whitePoint = icD50XYZ;
+    const whitePoint = _icD50XYZ;
 
     final xn = icICubeth(lab[0] / whitePoint[0]);
     final yn = icICubeth(lab[1] / whitePoint[1]);

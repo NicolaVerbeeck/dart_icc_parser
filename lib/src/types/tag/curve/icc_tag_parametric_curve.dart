@@ -7,26 +7,26 @@ import 'package:icc_parser/src/utils/num_utils.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class IccTagParametricCurve extends IccCurve {
+final class ColorProfileTagParametricCurve extends ColorProfileCurve {
   final int functionType;
   final int numberOfParameters;
   final List<double> dParam;
 
   @override
-  KnownTagType get type => KnownTagType.icSigParametricCurveType;
+  ColorProfileTagType get type => ColorProfileTagType.icSigParametricCurveType;
 
-  const IccTagParametricCurve({
+  const ColorProfileTagParametricCurve({
     required this.functionType,
     required this.numberOfParameters,
     required this.dParam,
   });
 
-  factory IccTagParametricCurve.fromBytes(
+  factory ColorProfileTagParametricCurve.fromBytes(
     DataStream data, {
     required int size,
   }) {
     final signature = data.readUnsigned32Number().value;
-    assert(signature == KnownTagType.icSigParametricCurveType.code);
+    assert(signature == ColorProfileTagType.icSigParametricCurveType.code);
 
     data.skip(4);
     final functionType = data.readUnsigned16Number().value;
@@ -40,7 +40,7 @@ final class IccTagParametricCurve extends IccCurve {
     final dParam = List.generate(numberOfParameters,
         (_) => data.readSigned15Fixed16Number().value);
 
-    return IccTagParametricCurve(
+    return ColorProfileTagParametricCurve(
       functionType: functionType,
       numberOfParameters: numberOfParameters,
       dParam: dParam,

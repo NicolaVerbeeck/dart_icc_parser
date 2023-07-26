@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_final_parameters
-
 import 'package:collection/collection.dart';
 import 'package:icc_parser/src/types/icc_profile_header.dart';
 import 'package:icc_parser/src/types/icc_tag_table.dart';
@@ -10,20 +8,20 @@ import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class IccProfile {
+final class ColorProfile {
   final DataStream stream;
 
-  final ICCProfileHeader header;
-  final IccTagTable tagTable;
+  final ColorProfileProfileHeader header;
+  final ColorProfileTagTable tagTable;
 
-  const IccProfile(this.stream, this.header, this.tagTable);
+  const ColorProfile(this.stream, this.header, this.tagTable);
 
-  factory IccProfile.fromBytes(final DataStream stream) {
-    final header = ICCProfileHeader.fromBytes(stream);
+  factory ColorProfile.fromBytes(DataStream stream) {
+    final header = ColorProfileProfileHeader.fromBytes(stream);
     stream.seek(128); // Total header size is 128 bytes
-    final tagTable = IccTagTable.fromBytes(stream);
+    final tagTable = ColorProfileTagTable.fromBytes(stream);
 
-    return IccProfile(stream, header, tagTable);
+    return ColorProfile(stream, header, tagTable);
   }
 
   List<Signed15Fixed16Number> getNormIlluminantXYZ() {
@@ -39,7 +37,7 @@ final class IccProfile {
     return 'ICCProfile{header: $header, tagTable: $tagTable}';
   }
 
-  IccTag? findTag(KnownTag tag) {
+  ColorProfileTag? findTag(ICCColorProfileTag tag) {
     final entry = tagTable.tags
         .firstWhereOrNull((element) => element.signature.value == tag.code);
     if (entry == null) return null;

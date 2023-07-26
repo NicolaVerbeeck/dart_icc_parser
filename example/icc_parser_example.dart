@@ -2,7 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:icc_parser/icc_parser.dart';
-import 'package:icc_parser/src/cmm/icc_transform.dart';
+import 'package:icc_parser/src/cmm/color_profile_transform.dart';
+import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 
 void main(List<String> args) {
@@ -20,25 +21,25 @@ void main(List<String> args) {
       offset: 0,
       length: secondProfileBytes.lengthInBytes);
 
-  final firstProfile = IccProfile.fromBytes(firstProfileStream);
-  final secondProfile = IccProfile.fromBytes(secondProfileStream);
+  final firstProfile = ColorProfile.fromBytes(firstProfileStream);
+  final secondProfile = ColorProfile.fromBytes(secondProfileStream);
 
   print('Creating output transform');
-  final outputTransform = IccTransform.create(
+  final outputTransform = ColorProfileTransform.create(
     profile: secondProfile,
     isInput: false,
-    intent: IccRenderingIntent.perceptual,
-    interpolation: IccInterpolation.tetrahedral,
-    lutType: IccTransformLutType.color,
+    intent: ColorProfileRenderingIntent.perceptual,
+    interpolation: ColorProfileInterpolation.tetrahedral,
+    lutType: ColorProfileTransformLutType.color,
     useD2BTags: true,
   );
   print('Creating input transform');
-  final inputTransform = IccTransform.create(
+  final inputTransform = ColorProfileTransform.create(
     profile: firstProfile,
     isInput: true,
-    intent: IccRenderingIntent.perceptual,
-    interpolation: IccInterpolation.tetrahedral,
-    lutType: IccTransformLutType.color,
+    intent: ColorProfileRenderingIntent.perceptual,
+    interpolation: ColorProfileInterpolation.tetrahedral,
+    lutType: ColorProfileTransformLutType.color,
     useD2BTags: true,
   );
 
@@ -48,7 +49,8 @@ void main(List<String> args) {
   print('Converting from lab to rgb');
   final hacked = [0.600877166, 0.363889456, 0.339949101];
   final step2Res = outputTransform.apply(hacked);
-  print(step2Res.map((e) => (e*255).toInt()).toList());
+  print(step2Res);
+  print(step2Res.map((e) => (e * 255).toInt()).toList());
 }
 
 // icccmm:2111 to connect profile 1 lab space to profile 2 lab space

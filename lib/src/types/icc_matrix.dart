@@ -5,17 +5,17 @@ import 'package:icc_parser/src/utils/num_utils.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class IccMatrix {
+final class ColorProfileMatrix {
   final List<double> matrix;
 
-  const IccMatrix(this.matrix) : assert(matrix.length == 12);
+  const ColorProfileMatrix(this.matrix) : assert(matrix.length == 12);
 
-  factory IccMatrix.fromBytes(DataStream stream) {
+  factory ColorProfileMatrix.fromBytes(DataStream stream) {
     final matrix = List.generate(
       12,
       (_) => stream.readSigned15Fixed16Number().value,
     );
-    return IccMatrix(UnmodifiableListView(matrix));
+    return ColorProfileMatrix(UnmodifiableListView(matrix));
   }
 
   bool isIdentity() {

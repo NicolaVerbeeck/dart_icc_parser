@@ -5,7 +5,7 @@ import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class ICCProfileHeader {
+final class ColorProfileProfileHeader {
   final Unsigned32Number size;
   final Uint8List cmmType;
   final Unsigned32Number version;
@@ -31,7 +31,7 @@ final class ICCProfileHeader {
 
   PlatformSignature get resolvedPlatform => _resolvePlatform(platform);
 
-  const ICCProfileHeader({
+  const ColorProfileProfileHeader({
     required this.size,
     required this.cmmType,
     required this.version,
@@ -51,8 +51,8 @@ final class ICCProfileHeader {
     required this.profileID,
   });
 
-  factory ICCProfileHeader.fromBytes(DataStream bytes) {
-    return ICCProfileHeader(
+  factory ColorProfileProfileHeader.fromBytes(DataStream bytes) {
+    return ColorProfileProfileHeader(
       size: bytes.readUnsigned32Number(),
       cmmType: bytes.readBytes(4),
       version: bytes.readUnsigned32Number(),

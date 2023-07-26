@@ -4,7 +4,7 @@ import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class IccCLUT {
+final class ColorProfileCLUT {
   final int inputChannelCount;
   final int outputChannelCount;
   final int numGridPoints;
@@ -14,7 +14,7 @@ class IccCLUT {
   final List<int> maxGridPoints;
   final List<int> _offsets;
 
-  const IccCLUT({
+  const ColorProfileCLUT({
     required this.inputChannelCount,
     required this.outputChannelCount,
     required this.numGridPoints,
@@ -25,7 +25,7 @@ class IccCLUT {
     required List<int> offsets,
   }) : _offsets = offsets;
 
-  factory IccCLUT.fromBytesWithHeader(
+  factory ColorProfileCLUT.fromBytesWithHeader(
     DataStream data, {
     required int inputChannelCount,
     required int outputChannelCount,
@@ -41,7 +41,7 @@ class IccCLUT {
     // 3 reserved bytes
     data.skip(3);
 
-    return IccCLUT._internalFromBytes(
+    return ColorProfileCLUT._internalFromBytes(
       data,
       inputChannelCount: inputChannelCount,
       outputChannelCount: outputChannelCount,
@@ -50,7 +50,7 @@ class IccCLUT {
     );
   }
 
-  factory IccCLUT.fromBytes(
+  factory ColorProfileCLUT.fromBytes(
     DataStream data, {
     required int numGridPoints,
     required int inputChannelCount,
@@ -61,7 +61,7 @@ class IccCLUT {
     for (var i = 0; i < inputChannelCount; i++) {
       gridPoints[i] = numGridPoints;
     }
-    return IccCLUT._internalFromBytes(
+    return ColorProfileCLUT._internalFromBytes(
       data,
       inputChannelCount: inputChannelCount,
       outputChannelCount: outputChannelCount,
@@ -70,7 +70,7 @@ class IccCLUT {
     );
   }
 
-  factory IccCLUT._internalFromBytes(
+  factory ColorProfileCLUT._internalFromBytes(
     DataStream data, {
     required int inputChannelCount,
     required int outputChannelCount,
@@ -113,7 +113,7 @@ class IccCLUT {
       inputChannelCount: inputChannelCount,
       dimensionSize: dimensionSize,
     );
-    return IccCLUT(
+    return ColorProfileCLUT(
       inputChannelCount: inputChannelCount,
       outputChannelCount: outputChannelCount,
       numGridPoints: totalNumGridPoints,

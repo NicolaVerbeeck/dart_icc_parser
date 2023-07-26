@@ -8,16 +8,16 @@ import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class IccTagLut8 extends IccMBB {
+final class ColorProfileTagLut8 extends ColorProfileMBB {
   final List<Signed15Fixed16Number> xyzMatrix;
 
   @override
-  IccCLUT get clut => super.clut!;
+  ColorProfileCLUT get clut => super.clut!;
 
   @override
-  KnownTagType get type => KnownTagType.icSigLut8Type;
+  ColorProfileTagType get type => ColorProfileTagType.icSigLut8Type;
 
-  const IccTagLut8({
+  const ColorProfileTagLut8({
     required super.inputChannelCount,
     required super.outputChannelCount,
     required super.aCurves,
@@ -30,7 +30,7 @@ final class IccTagLut8 extends IccMBB {
           matrix: null,
         );
 
-  factory IccTagLut8.fromBytes(DataStream data) {
+  factory ColorProfileTagLut8.fromBytes(DataStream data) {
     final signature = data.readUnsigned32Number();
     assert(signature.value == 0x6D667431);
     // 4 reserved bytes
@@ -46,12 +46,12 @@ final class IccTagLut8 extends IccMBB {
     const inputTableEntriesCount = 256;
     const outputTableEntriesCount = 256;
 
-    final bCurves = List<IccCurve>.generate(
+    final bCurves = List<ColorProfileCurve>.generate(
       inputChannelCount.value,
-      (_) => IccTagCurve.fromBytesWithSize(data, inputTableEntriesCount),
+      (_) => ColorProfileTagCurve.fromBytesWithSize(data, inputTableEntriesCount),
     );
 
-    final clut = IccCLUT.fromBytes(
+    final clut = ColorProfileCLUT.fromBytes(
       data,
       numGridPoints: clutPoints.value,
       inputChannelCount: inputChannelCount.value,
@@ -59,10 +59,10 @@ final class IccTagLut8 extends IccMBB {
       precision: 1,
     );
 
-    final aCurves = List<IccCurve>.generate(outputChannelCount.value,
-        (_) => IccTagCurve.fromBytesWithSize(data, outputTableEntriesCount));
+    final aCurves = List<ColorProfileCurve>.generate(outputChannelCount.value,
+        (_) => ColorProfileTagCurve.fromBytesWithSize(data, outputTableEntriesCount));
 
-    return IccTagLut8(
+    return ColorProfileTagLut8(
       inputChannelCount: inputChannelCount.value,
       outputChannelCount: outputChannelCount.value,
       aCurves: aCurves,

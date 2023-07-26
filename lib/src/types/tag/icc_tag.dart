@@ -6,11 +6,11 @@ import 'package:icc_parser/src/types/tag/lut/icc_tag_lut_b_to_a.dart';
 import 'package:icc_parser/src/types/tag/tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 
-abstract interface class IccTag {
+abstract interface class ColorProfileTag {
 
-  KnownTagType get type;
+  ColorProfileTagType get type;
 
-  factory IccTag.fromBytes(
+  factory ColorProfileTag.fromBytes(
     DataStream stream, {
     required int size,
   }) {
@@ -19,17 +19,17 @@ abstract interface class IccTag {
     stream.seek(pos);
 
     switch (tagTypeFromInt(signature)) {
-      case KnownTagType.icSigCurveType:
-      case KnownTagType.icSigParametricCurveType:
-        return IccCurve.fromBytes(stream, size: size);
-      case KnownTagType.icSigLut8Type:
-        return IccTagLut8.fromBytes(stream);
-      case KnownTagType.icSigLut16Type:
-        return IccTagLut16.fromBytes(stream);
-      case KnownTagType.icSigLutAtoBType:
-        return IccTagLutAToB.fromBytes(stream, size: size);
-      case KnownTagType.icSigLutBtoAType:
-        return IccTagLutBToA.fromBytes(stream, size: size);
+      case ColorProfileTagType.icSigCurveType:
+      case ColorProfileTagType.icSigParametricCurveType:
+        return ColorProfileCurve.fromBytes(stream, size: size);
+      case ColorProfileTagType.icSigLut8Type:
+        return ColorProfileTagLut8.fromBytes(stream);
+      case ColorProfileTagType.icSigLut16Type:
+        return ColorProfileTagLut16.fromBytes(stream);
+      case ColorProfileTagType.icSigLutAtoBType:
+        return ColorProfileTagLutAToB.fromBytes(stream, size: size);
+      case ColorProfileTagType.icSigLutBtoAType:
+        return ColorProfileTagLutBToA.fromBytes(stream, size: size);
       //ignore: no_default_cases
       default:
         throw Exception('Unsupported tag type: $signature');

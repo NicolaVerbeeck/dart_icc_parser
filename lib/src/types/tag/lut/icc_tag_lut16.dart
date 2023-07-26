@@ -8,19 +8,19 @@ import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class IccTagLut16 extends IccMBB {
+final class ColorProfileTagLut16 extends ColorProfileMBB {
   final List<Signed15Fixed16Number> xyzMatrix;
 
   @override
-  IccCLUT get clut => super.clut!;
+  ColorProfileCLUT get clut => super.clut!;
 
   @override
   bool get useLegacyPCS => true;
 
   @override
-  KnownTagType get type => KnownTagType.icSigLut16Type;
+  ColorProfileTagType get type => ColorProfileTagType.icSigLut16Type;
 
-  const IccTagLut16({
+  const ColorProfileTagLut16({
     required super.inputChannelCount,
     required super.outputChannelCount,
     required super.aCurves,
@@ -33,7 +33,7 @@ final class IccTagLut16 extends IccMBB {
           matrix: null,
         );
 
-  factory IccTagLut16.fromBytes(DataStream data) {
+  factory ColorProfileTagLut16.fromBytes(DataStream data) {
     final signature = data.readUnsigned32Number();
     assert(signature.value == 0x6D667432);
     // 4 reserved bytes
@@ -49,12 +49,12 @@ final class IccTagLut16 extends IccMBB {
     final inputTableEntriesCount = data.readUnsigned16Number();
     final outputTableEntriesCount = data.readUnsigned16Number();
 
-    final bCurves = List<IccCurve>.generate(
+    final bCurves = List<ColorProfileCurve>.generate(
       inputChannelCount.value,
-      (_) => IccTagCurve.fromBytesWithSize(data, inputTableEntriesCount.value),
+      (_) => ColorProfileTagCurve.fromBytesWithSize(data, inputTableEntriesCount.value),
     );
 
-    final clut = IccCLUT.fromBytes(
+    final clut = ColorProfileCLUT.fromBytes(
       data,
       numGridPoints: clutPoints.value,
       inputChannelCount: inputChannelCount.value,
@@ -62,12 +62,12 @@ final class IccTagLut16 extends IccMBB {
       precision: 2,
     );
 
-    final aCurves = List<IccCurve>.generate(
+    final aCurves = List<ColorProfileCurve>.generate(
         outputChannelCount.value,
         (_) =>
-            IccTagCurve.fromBytesWithSize(data, outputTableEntriesCount.value));
+            ColorProfileTagCurve.fromBytesWithSize(data, outputTableEntriesCount.value));
 
-    return IccTagLut16(
+    return ColorProfileTagLut16(
       inputChannelCount: inputChannelCount.value,
       outputChannelCount: outputChannelCount.value,
       aCurves: aCurves,

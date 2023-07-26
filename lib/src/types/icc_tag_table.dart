@@ -7,34 +7,34 @@ import 'package:meta/meta.dart';
 
 /// ICC tag table
 @immutable
-final class IccTagTable
-    with ListMixin<IccTagEntry>
-    implements List<IccTagEntry> {
+final class ColorProfileTagTable
+    with ListMixin<ColorProfileTagEntry>
+    implements List<ColorProfileTagEntry> {
   /// List of tags in the table
-  final List<IccTagEntry> tags;
+  final List<ColorProfileTagEntry> tags;
 
   @override
   int get length => tags.length;
 
   /// Creates ICC tag table with the given [tags].
-  const IccTagTable(this.tags);
+  const ColorProfileTagTable(this.tags);
 
-  /// Creates a new [IccTagTable] from the given [bytes].
+  /// Creates a new [ColorProfileTagTable] from the given [bytes].
   /// [bytes] must hold at least 4 bytes.
-  factory IccTagTable.fromBytes(DataStream bytes) {
+  factory ColorProfileTagTable.fromBytes(DataStream bytes) {
     final tagCount = bytes.readUnsigned32Number();
-    final tagTable = List<IccTagEntry>.generate(
+    final tagTable = List<ColorProfileTagEntry>.generate(
       tagCount.value,
-      (_) => IccTagEntry.fromBytes(bytes),
+      (_) => ColorProfileTagEntry.fromBytes(bytes),
     );
-    return IccTagTable(tagTable);
+    return ColorProfileTagTable(tagTable);
   }
 
   @override
-  IccTagEntry operator [](int index) => tags[index];
+  ColorProfileTagEntry operator [](int index) => tags[index];
 
   @override
-  void operator []=(int index, IccTagEntry value) =>
+  void operator []=(int index, ColorProfileTagEntry value) =>
       throw ArgumentError('ICCTagTable is immutable');
 
   @override
@@ -43,7 +43,7 @@ final class IccTagTable
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is IccTagTable &&
+      other is ColorProfileTagTable &&
           runtimeType == other.runtimeType &&
           const DeepCollectionEquality().equals(tags, other.tags);
 

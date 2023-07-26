@@ -1,4 +1,5 @@
-import 'package:icc_parser/src/cmm/icc_transform.dart';
+import 'package:icc_parser/src/cmm/color_profile_transform.dart';
+import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/icc_parser_base.dart';
 import 'package:icc_parser/src/types/icc_matrix.dart';
 import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
@@ -6,16 +7,16 @@ import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class IccTransform3DLut extends IccTransform {
-  final IccMBB tag;
-  final List<IccCurve>? aCurves;
-  final List<IccCurve>? bCurves;
-  final List<IccCurve>? mCurves;
-  final IccMatrix? matrix;
+final class ColorProfileTransform3DLut extends ColorProfileTransform {
+  final ColorProfileMBB tag;
+  final List<ColorProfileCurve>? aCurves;
+  final List<ColorProfileCurve>? bCurves;
+  final List<ColorProfileCurve>? mCurves;
+  final ColorProfileMatrix? matrix;
   // TODO move to transform parameters
-  final IccInterpolation interpolation;
+  final ColorProfileInterpolation interpolation;
 
-  const IccTransform3DLut({
+  const ColorProfileTransform3DLut({
     required this.aCurves,
     required this.bCurves,
     required this.mCurves,
@@ -31,19 +32,19 @@ final class IccTransform3DLut extends IccTransform {
     required this.interpolation,
   });
 
-  factory IccTransform3DLut.fromTag({
-    required IccMBB tag,
-    required IccProfile profile,
+  factory ColorProfileTransform3DLut.fromTag({
+    required ColorProfileMBB tag,
+    required ColorProfile profile,
     required bool doAdjustPCS,
     required bool isInput,
     required bool srcPCSConversion,
     required bool dstPCSConversion,
     required List<double>? pcsScale,
     required List<double>? pcsOffset,
-    required IccInterpolation interpolation,
+    required ColorProfileInterpolation interpolation,
   }) {
     final params = _begin(tag);
-    return IccTransform3DLut(
+    return ColorProfileTransform3DLut(
       aCurves: params.aCurves,
       bCurves: params.bCurves,
       mCurves: params.mCurves,
@@ -80,8 +81,8 @@ final class IccTransform3DLut extends IccTransform {
       }
       if (tag.clut != null) {
         final res = switch (interpolation){
-          IccInterpolation.linear => tag.clut!.interpolate3d(pixel),
-          IccInterpolation.tetrahedral => tag.clut!.interpolate3dTetra(pixel),
+          ColorProfileInterpolation.linear => tag.clut!.interpolate3d(pixel),
+          ColorProfileInterpolation.tetrahedral => tag.clut!.interpolate3dTetra(pixel),
         };
         pixel[0] = res[0];
         pixel[1] = res[1];
@@ -100,8 +101,8 @@ final class IccTransform3DLut extends IccTransform {
       }
       if (tag.clut != null) {
         final res = switch (interpolation){
-          IccInterpolation.linear => tag.clut!.interpolate3d(pixel),
-          IccInterpolation.tetrahedral => tag.clut!.interpolate3dTetra(pixel),
+          ColorProfileInterpolation.linear => tag.clut!.interpolate3d(pixel),
+          ColorProfileInterpolation.tetrahedral => tag.clut!.interpolate3dTetra(pixel),
         };
         pixel[0] = res[0];
         pixel[1] = res[1];
@@ -129,16 +130,16 @@ final class IccTransform3DLut extends IccTransform {
   bool get useLegacyPCS => tag.useLegacyPCS;
 
   static ({
-    List<IccCurve>? aCurves,
-    List<IccCurve>? bCurves,
-    List<IccCurve>? mCurves,
-    IccMatrix? matrix,
-  }) _begin(IccMBB tag) {
+    List<ColorProfileCurve>? aCurves,
+    List<ColorProfileCurve>? bCurves,
+    List<ColorProfileCurve>? mCurves,
+    ColorProfileMatrix? matrix,
+  }) _begin(ColorProfileMBB tag) {
     assert(tag.inputChannelCount == 3);
 
-    List<IccCurve>? usedACurves;
-    List<IccCurve>? usedBCurves;
-    List<IccCurve>? usedMCurves;
+    List<ColorProfileCurve>? usedACurves;
+    List<ColorProfileCurve>? usedBCurves;
+    List<ColorProfileCurve>? usedMCurves;
     final aCurves = tag.aCurves;
     final bCurves = tag.bCurves;
     final mCurves = tag.mCurves;
@@ -192,7 +193,7 @@ final class IccTransform3DLut extends IccTransform {
       }
     }
 
-    IccMatrix? usedMatrix;
+    ColorProfileMatrix? usedMatrix;
     final matrix = tag.matrix;
     if (matrix != null) {
       if (!matrix.isIdentity()) {

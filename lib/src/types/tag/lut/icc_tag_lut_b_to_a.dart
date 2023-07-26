@@ -4,13 +4,13 @@ import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class IccTagLutBToA extends IccTagLutAToB {
+class ColorProfileTagLutBToA extends ColorProfileTagLutAToB {
   static const _isInputMatrix = true;
 
   @override
-  KnownTagType get type => KnownTagType.icSigLutBtoAType;
+  ColorProfileTagType get type => ColorProfileTagType.icSigLutBtoAType;
 
-  const IccTagLutBToA({
+  const ColorProfileTagLutBToA({
     required super.inputChannelCount,
     required super.outputChannelCount,
     required super.aCurves,
@@ -23,17 +23,17 @@ class IccTagLutBToA extends IccTagLutAToB {
           isInputMatrix: isInputMatrix,
         );
 
-  factory IccTagLutBToA.fromBytes(
+  factory ColorProfileTagLutBToA.fromBytes(
     DataStream data, {
     required int size,
   }) {
-    final parent = IccTagLutAToB.readFromBytes(
+    final parent = ColorProfileTagLutAToB.readFromBytes(
       data,
       size: size,
       isInputMatrix: _isInputMatrix,
-      type: KnownTagType.icSigLutBtoAType,
+      type: ColorProfileTagType.icSigLutBtoAType,
     );
-    return IccTagLutBToA(
+    return ColorProfileTagLutBToA(
       inputChannelCount: parent.inputChannelCount,
       outputChannelCount: parent.outputChannelCount,
       aCurves: parent.aCurves,

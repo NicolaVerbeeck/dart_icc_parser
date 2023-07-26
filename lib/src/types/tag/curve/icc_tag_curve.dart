@@ -8,33 +8,33 @@ import 'package:icc_parser/src/utils/num_utils.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class IccTagCurve extends IccCurve {
+final class ColorProfileTagCurve extends ColorProfileCurve {
   final List<double> curve;
 
   int get _maxIndex => curve.length - 1;
 
   @override
-  KnownTagType get type => KnownTagType.icSigCurveType;
+  ColorProfileTagType get type => ColorProfileTagType.icSigCurveType;
 
-  const IccTagCurve(this.curve);
+  const ColorProfileTagCurve(this.curve);
 
-  factory IccTagCurve.fromBytes(DataStream data) {
+  factory ColorProfileTagCurve.fromBytes(DataStream data) {
     final signature = data.readUnsigned32Number().value;
-    assert(signature == KnownTagType.icSigCurveType.code);
+    assert(signature == ColorProfileTagType.icSigCurveType.code);
 
     data.skip(4);
 
     final numEntries = data.readUnsigned32Number().value;
 
-    return IccTagCurve.fromBytesWithSize(data, numEntries);
+    return ColorProfileTagCurve.fromBytesWithSize(data, numEntries);
   }
 
-  factory IccTagCurve.fromBytesWithSize(DataStream data, int numEntries) {
+  factory ColorProfileTagCurve.fromBytesWithSize(DataStream data, int numEntries) {
     final curveData = List.generate(
       numEntries,
       (_) => data.readUnsigned16Number().value / 65535,
     );
-    return IccTagCurve(UnmodifiableListView(curveData));
+    return ColorProfileTagCurve(UnmodifiableListView(curveData));
   }
 
   @override

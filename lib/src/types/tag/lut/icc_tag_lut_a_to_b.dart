@@ -7,13 +7,13 @@ import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class IccTagLutAToB extends IccMBB {
+class ColorProfileTagLutAToB extends ColorProfileMBB {
   static const _isInputMatrix = false;
 
   @override
-  KnownTagType get type => KnownTagType.icSigLutAtoBType;
+  ColorProfileTagType get type => ColorProfileTagType.icSigLutAtoBType;
 
-  const IccTagLutAToB({
+  const ColorProfileTagLutAToB({
     required super.inputChannelCount,
     required super.outputChannelCount,
     required super.aCurves,
@@ -26,7 +26,7 @@ class IccTagLutAToB extends IccMBB {
           isInputMatrix: isInputMatrix,
         );
 
-  factory IccTagLutAToB.fromBytes(
+  factory ColorProfileTagLutAToB.fromBytes(
     DataStream data, {
     required int size,
   }) {
@@ -34,16 +34,16 @@ class IccTagLutAToB extends IccMBB {
       data,
       size: size,
       isInputMatrix: _isInputMatrix,
-      type: KnownTagType.icSigLutAtoBType,
+      type: ColorProfileTagType.icSigLutAtoBType,
     );
   }
 
   @protected
-  static IccTagLutAToB readFromBytes(
+  static ColorProfileTagLutAToB readFromBytes(
     DataStream data, {
     required int size,
     required bool isInputMatrix,
-    required KnownTagType type,
+    required ColorProfileTagType type,
   }) {
     final start = data.position;
     final end = start + size;
@@ -64,11 +64,11 @@ class IccTagLutAToB extends IccMBB {
     final offsetToCLUT = data.readUnsigned32Number().value;
     final offsetToFirstACurve = data.readUnsigned32Number().value;
 
-    List<IccCurve>? bCurves;
-    List<IccCurve>? mCurves;
-    List<IccCurve>? aCurves;
-    IccMatrix? matrix;
-    IccCLUT? clut;
+    List<ColorProfileCurve>? bCurves;
+    List<ColorProfileCurve>? mCurves;
+    List<ColorProfileCurve>? aCurves;
+    ColorProfileMatrix? matrix;
+    ColorProfileCLUT? clut;
 
     if (offsetToFirstBCurve != 0) {
       data.seek(start + offsetToFirstBCurve);
@@ -83,7 +83,7 @@ class IccTagLutAToB extends IccMBB {
     if (offsetToMatrix != 0) {
       // Load matrix
       data.seek(start+offsetToMatrix);
-      matrix = IccMatrix.fromBytes(data);
+      matrix = ColorProfileMatrix.fromBytes(data);
     }
     if (offsetToFirstMCurve != 0) {
       data.seek(start + offsetToFirstMCurve);
@@ -98,7 +98,7 @@ class IccTagLutAToB extends IccMBB {
     if (offsetToCLUT != 0) {
       // Line 3910
       data.seek(start + offsetToCLUT);
-      clut = IccCLUT.fromBytesWithHeader(
+      clut = ColorProfileCLUT.fromBytesWithHeader(
         data,
         inputChannelCount: inputChannelCount.value,
         outputChannelCount: outputChannelCount.value,
@@ -116,7 +116,7 @@ class IccTagLutAToB extends IccMBB {
       );
     }
 
-    return IccTagLutAToB(
+    return ColorProfileTagLutAToB(
       inputChannelCount: inputChannelCount.value,
       outputChannelCount: outputChannelCount.value,
       aCurves: aCurves,
@@ -127,7 +127,7 @@ class IccTagLutAToB extends IccMBB {
     );
   }
 
-  static List<IccCurve>? _readCurves(
+  static List<ColorProfileCurve>? _readCurves(
     DataStream data, {
     required int end,
     required int channelCount,
@@ -135,10 +135,10 @@ class IccTagLutAToB extends IccMBB {
   }) {
     if (channelCount == 0) return null;
 
-    final bCurves = List<IccCurve>.generate(
+    final bCurves = List<ColorProfileCurve>.generate(
       channelCount,
       (_) {
-        final curve = IccCurve.fromBytes(data, size: end - data.position);
+        final curve = ColorProfileCurve.fromBytes(data, size: end - data.position);
         data.sync32(nextOffset);
         return curve;
       },

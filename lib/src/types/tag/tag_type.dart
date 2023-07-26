@@ -1,6 +1,7 @@
 import 'package:icc_parser/src/types/primitive.dart';
 
-enum KnownTagType {
+// TODO Remove up iccMax types
+enum ColorProfileTagType {
 /* 'chrm' */
   icSigChromaticityType(0x6368726D),
   /* 'clro' */
@@ -107,13 +108,13 @@ enum KnownTagType {
 
   final int code;
 
-  const KnownTagType(this.code);
+  const ColorProfileTagType(this.code);
 }
 
-KnownTagType? tagTypeFromInt(Unsigned32Number value) {
+ColorProfileTagType? tagTypeFromInt(Unsigned32Number value) {
   final rawValue = value.value;
   final index =
-      KnownTagType.values.indexWhere((element) => element.code == rawValue);
+      ColorProfileTagType.values.indexWhere((element) => element.code == rawValue);
   if (index < 0) return null;
-  return KnownTagType.values[index];
+  return ColorProfileTagType.values[index];
 }

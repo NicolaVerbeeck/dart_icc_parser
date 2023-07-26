@@ -1,8 +1,9 @@
-import 'package:icc_parser/src/cmm/icc_transform.dart';
+import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/types/primitive.dart';
 
-enum KnownTag {
-/* 'A2B0' */
+// TODO Remove up iccMax tags
+enum ICCColorProfileTag {
+  /* 'A2B0' */
   icSigAToB0Tag(0x41324230),
   /* 'A2B1' */
   icSigAToB1Tag(0x41324231),
@@ -258,20 +259,20 @@ enum KnownTag {
 
   final int code;
 
-  const KnownTag(this.code);
+  const ICCColorProfileTag(this.code);
 
-  KnownTag offsetWithIntent(IccRenderingIntent intent) {
-    final tagCode = code + intent.value;
-    return KnownTag.values.firstWhere((element) => element.code == tagCode, orElse: () {
+  ICCColorProfileTag offsetWithIntent(ColorProfileRenderingIntent intent) {
+    final tagCode = code + intent.offset;
+    return ICCColorProfileTag.values.firstWhere((element) => element.code == tagCode, orElse: () {
       throw Exception('Unknown tag code with offset: $this -> $intent');
     });
   }
 }
 
-KnownTag? tagFromInt(Unsigned32Number value) {
+ICCColorProfileTag? tagFromInt(Unsigned32Number value) {
   final rawValue = value.value;
   final index =
-      KnownTag.values.indexWhere((element) => element.code == rawValue);
+      ICCColorProfileTag.values.indexWhere((element) => element.code == rawValue);
   if (index < 0) return null;
-  return KnownTag.values[index];
+  return ICCColorProfileTag.values[index];
 }

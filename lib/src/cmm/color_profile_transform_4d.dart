@@ -1,4 +1,4 @@
-import 'package:icc_parser/src/cmm/icc_transform.dart';
+import 'package:icc_parser/src/cmm/color_profile_transform.dart';
 import 'package:icc_parser/src/icc_parser_base.dart';
 import 'package:icc_parser/src/types/icc_matrix.dart';
 import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
@@ -6,14 +6,14 @@ import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class IccTransform4DLut extends IccTransform {
-  final IccMBB tag;
-  final List<IccCurve>? aCurves;
-  final List<IccCurve>? bCurves;
-  final List<IccCurve>? mCurves;
-  final IccMatrix? matrix;
+final class ColorProfileTransform4DLut extends ColorProfileTransform {
+  final ColorProfileMBB tag;
+  final List<ColorProfileCurve>? aCurves;
+  final List<ColorProfileCurve>? bCurves;
+  final List<ColorProfileCurve>? mCurves;
+  final ColorProfileMatrix? matrix;
 
-  const IccTransform4DLut({
+  const ColorProfileTransform4DLut({
     required this.aCurves,
     required this.bCurves,
     required this.mCurves,
@@ -28,9 +28,9 @@ final class IccTransform4DLut extends IccTransform {
     required super.dstPCSConversion,
   });
 
-  factory IccTransform4DLut.fromTag({
-    required IccMBB tag,
-    required IccProfile profile,
+  factory ColorProfileTransform4DLut.fromTag({
+    required ColorProfileMBB tag,
+    required ColorProfile profile,
     required bool doAdjustPCS,
     required bool isInput,
     required bool srcPCSConversion,
@@ -39,7 +39,7 @@ final class IccTransform4DLut extends IccTransform {
     required List<double>? pcsOffset,
   }) {
     final params = _begin(tag);
-    return IccTransform4DLut(
+    return ColorProfileTransform4DLut(
       aCurves: params.aCurves,
       bCurves: params.bCurves,
       mCurves: params.mCurves,
@@ -113,16 +113,16 @@ final class IccTransform4DLut extends IccTransform {
   bool get useLegacyPCS => tag.useLegacyPCS;
 
   static ({
-    List<IccCurve>? aCurves,
-    List<IccCurve>? bCurves,
-    List<IccCurve>? mCurves,
-    IccMatrix? matrix,
-  }) _begin(IccMBB tag) {
+    List<ColorProfileCurve>? aCurves,
+    List<ColorProfileCurve>? bCurves,
+    List<ColorProfileCurve>? mCurves,
+    ColorProfileMatrix? matrix,
+  }) _begin(ColorProfileMBB tag) {
     assert(tag.inputChannelCount == 4);
 
-    List<IccCurve>? usedACurves;
-    List<IccCurve>? usedBCurves;
-    List<IccCurve>? usedMCurves;
+    List<ColorProfileCurve>? usedACurves;
+    List<ColorProfileCurve>? usedBCurves;
+    List<ColorProfileCurve>? usedMCurves;
     final aCurves = tag.aCurves;
     final bCurves = tag.bCurves;
     final mCurves = tag.mCurves;
@@ -171,7 +171,7 @@ final class IccTransform4DLut extends IccTransform {
       }
     }
 
-    IccMatrix? usedMatrix;
+    ColorProfileMatrix? usedMatrix;
     final matrix = tag.matrix;
     if (matrix != null) {
       if (!matrix.isIdentity()) {
