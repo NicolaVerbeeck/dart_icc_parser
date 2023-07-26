@@ -24,6 +24,25 @@ class DataStream {
     _position = position;
   }
 
+  DateTimeNumber readDateTime() {
+    final value = DateTimeNumber.fromBytes(_data, offset: _offset + _position);
+    _position += 12;
+    return value;
+  }
+
+  Uint8List readBytes(int length) {
+    final value = _data.buffer.asUint8List(_offset + _position, length);
+    _position += length;
+    return value;
+  }
+
+  Unsigned64Number readUnsigned64Number() {
+    final value =
+        Unsigned64Number.fromBytes(_data, offset: _offset + _position);
+    _position += 8;
+    return value;
+  }
+
   Unsigned32Number readUnsigned32Number() {
     final value =
         Unsigned32Number.fromBytes(_data, offset: _offset + _position);
@@ -48,6 +67,12 @@ class DataStream {
     final value =
         Signed15Fixed16Number.fromBytes(_data, offset: _offset + _position);
     _position += 4;
+    return value;
+  }
+
+  XYZNumber readXYZNumber() {
+    final value = XYZNumber.fromBytes(_data, offset: _offset + _position);
+    _position += 12;
     return value;
   }
 

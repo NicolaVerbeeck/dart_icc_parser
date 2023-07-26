@@ -11,6 +11,9 @@ final class IccTagParametricCurve extends IccCurve {
   final int numberOfParameters;
   final List<double> dParam;
 
+  @override
+  KnownTagType get type => KnownTagType.icSigParametricCurveType;
+
   const IccTagParametricCurve({
     required this.functionType,
     required this.numberOfParameters,

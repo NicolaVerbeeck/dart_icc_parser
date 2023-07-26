@@ -2,12 +2,16 @@ import 'package:icc_parser/src/types/icc_matrix.dart';
 import 'package:icc_parser/src/types/tag/clut/icc_clut.dart';
 import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
 import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
+import 'package:icc_parser/src/types/tag/tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 class IccTagLutAToB extends IccMBB {
   static const _isInputMatrix = false;
+
+  @override
+  KnownTagType get type => KnownTagType.icSigLutAtoBType;
 
   const IccTagLutAToB({
     required super.inputChannelCount,
@@ -30,6 +34,7 @@ class IccTagLutAToB extends IccMBB {
       data,
       size: size,
       isInputMatrix: _isInputMatrix,
+      type: KnownTagType.icSigLutAtoBType,
     );
   }
 
@@ -38,11 +43,12 @@ class IccTagLutAToB extends IccMBB {
     DataStream data, {
     required int size,
     required bool isInputMatrix,
+    required KnownTagType type,
   }) {
     final start = data.position;
     final end = start + size;
     final signature = data.readUnsigned32Number();
-    assert(signature.value == 0x6D414220);
+    assert(signature.value == type.code);
 
     // 4 reserved bytes
     data.skip(4);

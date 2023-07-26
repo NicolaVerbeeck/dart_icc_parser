@@ -1,9 +1,8 @@
 import 'dart:collection';
-import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
-import 'package:icc_parser/src/types/primitive.dart';
 import 'package:icc_parser/src/types/tag_entry.dart';
+import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 /// ICC tag table
@@ -20,15 +19,14 @@ final class IccTagTable
   /// Creates ICC tag table with the given [tags].
   const IccTagTable(this.tags);
 
-  /// Creates a new [IccTagTable] from the given [bytes] starting at [offset].
-  /// [bytes] must hold at least 4 bytes starting at [offset].
-  factory IccTagTable.fromBytes(ByteData bytes, {int offset = 0}) {
-    final tagCount = Unsigned32Number.fromBytes(bytes, offset: offset);
-    final tagTable = <IccTagEntry>[];
-    for (var i = 0; i < tagCount.value; ++i) {
-      final tagOffset = offset + 4 + (i * 12);
-      tagTable.add(IccTagEntry.fromBytes(bytes, offset: tagOffset));
-    }
+  /// Creates a new [IccTagTable] from the given [bytes].
+  /// [bytes] must hold at least 4 bytes.
+  factory IccTagTable.fromBytes(DataStream bytes) {
+    final tagCount = bytes.readUnsigned32Number();
+    final tagTable = List<IccTagEntry>.generate(
+      tagCount.value,
+      (_) => IccTagEntry.fromBytes(bytes),
+    );
     return IccTagTable(tagTable);
   }
 

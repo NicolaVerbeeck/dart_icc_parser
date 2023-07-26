@@ -3,6 +3,7 @@ import 'package:icc_parser/src/types/tag/clut/icc_clut.dart';
 import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
 import 'package:icc_parser/src/types/tag/curve/icc_tag_curve.dart';
 import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
+import 'package:icc_parser/src/types/tag/tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
@@ -12,6 +13,9 @@ final class IccTagLut8 extends IccMBB {
 
   @override
   IccCLUT get clut => super.clut!;
+
+  @override
+  KnownTagType get type => KnownTagType.icSigLut8Type;
 
   const IccTagLut8({
     required super.inputChannelCount,

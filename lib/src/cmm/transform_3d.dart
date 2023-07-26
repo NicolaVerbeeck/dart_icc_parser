@@ -1,4 +1,5 @@
 import 'package:icc_parser/src/cmm/icc_transform.dart';
+import 'package:icc_parser/src/icc_parser_base.dart';
 import 'package:icc_parser/src/types/icc_matrix.dart';
 import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
 import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
@@ -27,7 +28,32 @@ final class IccTransform3DLut extends IccTransform {
     required super.dstPCSConversion,
   });
 
-  void begin() {}
+  factory IccTransform3DLut.fromTag({
+    required IccMBB tag,
+    required IccProfile profile,
+    required bool doAdjustPCS,
+    required bool isInput,
+    required bool srcPCSConversion,
+    required bool dstPCSConversion,
+    required List<double>? pcsScale,
+    required List<double>? pcsOffset,
+  }) {
+    final params = _begin(tag);
+    return IccTransform3DLut(
+      aCurves: params.aCurves,
+      bCurves: params.bCurves,
+      mCurves: params.mCurves,
+      matrix: params.matrix,
+      tag: tag,
+      profile: profile,
+      doAdjustPCS: doAdjustPCS,
+      isInput: isInput,
+      srcPCSConversion: srcPCSConversion,
+      pcsScale: pcsScale,
+      pcsOffset: pcsOffset,
+      dstPCSConversion: dstPCSConversion,
+    );
+  }
 
   List<double> apply(List<double> source) {
     final sourcePixel = adjustPCS(source);
@@ -99,7 +125,6 @@ final class IccTransform3DLut extends IccTransform {
     IccMatrix? matrix,
   }) _begin(IccMBB tag) {
     assert(tag.inputChannelCount == 3);
-    // TODO parent begin...
 
     List<IccCurve>? usedACurves;
     List<IccCurve>? usedBCurves;

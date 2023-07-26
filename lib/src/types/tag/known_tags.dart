@@ -1,3 +1,4 @@
+import 'package:icc_parser/src/cmm/icc_transform.dart';
 import 'package:icc_parser/src/types/primitive.dart';
 
 enum KnownTag {
@@ -258,6 +259,13 @@ enum KnownTag {
   final int code;
 
   const KnownTag(this.code);
+
+  KnownTag offsetWithIntent(IccRenderingIntent intent) {
+    final tagCode = code + intent.value;
+    return KnownTag.values.firstWhere((element) => element.code == tagCode, orElse: () {
+      throw Exception('Unknown tag code with offset: $this -> $intent');
+    });
+  }
 }
 
 KnownTag? tagFromInt(Unsigned32Number value) {

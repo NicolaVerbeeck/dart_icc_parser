@@ -1,10 +1,14 @@
 import 'package:icc_parser/src/types/tag/lut/icc_tag_lut_a_to_b.dart';
+import 'package:icc_parser/src/types/tag/tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 class IccTagLutBToA extends IccTagLutAToB {
   static const _isInputMatrix = true;
+
+  @override
+  KnownTagType get type => KnownTagType.icSigLutBtoAType;
 
   const IccTagLutBToA({
     required super.inputChannelCount,
@@ -27,6 +31,7 @@ class IccTagLutBToA extends IccTagLutAToB {
       data,
       size: size,
       isInputMatrix: _isInputMatrix,
+      type: KnownTagType.icSigLutBtoAType,
     );
     return IccTagLutBToA(
       inputChannelCount: parent.inputChannelCount,

@@ -3,23 +3,52 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:icc_parser/icc_parser.dart';
+import 'package:icc_parser/src/cmm/icc_transform.dart';
 import 'package:icc_parser/src/types/tag/lut/icc_tag_lut16.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 
 void main(List<String> args) {
-  final list = File(args[0]).readAsBytesSync();
-  final bytes = ByteData.view(list.buffer);
-  final firstProfile = IccProfile.fromBytes(bytes);
+  final firstProfileBytes =
+      ByteData.view(File(args[0]).readAsBytesSync().buffer);
+  final secondProfileBytes =
+      ByteData.view(File(args[1]).readAsBytesSync().buffer);
 
-  print(firstProfile.getNormIlluminantXYZ());
+  final firstProfileStream = DataStream(
+      data: firstProfileBytes,
+      offset: 0,
+      length: firstProfileBytes.lengthInBytes);
+  final secondProfileStream = DataStream(
+      data: secondProfileBytes,
+      offset: 0,
+      length: secondProfileBytes.lengthInBytes);
 
-  final stream =
-      DataStream(data: bytes, offset: 0, length: bytes.lengthInBytes);
+  final firstProfile = IccProfile.fromBytes(firstProfileStream);
+  final secondProfile = IccProfile.fromBytes(secondProfileStream);
+
+  print('Creating output transform');
+  final outputTransform = IccTransform.create(
+    profile: secondProfile,
+    isInput: false,
+    intent: IccRenderingIntent.perceptual,
+    interpolation: IccInterpolation.tetrahedral,
+    lutType: IccTransformLutType.color,
+    useD2BTags: true,
+  );
+  print('Creating input transform');
+  final inputTransform = IccTransform.create(
+    profile: firstProfile,
+    isInput: true,
+    intent: IccRenderingIntent.perceptual,
+    interpolation: IccInterpolation.tetrahedral,
+    lutType: IccTransformLutType.color,
+    useD2BTags: true,
+  );
+
 
   final aToB0Entry = firstProfile.tagTable.firstWhereOrNull(
     (element) => element.knownTag == KnownTag.icSigAToB0Tag,
   );
-  final aToB0TagData = aToB0Entry?.read(stream);
+  final aToB0TagData = aToB0Entry?.read(firstProfileStream);
   print(
       'Found a to b0 entry? ${aToB0Entry != null}. Read as: ${aToB0TagData?.runtimeType}');
 

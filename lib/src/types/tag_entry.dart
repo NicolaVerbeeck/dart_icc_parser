@@ -33,14 +33,13 @@ final class IccTagEntry {
     required this.elementSize,
   });
 
-  /// Creates a new [IccTagEntry] from the given [bytes] starting at [offset].
-  /// [bytes] must hold at least 12 bytes starting at [offset].
-  factory IccTagEntry.fromBytes(ByteData bytes, {int offset = 0}) {
-    assert(bytes.lengthInBytes >= offset + 12);
+  /// Creates a new [IccTagEntry] from the given [bytes].
+  /// [bytes] must hold at least 12 bytes.
+  factory IccTagEntry.fromBytes(DataStream bytes) {
     return IccTagEntry(
-      signature: Unsigned32Number.fromBytes(bytes, offset: offset),
-      offset: Unsigned32Number.fromBytes(bytes, offset: offset + 4),
-      elementSize: Unsigned32Number.fromBytes(bytes, offset: offset + 8),
+      signature: bytes.readUnsigned32Number(),
+      offset: bytes.readUnsigned32Number(),
+      elementSize: bytes.readUnsigned32Number(),
     );
   }
 

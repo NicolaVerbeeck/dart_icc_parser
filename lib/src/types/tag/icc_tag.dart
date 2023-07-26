@@ -7,6 +7,9 @@ import 'package:icc_parser/src/types/tag/tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 
 abstract interface class IccTag {
+
+  KnownTagType get type;
+
   factory IccTag.fromBytes(
     DataStream stream, {
     required int size,

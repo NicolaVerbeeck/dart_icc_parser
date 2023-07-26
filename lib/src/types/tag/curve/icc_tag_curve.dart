@@ -13,6 +13,9 @@ final class IccTagCurve extends IccCurve {
 
   int get _maxIndex => curve.length - 1;
 
+  @override
+  KnownTagType get type => KnownTagType.icSigCurveType;
+
   const IccTagCurve(this.curve);
 
   factory IccTagCurve.fromBytes(DataStream data) {

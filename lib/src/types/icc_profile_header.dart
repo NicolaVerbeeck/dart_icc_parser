@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:icc_parser/src/types/primitive.dart';
+import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -50,25 +51,25 @@ final class ICCProfileHeader {
     required this.profileID,
   });
 
-  factory ICCProfileHeader.fromBytes(ByteData bytes, {int offset = 0}) {
+  factory ICCProfileHeader.fromBytes(DataStream bytes) {
     return ICCProfileHeader(
-      size: Unsigned32Number.fromBytes(bytes, offset: offset),
-      cmmType: bytes.buffer.asUint8List(offset + 4, 4),
-      version: Unsigned32Number.fromBytes(bytes, offset: offset + 8),
-      deviceClass: Unsigned32Number.fromBytes(bytes, offset: offset + 12),
-      colorSpace: Unsigned32Number.fromBytes(bytes, offset: offset + 16),
-      pcs: Unsigned32Number.fromBytes(bytes, offset: offset + 20),
-      dateTime: DateTimeNumber.fromBytes(bytes, offset: offset + 24),
-      signature: Unsigned32Number.fromBytes(bytes, offset: offset + 36),
-      platform: Unsigned32Number.fromBytes(bytes, offset: offset + 40),
-      flags: Unsigned32Number.fromBytes(bytes, offset: offset + 44),
-      manufacturer: Unsigned32Number.fromBytes(bytes, offset: offset + 48),
-      model: Unsigned32Number.fromBytes(bytes, offset: offset + 52),
-      attributes: Unsigned64Number.fromBytes(bytes, offset: offset + 56),
-      renderingIntent: Unsigned32Number.fromBytes(bytes, offset: offset + 64),
-      illuminant: XYZNumber.fromBytes(bytes, offset: offset + 68),
-      creator: Unsigned32Number.fromBytes(bytes, offset: offset + 80),
-      profileID: bytes.buffer.asUint8List(offset + 84, 16),
+      size: bytes.readUnsigned32Number(),
+      cmmType: bytes.readBytes(4),
+      version: bytes.readUnsigned32Number(),
+      deviceClass: bytes.readUnsigned32Number(),
+      colorSpace: bytes.readUnsigned32Number(),
+      pcs: bytes.readUnsigned32Number(),
+      dateTime: bytes.readDateTime(),
+      signature: bytes.readUnsigned32Number(),
+      platform: bytes.readUnsigned32Number(),
+      flags: bytes.readUnsigned32Number(),
+      manufacturer: bytes.readUnsigned32Number(),
+      model: bytes.readUnsigned32Number(),
+      attributes: bytes.readUnsigned64Number(),
+      renderingIntent: bytes.readUnsigned32Number(),
+      illuminant: bytes.readXYZNumber(),
+      creator: bytes.readUnsigned32Number(),
+      profileID: bytes.readBytes(16),
     );
   }
 
@@ -150,7 +151,7 @@ enum DeviceClass {
 }
 
 enum ColorSpaceSignature {
-/* 'XYZ ' */
+  /* 'XYZ ' */
   icSigXYZData(0x58595A20),
   /* 'Lab ' */
   icSigLabData(0x4C616220),
