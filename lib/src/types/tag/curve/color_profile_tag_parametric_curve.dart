@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
-import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:icc_parser/src/utils/num_utils.dart';
 import 'package:meta/meta.dart';
@@ -37,8 +37,8 @@ final class ColorProfileTagParametricCurve extends ColorProfileCurve {
 
     final numberOfParameters =
         _numberOfParametersForFunction(functionType, fallBack);
-    final dParam = List.generate(numberOfParameters,
-        (_) => data.readSigned15Fixed16Number().value);
+    final dParam = List.generate(
+        numberOfParameters, (_) => data.readSigned15Fixed16Number().value);
 
     return ColorProfileTagParametricCurve(
       functionType: functionType,

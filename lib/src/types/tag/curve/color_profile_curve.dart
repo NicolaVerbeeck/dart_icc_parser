@@ -1,7 +1,7 @@
-import 'package:icc_parser/src/types/tag/curve/icc_tag_curve.dart';
-import 'package:icc_parser/src/types/tag/curve/icc_tag_parametric_curve.dart';
-import 'package:icc_parser/src/types/tag/icc_tag.dart';
-import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_tag_curve.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_tag_parametric_curve.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 

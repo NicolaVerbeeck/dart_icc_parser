@@ -1,13 +1,12 @@
-import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
-import 'package:icc_parser/src/types/tag/lut/icc_tag_lut16.dart';
-import 'package:icc_parser/src/types/tag/lut/icc_tag_lut8.dart';
-import 'package:icc_parser/src/types/tag/lut/icc_tag_lut_a_to_b.dart';
-import 'package:icc_parser/src/types/tag/lut/icc_tag_lut_b_to_a.dart';
-import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
+import 'package:icc_parser/src/types/tag/lut/color_profile_tag_lut16.dart';
+import 'package:icc_parser/src/types/tag/lut/color_profile_tag_lut8.dart';
+import 'package:icc_parser/src/types/tag/lut/color_profile_tag_lut_a_to_b.dart';
+import 'package:icc_parser/src/types/tag/lut/color_profile_tag_lut_b_to_a.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 
 abstract interface class ColorProfileTag {
-
   ColorProfileTagType get type;
 
   factory ColorProfileTag.fromBytes(

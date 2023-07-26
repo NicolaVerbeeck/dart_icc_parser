@@ -1,7 +1,7 @@
 /// Utility class for converting between Lab and XYZ color spaces from various
 /// versions
 abstract class ColorProfilePCSUtils {
-
+  /// Utility classes should not be constructed
   ColorProfilePCSUtils._();
 
   /// The D50 XYZ values used in the ICC PCS

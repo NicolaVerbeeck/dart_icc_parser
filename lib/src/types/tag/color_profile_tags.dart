@@ -1,7 +1,9 @@
 import 'package:icc_parser/src/cmm/enums.dart';
-import 'package:icc_parser/src/types/primitive.dart';
+import 'package:icc_parser/src/types/color_profile_primitives.dart';
 
 // TODO Remove up iccMax tags
+// TODO clarify 'supported'
+/// All supported ICC color profile tags.
 enum ICCColorProfileTag {
   /* 'A2B0' */
   icSigAToB0Tag(0x41324230),
@@ -261,18 +263,23 @@ enum ICCColorProfileTag {
 
   const ICCColorProfileTag(this.code);
 
+  /// Offsets the tag code with the given [intent], throws an exception if the
+  /// offset combination is not valid.
   ICCColorProfileTag offsetWithIntent(ColorProfileRenderingIntent intent) {
     final tagCode = code + intent.offset;
-    return ICCColorProfileTag.values.firstWhere((element) => element.code == tagCode, orElse: () {
+    return ICCColorProfileTag.values
+        .firstWhere((element) => element.code == tagCode, orElse: () {
       throw Exception('Unknown tag code with offset: $this -> $intent');
     });
   }
 }
 
-ICCColorProfileTag? tagFromInt(Unsigned32Number value) {
+/// Resolve the [ICCColorProfileTag] from the given [value], returns null if
+/// the value is not a valid tag code.
+ICCColorProfileTag? parseICCColorProfileTag(Unsigned32Number value) {
   final rawValue = value.value;
-  final index =
-      ICCColorProfileTag.values.indexWhere((element) => element.code == rawValue);
+  final index = ICCColorProfileTag.values
+      .indexWhere((element) => element.code == rawValue);
   if (index < 0) return null;
   return ICCColorProfileTag.values[index];
 }

@@ -2,12 +2,12 @@ import 'package:icc_parser/src/cmm/color_profile_pcs.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform_3d.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform_4d.dart';
 import 'package:icc_parser/src/cmm/enums.dart';
-import 'package:icc_parser/src/icc_parser_base.dart';
-import 'package:icc_parser/src/types/icc_profile_header.dart';
-import 'package:icc_parser/src/types/tag/icc_tag.dart';
-import 'package:icc_parser/src/types/tag/known_tags.dart';
-import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
-import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/color_profile.dart';
+import 'package:icc_parser/src/types/color_profile_profile_header.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tags.dart';
+import 'package:icc_parser/src/types/tag/lut/color_profile_mbb.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -167,10 +167,12 @@ abstract class ColorProfileTransform {
 
     if (isInput) {
       if (useD2BTags) {
-        tag = profile.findTag(ICCColorProfileTag.icSigDToB0Tag.offsetWithIntent(intent));
+        tag = profile
+            .findTag(ICCColorProfileTag.icSigDToB0Tag.offsetWithIntent(intent));
       }
       if (useColorimetricTags && tag == null) {
-        tag = profile.findTag(ICCColorProfileTag.icSigAToB0Tag.offsetWithIntent(intent));
+        tag = profile
+            .findTag(ICCColorProfileTag.icSigAToB0Tag.offsetWithIntent(intent));
         tag ??= profile.findTag(ICCColorProfileTag.icSigAToB0Tag);
         tag ??= profile.findTag(ICCColorProfileTag.icSigAToB1Tag);
         if (tag == null) {
@@ -227,10 +229,12 @@ abstract class ColorProfileTransform {
     }
     // Not input
     if (useD2BTags) {
-      tag = profile.findTag(ICCColorProfileTag.icSigBToD0Tag.offsetWithIntent(intent));
+      tag = profile
+          .findTag(ICCColorProfileTag.icSigBToD0Tag.offsetWithIntent(intent));
     }
     if (useColorimetricTags) {
-      tag ??= profile.findTag(ICCColorProfileTag.icSigBToA0Tag.offsetWithIntent(intent));
+      tag ??= profile
+          .findTag(ICCColorProfileTag.icSigBToA0Tag.offsetWithIntent(intent));
       tag ??= profile.findTag(ICCColorProfileTag.icSigBToA0Tag);
     }
     if (tag?.type == ColorProfileTagType.icSigMultiProcessElementType) {

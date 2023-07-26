@@ -1,23 +1,26 @@
-import 'package:icc_parser/src/types/primitive.dart';
-import 'package:icc_parser/src/types/tag/clut/icc_clut.dart';
-import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
-import 'package:icc_parser/src/types/tag/curve/icc_tag_curve.dart';
-import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
-import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/types/color_profile_primitives.dart';
+import 'package:icc_parser/src/types/tag/clut/color_profile_clut.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_tag_curve.dart';
+import 'package:icc_parser/src/types/tag/lut/color_profile_mbb.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class ColorProfileTagLut8 extends ColorProfileMBB {
+final class ColorProfileTagLut16 extends ColorProfileMBB {
   final List<Signed15Fixed16Number> xyzMatrix;
 
   @override
   ColorProfileCLUT get clut => super.clut!;
 
   @override
-  ColorProfileTagType get type => ColorProfileTagType.icSigLut8Type;
+  bool get useLegacyPCS => true;
 
-  const ColorProfileTagLut8({
+  @override
+  ColorProfileTagType get type => ColorProfileTagType.icSigLut16Type;
+
+  const ColorProfileTagLut16({
     required super.inputChannelCount,
     required super.outputChannelCount,
     required super.aCurves,
@@ -30,9 +33,9 @@ final class ColorProfileTagLut8 extends ColorProfileMBB {
           matrix: null,
         );
 
-  factory ColorProfileTagLut8.fromBytes(DataStream data) {
+  factory ColorProfileTagLut16.fromBytes(DataStream data) {
     final signature = data.readUnsigned32Number();
-    assert(signature.value == 0x6D667431);
+    assert(signature.value == 0x6D667432);
     // 4 reserved bytes
     data.skip(4);
     final inputChannelCount = data.readUnsigned8Number();
@@ -43,12 +46,13 @@ final class ColorProfileTagLut8 extends ColorProfileMBB {
 
     final xyzMatrix = List.generate(9, (_) => data.readSigned15Fixed16Number());
 
-    const inputTableEntriesCount = 256;
-    const outputTableEntriesCount = 256;
+    final inputTableEntriesCount = data.readUnsigned16Number();
+    final outputTableEntriesCount = data.readUnsigned16Number();
 
     final bCurves = List<ColorProfileCurve>.generate(
       inputChannelCount.value,
-      (_) => ColorProfileTagCurve.fromBytesWithSize(data, inputTableEntriesCount),
+      (_) => ColorProfileTagCurve.fromBytesWithSize(
+          data, inputTableEntriesCount.value),
     );
 
     final clut = ColorProfileCLUT.fromBytes(
@@ -56,13 +60,15 @@ final class ColorProfileTagLut8 extends ColorProfileMBB {
       numGridPoints: clutPoints.value,
       inputChannelCount: inputChannelCount.value,
       outputChannelCount: outputChannelCount.value,
-      precision: 1,
+      precision: 2,
     );
 
-    final aCurves = List<ColorProfileCurve>.generate(outputChannelCount.value,
-        (_) => ColorProfileTagCurve.fromBytesWithSize(data, outputTableEntriesCount));
+    final aCurves = List<ColorProfileCurve>.generate(
+        outputChannelCount.value,
+        (_) => ColorProfileTagCurve.fromBytesWithSize(
+            data, outputTableEntriesCount.value));
 
-    return ColorProfileTagLut8(
+    return ColorProfileTagLut16(
       inputChannelCount: inputChannelCount.value,
       outputChannelCount: outputChannelCount.value,
       aCurves: aCurves,

@@ -1,8 +1,8 @@
-import 'package:icc_parser/src/types/icc_matrix.dart';
-import 'package:icc_parser/src/types/tag/clut/icc_clut.dart';
-import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
-import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
-import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/types/color_profile_matrix.dart';
+import 'package:icc_parser/src/types/tag/clut/color_profile_clut.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
+import 'package:icc_parser/src/types/tag/lut/color_profile_mbb.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
@@ -82,7 +82,7 @@ class ColorProfileTagLutAToB extends ColorProfileMBB {
     }
     if (offsetToMatrix != 0) {
       // Load matrix
-      data.seek(start+offsetToMatrix);
+      data.seek(start + offsetToMatrix);
       matrix = ColorProfileMatrix.fromBytes(data);
     }
     if (offsetToFirstMCurve != 0) {
@@ -138,7 +138,8 @@ class ColorProfileTagLutAToB extends ColorProfileMBB {
     final bCurves = List<ColorProfileCurve>.generate(
       channelCount,
       (_) {
-        final curve = ColorProfileCurve.fromBytes(data, size: end - data.position);
+        final curve =
+            ColorProfileCurve.fromBytes(data, size: end - data.position);
         data.sync32(nextOffset);
         return curve;
       },

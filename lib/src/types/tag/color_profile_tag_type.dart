@@ -1,4 +1,4 @@
-import 'package:icc_parser/src/types/primitive.dart';
+import 'package:icc_parser/src/types/color_profile_primitives.dart';
 
 // TODO Remove up iccMax types
 enum ColorProfileTagType {
@@ -113,8 +113,8 @@ enum ColorProfileTagType {
 
 ColorProfileTagType? tagTypeFromInt(Unsigned32Number value) {
   final rawValue = value.value;
-  final index =
-      ColorProfileTagType.values.indexWhere((element) => element.code == rawValue);
+  final index = ColorProfileTagType.values
+      .indexWhere((element) => element.code == rawValue);
   if (index < 0) return null;
   return ColorProfileTagType.values[index];
 }

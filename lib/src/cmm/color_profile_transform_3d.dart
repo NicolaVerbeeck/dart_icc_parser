@@ -1,9 +1,9 @@
 import 'package:icc_parser/src/cmm/color_profile_transform.dart';
 import 'package:icc_parser/src/cmm/enums.dart';
-import 'package:icc_parser/src/icc_parser_base.dart';
-import 'package:icc_parser/src/types/icc_matrix.dart';
-import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
-import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
+import 'package:icc_parser/src/color_profile.dart';
+import 'package:icc_parser/src/types/color_profile_matrix.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
+import 'package:icc_parser/src/types/tag/lut/color_profile_mbb.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -80,9 +80,10 @@ final class ColorProfileTransform3DLut extends ColorProfileTransform {
         pixel[2] = mCurves![2].apply(pixel[2]);
       }
       if (tag.clut != null) {
-        final res = switch (interpolation){
+        final res = switch (interpolation) {
           ColorProfileInterpolation.linear => tag.clut!.interpolate3d(pixel),
-          ColorProfileInterpolation.tetrahedral => tag.clut!.interpolate3dTetra(pixel),
+          ColorProfileInterpolation.tetrahedral =>
+            tag.clut!.interpolate3dTetra(pixel),
         };
         pixel[0] = res[0];
         pixel[1] = res[1];
@@ -100,9 +101,10 @@ final class ColorProfileTransform3DLut extends ColorProfileTransform {
         pixel[2] = aCurves![2].apply(pixel[2]);
       }
       if (tag.clut != null) {
-        final res = switch (interpolation){
+        final res = switch (interpolation) {
           ColorProfileInterpolation.linear => tag.clut!.interpolate3d(pixel),
-          ColorProfileInterpolation.tetrahedral => tag.clut!.interpolate3dTetra(pixel),
+          ColorProfileInterpolation.tetrahedral =>
+            tag.clut!.interpolate3dTetra(pixel),
         };
         pixel[0] = res[0];
         pixel[1] = res[1];

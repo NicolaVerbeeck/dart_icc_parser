@@ -1,9 +1,9 @@
 import 'package:collection/collection.dart';
-import 'package:icc_parser/src/types/icc_profile_header.dart';
-import 'package:icc_parser/src/types/icc_tag_table.dart';
-import 'package:icc_parser/src/types/primitive.dart';
-import 'package:icc_parser/src/types/tag/icc_tag.dart';
-import 'package:icc_parser/src/types/tag/known_tags.dart';
+import 'package:icc_parser/src/types/color_profile_profile_header.dart';
+import 'package:icc_parser/src/types/color_profile_tag_table.dart';
+import 'package:icc_parser/src/types/color_profile_primitives.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tags.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 

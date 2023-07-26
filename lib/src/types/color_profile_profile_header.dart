@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:icc_parser/src/types/primitive.dart';
+import 'package:icc_parser/src/types/color_profile_primitives.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 

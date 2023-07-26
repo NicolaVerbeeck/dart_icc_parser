@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
-import 'package:icc_parser/src/types/tag_entry.dart';
+import 'package:icc_parser/src/types/color_profile_tag_entry.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 

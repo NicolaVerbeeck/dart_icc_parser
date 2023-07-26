@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:icc_parser/icc_parser.dart';
-import 'package:icc_parser/src/types/tag/icc_tag.dart';
-import 'package:icc_parser/src/types/tag/tag_type.dart';
+import 'package:icc_parser/src/types/color_profile_primitives.dart';
+import 'package:icc_parser/src/types/color_profile_tag_table.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tags.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
@@ -18,7 +20,7 @@ final class ColorProfileTagEntry {
   /// Size of the tag data element in bytes
   final Unsigned32Number elementSize;
 
-  ICCColorProfileTag? get knownTag => tagFromInt(signature);
+  ICCColorProfileTag? get knownTag => parseICCColorProfileTag(signature);
 
   ColorProfileTagType? tagType(ByteData bytes, {int offset = 0}) {
     return tagTypeFromInt(

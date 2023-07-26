@@ -1,8 +1,8 @@
 import 'package:icc_parser/src/cmm/color_profile_transform.dart';
-import 'package:icc_parser/src/icc_parser_base.dart';
-import 'package:icc_parser/src/types/icc_matrix.dart';
-import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
-import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
+import 'package:icc_parser/src/color_profile.dart';
+import 'package:icc_parser/src/types/color_profile_matrix.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
+import 'package:icc_parser/src/types/tag/lut/color_profile_mbb.dart';
 import 'package:meta/meta.dart';
 
 @immutable
