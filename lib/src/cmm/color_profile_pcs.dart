@@ -69,13 +69,18 @@ abstract class ColorProfilePCSUtils {
     pixel[2] = (pixel[2] * 255.0) - 128.0;
   }
 
-  static void icLabToXYZ(List<double> pixel) {
-    const whitePoint = _icD50XYZ;
+  static void icLabToXYZ(
+    List<double> pixel, {
+    List<double>? lab,
+    List<double>? whiteXYZ,
+  }) {
+    final useLab = lab ?? pixel;
+    final whitePoint = whiteXYZ ?? _icD50XYZ;
 
-    final fy = (pixel[0] + 16.0) / 116.0;
-    pixel[0] = icICubeth(pixel[1] / 500.0 + fy) * whitePoint[0];
+    final fy = (useLab[0] + 16.0) / 116.0;
+    pixel[0] = icICubeth(useLab[1] / 500.0 + fy) * whitePoint[0];
     pixel[1] = icICubeth(fy) * whitePoint[1];
-    pixel[2] = icICubeth(fy - pixel[2] / 200.0) * whitePoint[2];
+    pixel[2] = icICubeth(fy - useLab[2] / 200.0) * whitePoint[2];
   }
 
   static void xyzToLab({
@@ -123,12 +128,17 @@ abstract class ColorProfilePCSUtils {
     xyz[2] *= factor;
   }
 
-  static void icXYZtoLab(List<double> lab) {
-    const whitePoint = _icD50XYZ;
+  static void icXYZtoLab(
+    List<double> lab, {
+    List<double>? xyz,
+    List<double>? whiteXYZ,
+  }) {
+    final whitePoint = whiteXYZ ?? _icD50XYZ;
+    final useXyz = xyz ?? lab;
 
-    final xn = icICubeth(lab[0] / whitePoint[0]);
-    final yn = icICubeth(lab[1] / whitePoint[1]);
-    final zn = icICubeth(lab[2] / whitePoint[2]);
+    final xn = icICubeth(useXyz[0] / whitePoint[0]);
+    final yn = icICubeth(useXyz[1] / whitePoint[1]);
+    final zn = icICubeth(useXyz[2] / whitePoint[2]);
 
     lab[0] = 116.0 * yn - 16.0;
     lab[1] = 500.0 * (xn - yn);

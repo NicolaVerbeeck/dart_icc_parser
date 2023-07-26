@@ -2,9 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:icc_parser/icc_parser.dart';
-import 'package:icc_parser/src/cmm/color_profile_transform.dart';
-import 'package:icc_parser/src/cmm/enums.dart';
-import 'package:icc_parser/src/utils/data_stream.dart';
+import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 
 void main(List<String> args) {
   final firstProfileBytes =
@@ -43,14 +41,25 @@ void main(List<String> args) {
     useD2BTags: true,
   );
 
-  print('Converting from cmyk to lab');
-  final step1Res = inputTransform.apply([255, 0, 0, 0]);
-  print(step1Res);
-  print('Converting from lab to rgb');
-  final hacked = [0.600877166, 0.363889456, 0.339949101];
-  final step2Res = outputTransform.apply(hacked);
-  print(step2Res);
-  print(step2Res.map((e) => (e * 255).toInt()).toList());
+  final cmm = ColorProfileCmm();
+
+  final transformations = cmm.buildTransformations([
+    inputTransform,
+    outputTransform,
+  ]);
+  print("Got transformations: $transformations");
+  final res = cmm.apply(transformations, [255, 0, 0, 0]);
+  print(res);
+  print(res.map((e) => (e * 255).toInt()).toList());
+
+  // print('Converting from cmyk to lab');
+  // final step1Res = inputTransform.apply([255, 0, 0, 0]);
+  // print(step1Res);
+  // print('Converting from lab to rgb');
+  // final hacked = [0.600877166, 0.363889456, 0.339949101];
+  // final step2Res = outputTransform.apply(hacked);
+  // print(step2Res);
+  // print(step2Res.map((e) => (e * 255).toInt()).toList());
 }
 
 // icccmm:2111 to connect profile 1 lab space to profile 2 lab space

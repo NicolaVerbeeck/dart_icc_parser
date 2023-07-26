@@ -1,3 +1,4 @@
+import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform.dart';
 import 'package:icc_parser/src/color_profile.dart';
 import 'package:icc_parser/src/types/color_profile_matrix.dart';
@@ -22,10 +23,8 @@ final class ColorProfileTransform4DLut extends ColorProfileTransform {
     required super.profile,
     required super.doAdjustPCS,
     required super.isInput,
-    required super.srcPCSConversion,
     required super.pcsScale,
     required super.pcsOffset,
-    required super.dstPCSConversion,
   });
 
   factory ColorProfileTransform4DLut.fromTag({
@@ -33,8 +32,6 @@ final class ColorProfileTransform4DLut extends ColorProfileTransform {
     required ColorProfile profile,
     required bool doAdjustPCS,
     required bool isInput,
-    required bool srcPCSConversion,
-    required bool dstPCSConversion,
     required List<double>? pcsScale,
     required List<double>? pcsOffset,
   }) {
@@ -48,16 +45,14 @@ final class ColorProfileTransform4DLut extends ColorProfileTransform {
       profile: profile,
       doAdjustPCS: doAdjustPCS,
       isInput: isInput,
-      srcPCSConversion: srcPCSConversion,
       pcsScale: pcsScale,
       pcsOffset: pcsOffset,
-      dstPCSConversion: dstPCSConversion,
     );
   }
 
   @override
-  List<double> apply(List<double> source) {
-    final sourcePixel = checkSourceAbsolute(source);
+  List<double> apply(List<double> source, ColorProfileTransformationStep step) {
+    final sourcePixel = checkSourceAbsolute(source, step);
     final pixel = [...sourcePixel];
     if (tag.isInputMatrix) {
       if (bCurves != null) {
@@ -106,7 +101,8 @@ final class ColorProfileTransform4DLut extends ColorProfileTransform {
       }
     }
 
-    return checkDestinationAbsolute(pixel).sublist(0, tag.outputChannelCount);
+    return checkDestinationAbsolute(pixel, step)
+        .sublist(0, tag.outputChannelCount);
   }
 
   @override

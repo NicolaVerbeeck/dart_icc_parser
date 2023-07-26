@@ -1,3 +1,4 @@
+import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 import 'package:icc_parser/src/cmm/color_profile_pcs.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform_3d.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform_4d.dart';
@@ -5,9 +6,9 @@ import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/color_profile.dart';
 import 'package:icc_parser/src/types/color_profile_profile_header.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tags.dart';
 import 'package:icc_parser/src/types/tag/lut/color_profile_mbb.dart';
-import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -16,8 +17,6 @@ abstract class ColorProfileTransform {
 
   final bool doAdjustPCS;
   final bool isInput;
-  final bool srcPCSConversion;
-  final bool dstPCSConversion;
   final List<double>? pcsScale;
   final List<double>? pcsOffset;
 
@@ -25,13 +24,11 @@ abstract class ColorProfileTransform {
     required this.profile,
     required this.doAdjustPCS,
     required this.isInput,
-    required this.srcPCSConversion,
-    required this.dstPCSConversion,
     required this.pcsScale,
     required this.pcsOffset,
   });
 
-  List<double> apply(List<double> source);
+  List<double> apply(List<double> source, ColorProfileTransformationStep step);
 
   factory ColorProfileTransform.create({
     required ColorProfile profile,
@@ -61,15 +58,21 @@ abstract class ColorProfileTransform {
     }
   }
 
-  List<double> checkSourceAbsolute(List<double> source) {
-    if (doAdjustPCS && !isInput && srcPCSConversion) {
+  List<double> checkSourceAbsolute(
+    List<double> source,
+    ColorProfileTransformationStep step,
+  ) {
+    if (doAdjustPCS && !isInput && step.useSourcePCSConversion) {
       return adjustPCS(source);
     }
     return source;
   }
 
-  List<double> checkDestinationAbsolute(List<double> source) {
-    if (doAdjustPCS && isInput && dstPCSConversion) {
+  List<double> checkDestinationAbsolute(
+    List<double> source,
+    ColorProfileTransformationStep step,
+  ) {
+    if (doAdjustPCS && isInput && step.useDestinationPCSConversion) {
       return adjustPCS(source);
     }
     return source;
@@ -116,6 +119,9 @@ abstract class ColorProfileTransform {
 
   bool get useLegacyPCS => false;
 
+  bool get isAbstract =>
+      profile.header.resolvedDeviceClass == DeviceClass.abstract;
+
   static ColorProfileTransform _createTransformFromTypeAndTag({
     required ColorProfileTransformType type,
     required ColorProfileTag tag,
@@ -135,8 +141,6 @@ abstract class ColorProfileTransform {
           profile: profile,
           doAdjustPCS: doAdjustPCS,
           isInput: isInput,
-          srcPCSConversion: false,
-          dstPCSConversion: false,
           pcsOffset: pcsOffset,
           pcsScale: pcsScale,
           interpolation: interpolation,
@@ -147,8 +151,6 @@ abstract class ColorProfileTransform {
           profile: profile,
           doAdjustPCS: doAdjustPCS,
           isInput: isInput,
-          srcPCSConversion: false,
-          dstPCSConversion: false,
           pcsOffset: pcsOffset,
           pcsScale: pcsScale,
         );
@@ -294,7 +296,7 @@ abstract class ColorProfileTransform {
     if (intent == ColorProfileRenderingIntent.perceptual &&
         (profile.isVersion2 || !hasPerceptualHandling)) {
       final space = intToColorSpaceSignature(profile.header.pcs);
-      if (_isSpacePCS(space) &&
+      if (isSpacePCS(space) &&
           profile.header.resolvedDeviceClass != DeviceClass.abstract) {
         adjustPCS = true;
         pcsScale = [
@@ -324,13 +326,29 @@ abstract class ColorProfileTransform {
       pcsOffset: pcsOffset,
     );
   }
+
+  ColorSpaceSignature getDestinationColorSpace() {
+    if (isInput) {
+      return intToColorSpaceSignature(profile.header.pcs);
+    } else {
+      return profile.header.resolvedColorSpace;
+    }
+  }
+
+  ColorSpaceSignature getSourceColorSpace() {
+    if (isInput) {
+      return profile.header.resolvedColorSpace;
+    } else {
+      return intToColorSpaceSignature(profile.header.pcs);
+    }
+  }
 }
 
-bool _isSpacePCS(ColorSpaceSignature signature) {
-  return _isSpaceColorimetricPCS(signature);
+bool isSpacePCS(ColorSpaceSignature signature) {
+  return isSpaceColorimetricPCS(signature);
 }
 
-bool _isSpaceColorimetricPCS(ColorSpaceSignature signature) {
+bool isSpaceColorimetricPCS(ColorSpaceSignature signature) {
   return signature == ColorSpaceSignature.icSigXYZData ||
       signature == ColorSpaceSignature.icSigLabData;
 }

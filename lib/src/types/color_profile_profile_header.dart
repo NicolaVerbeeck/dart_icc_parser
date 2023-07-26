@@ -152,98 +152,99 @@ enum DeviceClass {
 
 enum ColorSpaceSignature {
   /* 'XYZ ' */
-  icSigXYZData(0x58595A20),
+  icSigXYZData(0x58595A20, 3),
   /* 'Lab ' */
-  icSigLabData(0x4C616220),
+  icSigLabData(0x4C616220, 3),
   /* 'Luv ' */
-  icSigLuvData(0x4C757620),
+  icSigLuvData(0x4C757620, 3),
   /* 'YCbr' */
-  icSigYCbCrData(0x59436272),
+  icSigYCbCrData(0x59436272, 3),
   /* 'Yxy ' */
-  icSigYxyData(0x59787920),
+  icSigYxyData(0x59787920, 3),
   /* 'RGB ' */
-  icSigRgbData(0x52474220),
+  icSigRgbData(0x52474220, 3),
   /* 'GRAY' */
-  icSigGrayData(0x47524159),
+  icSigGrayData(0x47524159, 1),
   /* 'HSV ' */
-  icSigHsvData(0x48535620),
+  icSigHsvData(0x48535620, 3),
   /* 'HLS ' */
-  icSigHlsData(0x484C5320),
+  icSigHlsData(0x484C5320, 3),
   /* 'CMYK' */
-  icSigCmykData(0x434D594B),
+  icSigCmykData(0x434D594B, 4),
   /* 'CMY ' */
-  icSigCmyData(0x434D5920),
+  icSigCmyData(0x434D5920, 3),
   /* '1CLR' */
-  icSig1colorData(0x31434C52),
+  icSig1colorData(0x31434C52, 1),
   /* '2CLR' */
-  icSig2colorData(0x32434C52),
+  icSig2colorData(0x32434C52, 2),
   /* '3CLR' */
-  icSig3colorData(0x33434C52),
+  icSig3colorData(0x33434C52, 3),
   /* '4CLR' */
-  icSig4colorData(0x34434C52),
+  icSig4colorData(0x34434C52, 4),
   /* '5CLR' */
-  icSig5colorData(0x35434C52),
+  icSig5colorData(0x35434C52, 5),
   /* '6CLR' */
-  icSig6colorData(0x36434C52),
+  icSig6colorData(0x36434C52, 6),
   /* '7CLR' */
-  icSig7colorData(0x37434C52),
+  icSig7colorData(0x37434C52, 7),
   /* '8CLR' */
-  icSig8colorData(0x38434C52),
+  icSig8colorData(0x38434C52, 8),
   /* '9CLR' */
-  icSig9colorData(0x39434C52),
+  icSig9colorData(0x39434C52, 9),
   /* 'ACLR' */
-  icSig10colorData(0x41434C52),
+  icSig10colorData(0x41434C52, 10),
   /* 'BCLR' */
-  icSig11colorData(0x42434C52),
+  icSig11colorData(0x42434C52, 11),
   /* 'CCLR' */
-  icSig12colorData(0x43434C52),
+  icSig12colorData(0x43434C52, 12),
   /* 'DCLR' */
-  icSig13colorData(0x44434C52),
+  icSig13colorData(0x44434C52, 13),
   /* 'ECLR' */
-  icSig14colorData(0x45434C52),
+  icSig14colorData(0x45434C52, 14),
   /* 'FCLR' */
-  icSig15colorData(0x46434C52),
+  icSig15colorData(0x46434C52, 15),
   /* 'nmcl' */
-  icSigNamedData(0x6e6d636c),
+  icSigNamedData(0x6e6d636c, -1),
   /* '1CLR' */
-  icSigMCH1Data(0x31434C52),
+  icSigMCH1Data(0x31434C52, 1),
   /* '2CLR' */
-  icSigMCH2Data(0x32434C52),
+  icSigMCH2Data(0x32434C52, 2),
   /* '3CLR' */
-  icSigMCH3Data(0x33434C52),
+  icSigMCH3Data(0x33434C52, 3),
   /* '4CLR' */
-  icSigMCH4Data(0x34434C52),
+  icSigMCH4Data(0x34434C52, 4),
   /* '5CLR' */
-  icSigMCH5Data(0x35434C52),
+  icSigMCH5Data(0x35434C52, 5),
   /* '6CLR' */
-  icSigMCH6Data(0x36434C52),
+  icSigMCH6Data(0x36434C52, 6),
   /* '7CLR' */
-  icSigMCH7Data(0x37434C52),
+  icSigMCH7Data(0x37434C52, 7),
   /* '8CLR' */
-  icSigMCH8Data(0x38434C52),
+  icSigMCH8Data(0x38434C52, 8),
   /* '9CLR' */
-  icSigMCH9Data(0x39434C52),
+  icSigMCH9Data(0x39434C52, 9),
   /* 'ACLR' */
-  icSigMCHAData(0x41434C52),
+  icSigMCHAData(0x41434C52, 10),
   /* 'BCLR' */
-  icSigMCHBData(0x42434C52),
+  icSigMCHBData(0x42434C52, 11),
   /* 'CCLR' */
-  icSigMCHCData(0x43434C52),
+  icSigMCHCData(0x43434C52, 12),
   /* 'DCLR' */
-  icSigMCHDData(0x44434C52),
+  icSigMCHDData(0x44434C52, 13),
   /* 'ECLR' */
-  icSigMCHEData(0x45434C52),
+  icSigMCHEData(0x45434C52, 14),
   /* 'FCLR' */
-  icSigMCHFData(0x46434C52),
+  icSigMCHFData(0x46434C52, 15),
   /* "nc0000" */
-  icSigNChannelData(0x6e630000),
+  icSigNChannelData(0x6e630000, -1),
   /* "mc0000" */
-  icSigSrcMCSChannelData(0x6d630000),
+  icSigSrcMCSChannelData(0x6d630000, -1),
   ;
 
   final int code;
+  final int numSamples;
 
-  const ColorSpaceSignature(this.code);
+  const ColorSpaceSignature(this.code, this.numSamples);
 }
 
 enum PlatformSignature {

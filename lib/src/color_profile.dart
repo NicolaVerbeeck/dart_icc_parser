@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/types/color_profile_profile_header.dart';
 import 'package:icc_parser/src/types/color_profile_tag_table.dart';
 import 'package:icc_parser/src/types/color_profile_primitives.dart';
@@ -46,4 +47,9 @@ final class ColorProfile {
   }
 
   bool get isVersion2 => header.version.value == 0x04000000;
+
+  ColorProfileIlluminant get illuminant => ColorProfileIlluminant.illuminantD50;
+
+  ColorProfileStandardObserver get pccObserver =>
+      ColorProfileStandardObserver.standardObserver1931TwoDegrees;
 }

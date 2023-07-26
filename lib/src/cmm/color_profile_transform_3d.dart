@@ -1,3 +1,4 @@
+import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform.dart';
 import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/color_profile.dart';
@@ -13,6 +14,7 @@ final class ColorProfileTransform3DLut extends ColorProfileTransform {
   final List<ColorProfileCurve>? bCurves;
   final List<ColorProfileCurve>? mCurves;
   final ColorProfileMatrix? matrix;
+
   // TODO move to transform parameters
   final ColorProfileInterpolation interpolation;
 
@@ -25,10 +27,8 @@ final class ColorProfileTransform3DLut extends ColorProfileTransform {
     required super.profile,
     required super.doAdjustPCS,
     required super.isInput,
-    required super.srcPCSConversion,
     required super.pcsScale,
     required super.pcsOffset,
-    required super.dstPCSConversion,
     required this.interpolation,
   });
 
@@ -37,8 +37,6 @@ final class ColorProfileTransform3DLut extends ColorProfileTransform {
     required ColorProfile profile,
     required bool doAdjustPCS,
     required bool isInput,
-    required bool srcPCSConversion,
-    required bool dstPCSConversion,
     required List<double>? pcsScale,
     required List<double>? pcsOffset,
     required ColorProfileInterpolation interpolation,
@@ -53,17 +51,15 @@ final class ColorProfileTransform3DLut extends ColorProfileTransform {
       profile: profile,
       doAdjustPCS: doAdjustPCS,
       isInput: isInput,
-      srcPCSConversion: srcPCSConversion,
       pcsScale: pcsScale,
       pcsOffset: pcsOffset,
-      dstPCSConversion: dstPCSConversion,
       interpolation: interpolation,
     );
   }
 
   @override
-  List<double> apply(List<double> source) {
-    final sourcePixel = checkSourceAbsolute(source);
+  List<double> apply(List<double> source, ColorProfileTransformationStep step) {
+    final sourcePixel = checkSourceAbsolute(source, step);
     final pixel = [...sourcePixel];
     if (tag.isInputMatrix) {
       if (bCurves != null) {
@@ -125,7 +121,7 @@ final class ColorProfileTransform3DLut extends ColorProfileTransform {
       }
     }
 
-    return checkDestinationAbsolute(pixel);
+    return checkDestinationAbsolute(pixel, step);
   }
 
   @override

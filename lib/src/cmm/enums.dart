@@ -20,3 +20,11 @@ enum ColorProfileInterpolation {
 enum ColorProfileTransformLutType {
   color, // Only one for now
 }
+
+enum ColorProfileStandardObserver {
+  standardObserver1931TwoDegrees,
+}
+
+enum ColorProfileIlluminant {
+  illuminantD50,
+}
