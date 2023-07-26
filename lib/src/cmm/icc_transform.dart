@@ -1,5 +1,6 @@
 import 'package:icc_parser/src/cmm/icc_pcs.dart';
 import 'package:icc_parser/src/cmm/transform_3d.dart';
+import 'package:icc_parser/src/cmm/transform_4d.dart';
 import 'package:icc_parser/src/icc_parser_base.dart';
 import 'package:icc_parser/src/types/icc_profile_header.dart';
 import 'package:icc_parser/src/types/tag/icc_tag.dart';
@@ -28,6 +29,8 @@ abstract class IccTransform {
     required this.pcsScale,
     required this.pcsOffset,
   });
+
+  List<double> apply(List<double> source);
 
   factory IccTransform.create({
     required IccProfile profile,
@@ -121,6 +124,7 @@ abstract class IccTransform {
     required bool dstPCSConversion,
     required List<double>? pcsScale,
     required List<double>? pcsOffset,
+    required IccInterpolation interpolation,
   }) {
     switch (type) {
       case TransformType.transform3D:
@@ -133,9 +137,19 @@ abstract class IccTransform {
           dstPCSConversion: false,
           pcsOffset: pcsOffset,
           pcsScale: pcsScale,
+          interpolation: interpolation,
         );
       case TransformType.transform4D:
-        throw ArgumentError('Unsupported transform type: $type');
+        return IccTransform4DLut.fromTag(
+          tag: tag as IccMBB,
+          profile: profile,
+          doAdjustPCS: doAdjustPCS,
+          isInput: isInput,
+          srcPCSConversion: false,
+          dstPCSConversion: false,
+          pcsOffset: pcsOffset,
+          pcsScale: pcsScale,
+        );
       case TransformType.transformMPE:
         throw ArgumentError('Unsupported transform type: $type');
     }
@@ -208,6 +222,7 @@ abstract class IccTransform {
         dstPCSConversion: true,
         pcsScale: params.pcsScale,
         pcsOffset: params.pcsOffset,
+        interpolation: interpolation,
       );
     }
     // Not input
@@ -244,6 +259,7 @@ abstract class IccTransform {
           dstPCSConversion: true,
           pcsScale: params.pcsScale,
           pcsOffset: params.pcsOffset,
+          interpolation: interpolation,
         );
       // ignore: no_default_cases
       default:

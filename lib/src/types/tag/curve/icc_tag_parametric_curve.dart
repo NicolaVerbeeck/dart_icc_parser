@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:icc_parser/src/types/tag/curve/icc_curve.dart';
 import 'package:icc_parser/src/types/tag/tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
+import 'package:icc_parser/src/utils/num_utils.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -37,7 +38,7 @@ final class IccTagParametricCurve extends IccCurve {
     final numberOfParameters =
         _numberOfParametersForFunction(functionType, fallBack);
     final dParam = List.generate(numberOfParameters,
-        (_) => data.readSigned15Fixed16Number().value / 65536.0);
+        (_) => data.readSigned15Fixed16Number().value);
 
     return IccTagParametricCurve(
       functionType: functionType,
@@ -57,7 +58,7 @@ final class IccTagParametricCurve extends IccCurve {
       case 1:
         a = dParam[1];
         b = dParam[2];
-        if (value >= -b / 1) {
+        if (value >= -b / a) {
           return pow(value * a + b, dParam[0]).toDouble();
         }
         return 0;
@@ -108,5 +109,20 @@ final class IccTagParametricCurve extends IccCurve {
         break;
     }
     return numberOfParameters;
+  }
+
+  @override
+  bool get isIdentity {
+    switch (functionType) {
+      case 0:
+        return isUnity(dParam[0]);
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+        return false;
+      default:
+        return true;
+    }
   }
 }

@@ -82,7 +82,7 @@ class IccTagLutAToB extends IccMBB {
     }
     if (offsetToMatrix != 0) {
       // Load matrix
-      data.seek(offsetToMatrix);
+      data.seek(start+offsetToMatrix);
       matrix = IccMatrix.fromBytes(data);
     }
     if (offsetToFirstMCurve != 0) {

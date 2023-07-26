@@ -6,7 +6,7 @@ import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 abstract class IccCurve implements IccTag {
-  bool get isIdentity => false;
+  bool get isIdentity;
 
   const IccCurve();
 

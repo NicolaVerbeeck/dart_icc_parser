@@ -6,16 +6,14 @@ import 'package:icc_parser/src/types/tag/lut/icc_mbb.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class IccTransform3DLut extends IccTransform {
+final class IccTransform4DLut extends IccTransform {
   final IccMBB tag;
   final List<IccCurve>? aCurves;
   final List<IccCurve>? bCurves;
   final List<IccCurve>? mCurves;
   final IccMatrix? matrix;
-  // TODO move to transform parameters
-  final IccInterpolation interpolation;
 
-  const IccTransform3DLut({
+  const IccTransform4DLut({
     required this.aCurves,
     required this.bCurves,
     required this.mCurves,
@@ -28,10 +26,9 @@ final class IccTransform3DLut extends IccTransform {
     required super.pcsScale,
     required super.pcsOffset,
     required super.dstPCSConversion,
-    required this.interpolation,
   });
 
-  factory IccTransform3DLut.fromTag({
+  factory IccTransform4DLut.fromTag({
     required IccMBB tag,
     required IccProfile profile,
     required bool doAdjustPCS,
@@ -40,10 +37,9 @@ final class IccTransform3DLut extends IccTransform {
     required bool dstPCSConversion,
     required List<double>? pcsScale,
     required List<double>? pcsOffset,
-    required IccInterpolation interpolation,
   }) {
     final params = _begin(tag);
-    return IccTransform3DLut(
+    return IccTransform4DLut(
       aCurves: params.aCurves,
       bCurves: params.bCurves,
       mCurves: params.mCurves,
@@ -56,7 +52,6 @@ final class IccTransform3DLut extends IccTransform {
       pcsScale: pcsScale,
       pcsOffset: pcsOffset,
       dstPCSConversion: dstPCSConversion,
-      interpolation: interpolation,
     );
   }
 
@@ -69,43 +64,32 @@ final class IccTransform3DLut extends IccTransform {
         pixel[0] = bCurves![0].apply(pixel[0]);
         pixel[1] = bCurves![1].apply(pixel[1]);
         pixel[2] = bCurves![2].apply(pixel[2]);
-      }
-      if (matrix != null) {
-        matrix!.apply(pixel);
-      }
-      if (mCurves != null) {
-        pixel[0] = mCurves![0].apply(pixel[0]);
-        pixel[1] = mCurves![1].apply(pixel[1]);
-        pixel[2] = mCurves![2].apply(pixel[2]);
+        pixel[3] = bCurves![3].apply(pixel[3]);
       }
       if (tag.clut != null) {
-        final res = switch (interpolation){
-          IccInterpolation.linear => tag.clut!.interpolate3d(pixel),
-          IccInterpolation.tetrahedral => tag.clut!.interpolate3dTetra(pixel),
-        };
+        final res = tag.clut!.interpolate4d(pixel);
         pixel[0] = res[0];
         pixel[1] = res[1];
         pixel[2] = res[2];
       }
       if (aCurves != null) {
-        pixel[0] = aCurves![0].apply(pixel[0]);
-        pixel[1] = aCurves![1].apply(pixel[1]);
-        pixel[2] = aCurves![2].apply(pixel[2]);
+        for (var i = 0; i < tag.outputChannelCount; i++) {
+          pixel[i] = aCurves![i].apply(pixel[i]);
+        }
       }
     } else {
       if (aCurves != null) {
         pixel[0] = aCurves![0].apply(pixel[0]);
         pixel[1] = aCurves![1].apply(pixel[1]);
         pixel[2] = aCurves![2].apply(pixel[2]);
+        pixel[3] = aCurves![3].apply(pixel[3]);
       }
       if (tag.clut != null) {
-        final res = switch (interpolation){
-          IccInterpolation.linear => tag.clut!.interpolate3d(pixel),
-          IccInterpolation.tetrahedral => tag.clut!.interpolate3dTetra(pixel),
-        };
+        final res = tag.clut!.interpolate4d(pixel);
         pixel[0] = res[0];
         pixel[1] = res[1];
         pixel[2] = res[2];
+        pixel[3] = res[3];
       }
       if (mCurves != null) {
         for (var i = 0; i < tag.outputChannelCount; i++) {
@@ -122,7 +106,7 @@ final class IccTransform3DLut extends IccTransform {
       }
     }
 
-    return checkDestinationAbsolute(pixel);
+    return checkDestinationAbsolute(pixel).sublist(0, tag.outputChannelCount);
   }
 
   @override
@@ -134,7 +118,7 @@ final class IccTransform3DLut extends IccTransform {
     List<IccCurve>? mCurves,
     IccMatrix? matrix,
   }) _begin(IccMBB tag) {
-    assert(tag.inputChannelCount == 3);
+    assert(tag.inputChannelCount == 4);
 
     List<IccCurve>? usedACurves;
     List<IccCurve>? usedBCurves;
@@ -144,17 +128,11 @@ final class IccTransform3DLut extends IccTransform {
     final mCurves = tag.mCurves;
     if (tag.isInputMatrix) {
       if (bCurves != null) {
-        if (!bCurves[0].isIdentity ||
-            !bCurves[1].isIdentity ||
-            !bCurves[2].isIdentity) {
-          usedBCurves = bCurves;
-        }
-      }
-      if (mCurves != null) {
-        if (!mCurves[0].isIdentity ||
-            !mCurves[1].isIdentity ||
-            !mCurves[2].isIdentity) {
-          usedMCurves = mCurves;
+        for (final curve in bCurves) {
+          if (!curve.isIdentity) {
+            usedBCurves = bCurves;
+            break;
+          }
         }
       }
       if (aCurves != null) {
@@ -166,12 +144,13 @@ final class IccTransform3DLut extends IccTransform {
         }
       }
     } else {
-      // isInputMatrix
+      // !isInputMatrix
       if (aCurves != null) {
-        if (!aCurves[0].isIdentity ||
-            !aCurves[1].isIdentity ||
-            !aCurves[2].isIdentity) {
-          usedACurves = aCurves;
+        for (final curve in aCurves) {
+          if (!curve.isIdentity) {
+            usedACurves = aCurves;
+            break;
+          }
         }
       }
       if (bCurves != null) {

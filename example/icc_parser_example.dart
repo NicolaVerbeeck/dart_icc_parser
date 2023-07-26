@@ -1,10 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
 import 'package:icc_parser/icc_parser.dart';
 import 'package:icc_parser/src/cmm/icc_transform.dart';
-import 'package:icc_parser/src/types/tag/lut/icc_tag_lut16.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 
 void main(List<String> args) {
@@ -44,18 +42,13 @@ void main(List<String> args) {
     useD2BTags: true,
   );
 
-
-  final aToB0Entry = firstProfile.tagTable.firstWhereOrNull(
-    (element) => element.knownTag == KnownTag.icSigAToB0Tag,
-  );
-  final aToB0TagData = aToB0Entry?.read(firstProfileStream);
-  print(
-      'Found a to b0 entry? ${aToB0Entry != null}. Read as: ${aToB0TagData?.runtimeType}');
-
-  if (aToB0TagData is IccTagLut16) {
-    final res = aToB0TagData.clut.interpolate4d([1.0, 0.0, 0.0, 0.0]);
-    print(res);
-  }
+  print('Converting from cmyk to lab');
+  final step1Res = inputTransform.apply([255, 0, 0, 0]);
+  print(step1Res);
+  print('Converting from lab to rgb');
+  final hacked = [0.600877166, 0.363889456, 0.339949101];
+  final step2Res = outputTransform.apply(hacked);
+  print(step2Res.map((e) => (e*255).toInt()).toList());
 }
 
 // icccmm:2111 to connect profile 1 lab space to profile 2 lab space
