@@ -46,7 +46,7 @@ final class ColorProfile {
     return entry.read(stream);
   }
 
-  bool get isVersion2 => header.version.value == 0x04000000;
+  bool get isVersion2 => header.version.value < 0x04000000;
 
   ColorProfileIlluminant get illuminant => ColorProfileIlluminant.illuminantD50;
 

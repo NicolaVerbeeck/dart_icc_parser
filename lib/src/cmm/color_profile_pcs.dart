@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// Utility class for converting between Lab and XYZ color spaces from various
 /// versions
 abstract class ColorProfilePCSUtils {
@@ -104,6 +106,14 @@ abstract class ColorProfilePCSUtils {
     icLabToPcs(xyz);
   }
 
+  static double icCubeth(double v){
+    if (v > 0.008856) {
+      return pow(v, 1.0 / 3.0).toDouble();
+    } else {
+      return 7.787037037037037037037037037037 * v + 16.0 / 116.0;
+    }
+  }
+
   static double icICubeth(double v) {
     if (v > 0.20689303448275862068965517241379) {
       return v * v * v;
@@ -136,9 +146,9 @@ abstract class ColorProfilePCSUtils {
     final whitePoint = whiteXYZ ?? _icD50XYZ;
     final useXyz = xyz ?? lab;
 
-    final xn = icICubeth(useXyz[0] / whitePoint[0]);
-    final yn = icICubeth(useXyz[1] / whitePoint[1]);
-    final zn = icICubeth(useXyz[2] / whitePoint[2]);
+    final xn = icCubeth(useXyz[0] / whitePoint[0]);
+    final yn = icCubeth(useXyz[1] / whitePoint[1]);
+    final zn = icCubeth(useXyz[2] / whitePoint[2]);
 
     lab[0] = 116.0 * yn - 16.0;
     lab[1] = 500.0 * (xn - yn);

@@ -22,19 +22,19 @@ void main(List<String> args) {
   final firstProfile = ColorProfile.fromBytes(firstProfileStream);
   final secondProfile = ColorProfile.fromBytes(secondProfileStream);
 
-  print('Creating output transform');
-  final outputTransform = ColorProfileTransform.create(
-    profile: secondProfile,
-    isInput: false,
+  print('Creating input transform');
+  final inputTransform = ColorProfileTransform.create(
+    profile: firstProfile,
+    isInput: true,
     intent: ColorProfileRenderingIntent.perceptual,
     interpolation: ColorProfileInterpolation.tetrahedral,
     lutType: ColorProfileTransformLutType.color,
     useD2BTags: true,
   );
-  print('Creating input transform');
-  final inputTransform = ColorProfileTransform.create(
-    profile: firstProfile,
-    isInput: true,
+  print('Creating output transform');
+  final outputTransform = ColorProfileTransform.create(
+    profile: secondProfile,
+    isInput: false,
     intent: ColorProfileRenderingIntent.perceptual,
     interpolation: ColorProfileInterpolation.tetrahedral,
     lutType: ColorProfileTransformLutType.color,
