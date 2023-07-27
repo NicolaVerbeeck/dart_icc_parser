@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:icc_parser/src/utils/num_utils.dart';
 import 'package:meta/meta.dart';

@@ -1,5 +1,5 @@
-import 'package:icc_parser/src/types/tag/lut/color_profile_tag_lut_a_to_b.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
+import 'package:icc_parser/src/types/tag/lut/color_profile_tag_lut_a_to_b.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 

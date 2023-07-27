@@ -1,8 +1,8 @@
 import 'package:icc_parser/src/types/color_profile_matrix.dart';
 import 'package:icc_parser/src/types/tag/clut/color_profile_clut.dart';
+import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
 import 'package:icc_parser/src/types/tag/lut/color_profile_mbb.dart';
-import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 

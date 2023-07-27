@@ -1,7 +1,7 @@
 import 'package:icc_parser/src/types/color_profile_matrix.dart';
 import 'package:icc_parser/src/types/tag/clut/color_profile_clut.dart';
-import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag.dart';
+import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
 import 'package:meta/meta.dart';
 
 /// Multi-dimensional Black Box (MBB) base class for lut8, lut16,
