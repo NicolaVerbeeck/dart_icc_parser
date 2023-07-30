@@ -177,13 +177,6 @@ abstract class ColorProfileTransform {
             .findTag(ICCColorProfileTag.icSigAToB0Tag.offsetWithIntent(intent));
         tag ??= profile.findTag(ICCColorProfileTag.icSigAToB0Tag);
         tag ??= profile.findTag(ICCColorProfileTag.icSigAToB1Tag);
-        if (tag == null) {
-          tag = profile.findTag(ICCColorProfileTag.icSigAToB3Tag);
-          if (tag != null) {
-            throw Exception(
-                'Rendering anything but perceptual is not supported');
-          }
-        }
       }
       if (tag?.type == ColorProfileTagType.icSigMultiProcessElementType) {
         throw Exception('Multi processing elements are not supported');
