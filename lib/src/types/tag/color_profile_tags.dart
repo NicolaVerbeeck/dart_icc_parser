@@ -3,107 +3,157 @@ import 'package:icc_parser/src/types/color_profile_primitives.dart';
 
 /// All defined ICC color profile tags in V 4.4.
 enum ICCColorProfileTag {
-  /* 'A2B0' */
+  /// 'A2B0'
   icSigAToB0Tag(0x41324230),
-  /* 'A2B1' */
+
+  /// 'A2B1'
   icSigAToB1Tag(0x41324231),
-  /* 'A2B2' */
+
+  /// 'A2B2'
   icSigAToB2Tag(0x41324232),
-  /* 'bXYZ' */
+
+  /// 'bXYZ'
   icSigBlueMatrixColumnTag(0x6258595A),
-  /* 'bTRC' */
+
+  /// 'bTRC'
   icSigBlueTRCTag(0x62545243),
-  /* 'B2A0' */
+
+  /// 'B2A0'
   icSigBToA0Tag(0x42324130),
-  /* 'B2A1' */
+
+  /// 'B2A1'
   icSigBToA1Tag(0x42324131),
-  /* 'B2A2' */
+
+  /// 'B2A2'
   icSigBToA2Tag(0x42324132),
-  /* 'calt' */
+
+  /// 'calt'
   icSigCalibrationDateTimeTag(0x63616C74),
-  /* 'targ' */
+
+  /// 'targ'
   icSigCharTargetTag(0x74617267),
-  /* 'chad' */
+
+  /// 'chad'
   icSigChromaticAdaptationTag(0x63686164),
-  /* 'chrm' */
+
+  /// 'chrm'
   icSigChromaticityTag(0x6368726D),
-  /* 'clro' */
+
+  /// 'clro'
   icSigColorantOrderTag(0x636C726F),
-  /* 'clrt' */
+
+  /// 'clrt'
   icSigColorantTableTag(0x636C7274),
-  /* 'clot' */
+
+  /// 'clot'
   icSigColorantTableOutTag(0x636C6F74),
-  /* 'ciis' */
+
+  /// 'ciis'
   icSigColorimetricIntentImageStateTag(0x63696973),
-  /* 'cprt' */
+
+  /// 'cprt'
   icSigCopyrightTag(0x63707274),
-  /* 'dmnd' */
+
+  /// 'dmnd'
   icSigDeviceMfgDescTag(0x646D6E64),
-  /* 'dmdd' */
+
+  /// 'dmdd'
   icSigDeviceModelDescTag(0x646D6464),
-  /* 'D2B0' */
+
+  /// 'D2B0'
   icSigDToB0Tag(0x44324230),
-  /* 'D2B1' */
+
+  /// 'D2B1'
   icSigDToB1Tag(0x44324231),
-  /* 'D2B2' */
+
+  /// 'D2B2'
   icSigDToB2Tag(0x44324232),
-  /* 'D2B3' */
+
+  /// 'D2B3'
   icSigDToB3Tag(0x44324233),
-  /* 'B2D0' */
+
+  /// 'B2D0'
   icSigBToD0Tag(0x42324430),
-  /* 'B2D1' */
+
+  /// 'B2D1'
   icSigBToD1Tag(0x42324431),
-  /* 'B2D2' */
+
+  /// 'B2D2'
   icSigBToD2Tag(0x42324432),
-  /* 'B2D3' */
+
+  /// 'B2D3'
   icSigBToD3Tag(0x42324433),
-  /* 'gamt' */
+
+  /// 'gamt'
   icSigGamutTag(0x67616D74),
-  /* 'kTRC' */
+
+  /// 'kTRC'
   icSigGrayTRCTag(0x6b545243),
-  /* 'gXYZ' */
+
+  /// 'gXYZ'
   icSigGreenColorantTag(0x6758595A),
-  /* 'gXYZ' */
+
+  /// 'gXYZ'
   icSigGreenMatrixColumnTag(0x6758595A),
-  /* 'gTRC' */
+
+  /// 'gTRC'
   icSigGreenTRCTag(0x67545243),
-  /* 'lumi' */
+
+  /// 'lumi'
   icSigLuminanceTag(0x6C756d69),
-  /* 'meas' */
+
+  /// 'meas'
   icSigMeasurementTag(0x6D656173),
-  /* 'wtpt' */
+
+  /// 'wtpt'
   icSigMediaWhitePointTag(0x77747074),
-  /* 'meta' */
+
+  /// 'meta'
   icSigMetaDataTag(0x6D657461),
-  /* 'ncl2' */
+
+  /// 'ncl2'
   icSigNamedColor2Tag(0x6E636C32),
-  /* 'resp' */
+
+  /// 'resp'
   icSigOutputResponseTag(0x72657370),
-  /* 'rig0' */
+
+  /// 'rig0'
   icSigPerceptualRenderingIntentGamutTag(0x72696730),
-  /* 'pre0' */
+
+  /// 'pre0'
   icSigPreview0Tag(0x70726530),
-  /* 'pre1' */
+
+  /// 'pre1'
   icSigPreview1Tag(0x70726531),
-  /* 'pre2' */
+
+  /// 'pre2'
   icSigPreview2Tag(0x70726532),
-  /* 'desc' */
+
+  /// 'desc'
   icSigProfileDescriptionTag(0x64657363),
-  /* 'pseq' */
+
+  /// 'pseq'
   icSigProfileSequenceDescTag(0x70736571),
-  /* 'psid' */
+
+  /// 'psid'
   icSigProfileSequceIdTag(0x70736964),
-  /* 'rXYZ' */
+
+  /// 'rXYZ'
   icSigRedMatrixColumnTag(0x7258595A),
-  /* 'rTRC' */
+
+  /// 'rTRC'
   icSigRedTRCTag(0x72545243),
-  /* 'rig2' */
+
+  /// 'rig2'
   icSigSaturationRenderingIntentGamutTag(0x72696732),
-  /* 'tech' */
+
+  /// 'tech'
   icSigTechnologyTag(0x74656368),
-  /* 'vued' */
+
+  /// 'vued'
   icSigViewingCondDescTag(0x76756564),
-  /* 'view' */
+
+  /// 'view'
   icSigViewingConditionsTag(0x76696577),
   ;
 

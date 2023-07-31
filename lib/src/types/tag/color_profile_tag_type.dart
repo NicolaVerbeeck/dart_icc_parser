@@ -1,109 +1,96 @@
 import 'package:icc_parser/src/types/color_profile_primitives.dart';
 
-// TODO Remove up iccMax types
+/// ALl defined tag types in ICC spec 4.4 (see chapter 10)
 enum ColorProfileTagType {
-/* 'chrm' */
+  /// 'chrm'
   icSigChromaticityType(0x6368726D),
-  /* 'clro' */
+
+  /// 'clro'
   icSigColorantOrderType(0x636C726F),
-  /* 'clrt' */
+
+  /// 'clrt'
   icSigColorantTableType(0x636C7274),
-  /* 'crdi' Removed in V4 */
-  icSigCrdInfoType(0x63726469),
-  /* 'curv' */
+
+  /// 'curv'
   icSigCurveType(0x63757276),
-  /* 'data' */
+
+  /// 'data'
   icSigDataType(0x64617461),
-  /* 'dict' */
-  icSigDictType(0x64696374),
-  /* 'dtim' */
+
+  /// 'dtim'
   icSigDateTimeType(0x6474696D),
-  /* 'devs' Removed in V4 */
-  icSigDeviceSettingsType(0x64657673),
-  /* 'ehim' */
-  icSigEmbeddedHeightImageType(0x6568696D),
-  /* 'enim' */
-  icSigEmbeddedNormalImageType(0x656e696d),
-  /* 'fl16' */
-  icSigFloat16ArrayType(0x666c3136),
-  /* 'fl32' */
-  icSigFloat32ArrayType(0x666c3332),
-  /* 'fl64' */
-  icSigFloat64ArrayType(0x666c3634),
-  /* 'gbd ' */
-  icSigGamutBoundaryDescType(0x67626420),
-  /* 'mft2' */
+
+  /// 'mft2'
   icSigLut16Type(0x6d667432),
-  /* 'mft1' */
+
+  /// 'mft1'
   icSigLut8Type(0x6d667431),
-  /* 'mAB ' */
+
+  /// 'mAB '
   icSigLutAtoBType(0x6d414220),
-  /* 'mBA ' */
+
+  /// 'mBA '
   icSigLutBtoAType(0x6d424120),
-  /* 'meas' */
+
+  /// 'meas'
   icSigMeasurementType(0x6D656173),
-  /* 'mluc' */
+
+  /// 'mluc'
   icSigMultiLocalizedUnicodeType(0x6D6C7563),
-  /* 'mpet' */
+
+  /// 'mpet'
   icSigMultiProcessElementType(0x6D706574),
-  /* 'ncl2' use v2-v4*/
+
+  /// 'ncl2' use v2-v4
   icSigNamedColor2Type(0x6E636C32),
-  /* 'para' */
+
+  /// 'para'
   icSigParametricCurveType(0x70617261),
-  /* 'pseq' */
+
+  /// 'pseq'
   icSigProfileSequenceDescType(0x70736571),
-  /* 'psid' */
+
+  /// 'psid'
   icSigProfileSequceIdType(0x70736964),
-  /* 'rcs2' */
+
+  /// 'rcs2'
   icSigResponseCurveSet16Type(0x72637332),
-  /* 'sf32' */
+
+  /// 'sf32'
   icSigS15Fixed16ArrayType(0x73663332),
-  /* 'scrn' Removed in V4 */
-  icSigScreeningType(0x7363726E),
-  /* 'curf' */
+
+  /// 'curf'
   icSigSegmentedCurveType(0x63757266),
-  /* 'sig ' */
+
+  /// 'sig '
   icSigSignatureType(0x73696720),
-  /* 'smat' */
-  icSigSparseMatrixArrayType(0x736D6174),
-  /* 'svcn' */
-  icSigSpectralViewingConditionsType(0x7376636e),
-  /* 'sdin' */
-  icSigSpectralDataInfoType(0x7364696e),
-  /* 'tary' */
-  icSigTagArrayType(0x74617279),
-  /* 'tstr' */
-  icSigTagStructType(0x74737472),
-  /* 'text' */
+
+  /// 'text'
   icSigTextType(0x74657874),
-  /* 'desc' Removed in V4 */
-  icSigTextDescriptionType(0x64657363),
-  /* 'uf32' */
+
+  /// 'uf32'
   icSigU16Fixed16ArrayType(0x75663332),
-  /* 'bfd ' Removed in V4 */
-  icSigUcrBgType(0x62666420),
-  /* 'ui16' */
+
+  /// 'ui16'
   icSigUInt16ArrayType(0x75693136),
-  /* 'ui32' */
+
+  /// 'ui32'
   icSigUInt32ArrayType(0x75693332),
-  /* 'ui64' */
+
+  /// 'ui64'
   icSigUInt64ArrayType(0x75693634),
-  /* 'ui08' */
+
+  /// 'ui08'
   icSigUInt8ArrayType(0x75693038),
-  /* 'view' */
+
+  /// 'view'
   icSigViewingConditionsType(0x76696577),
-  /* 'utf8' */
-  icSigUtf8TextType(0x75746638),
-  /* 'ut16' */
-  icSigUtf16TextType(0x75743136),
-  /* 'XYZ ' */
+
+  /// 'XYZ '
   icSigXYZType(0x58595A20),
-  /* 'XYZ ' */
+
+  /// 'XYZ '
   icSigXYZArrayType(0x58595A20),
-  /* 'zut8' */
-  icSigZipUtf8TextType(0x7a757438),
-  /* 'ZXML' */
-  icSigZipXmlType(0x5a584d4c),
   ;
 
   final int code;
@@ -111,6 +98,7 @@ enum ColorProfileTagType {
   const ColorProfileTagType(this.code);
 }
 
+/// Returns the [ColorProfileTagType] from the given [value] or null if not found
 ColorProfileTagType? tagTypeFromInt(Unsigned32Number value) {
   final rawValue = value.value;
   final index = ColorProfileTagType.values
