@@ -1,15 +1,17 @@
-import 'package:icc_parser/src/types/color_profile_primitives.dart';
+import 'dart:typed_data';
+
 import 'package:icc_parser/src/types/tag/clut/color_profile_clut.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
 import 'package:icc_parser/src/types/tag/curve/color_profile_tag_curve.dart';
 import 'package:icc_parser/src/types/tag/lut/color_profile_mbb.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
+import 'package:icc_parser/src/utils/list_utils.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 final class ColorProfileTagLut8 extends ColorProfileMBB {
-  final List<Signed15Fixed16Number> xyzMatrix;
+  final Float64List xyzMatrix;
 
   @override
   ColorProfileCLUT get clut => super.clut!;
@@ -41,7 +43,10 @@ final class ColorProfileTagLut8 extends ColorProfileMBB {
     // 1 reserved byte
     data.skip(1);
 
-    final xyzMatrix = List.generate(9, (_) => data.readSigned15Fixed16Number());
+    final xyzMatrix = generateFloat64List(
+      9,
+      (_) => data.readSigned15Fixed16Number().value,
+    );
 
     const inputTableEntriesCount = 256;
     const outputTableEntriesCount = 256;

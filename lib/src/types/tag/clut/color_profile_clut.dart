@@ -1,6 +1,8 @@
-import 'package:collection/collection.dart';
+import 'dart:typed_data';
+
 import 'package:fixnum/fixnum.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
+import 'package:icc_parser/src/utils/list_utils.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -8,11 +10,12 @@ final class ColorProfileCLUT {
   final int inputChannelCount;
   final int outputChannelCount;
   final int numGridPoints;
-  final List<int> gridPoints;
-  final List<int> dimensionSize;
-  final List<double> data;
-  final List<int> maxGridPoints;
-  final List<int> _offsets;
+  final Uint8List gridPoints;
+  final Uint32List dimensionSize;
+  final Uint8List _data;
+  final Uint8List maxGridPoints;
+  final Uint32List _offsets;
+  final int precision;
 
   const ColorProfileCLUT({
     required this.inputChannelCount,
@@ -20,10 +23,12 @@ final class ColorProfileCLUT {
     required this.numGridPoints,
     required this.gridPoints,
     required this.dimensionSize,
-    required this.data,
+    required Uint8List data,
     required this.maxGridPoints,
-    required List<int> offsets,
-  }) : _offsets = offsets;
+    required Uint32List offsets,
+    required this.precision,
+  })  : _data = data,
+        _offsets = offsets;
 
   factory ColorProfileCLUT.fromBytesWithHeader(
     DataStream data, {
@@ -31,10 +36,7 @@ final class ColorProfileCLUT {
     required int outputChannelCount,
   }) {
     // Skip 16-inputChannelCount bytes as we will never need them
-    final gridPoints = List.generate(
-      inputChannelCount,
-      (i) => data.readUnsigned8Number().value,
-    );
+    final gridPoints = data.readBytes(inputChannelCount);
     data.skip(16 - inputChannelCount);
 
     final precision = data.readUnsigned8Number().value;
@@ -57,10 +59,7 @@ final class ColorProfileCLUT {
     required int outputChannelCount,
     required int precision,
   }) {
-    final gridPoints = List.filled(inputChannelCount, 0);
-    for (var i = 0; i < inputChannelCount; i++) {
-      gridPoints[i] = numGridPoints;
-    }
+    final gridPoints = filledUint8List(inputChannelCount, numGridPoints);
     return ColorProfileCLUT._internalFromBytes(
       data,
       inputChannelCount: inputChannelCount,
@@ -75,11 +74,11 @@ final class ColorProfileCLUT {
     required int inputChannelCount,
     required int outputChannelCount,
     required int precision,
-    required List<int> gridPoints,
+    required Uint8List gridPoints,
   }) {
     // Init lists
-    final dimensionSize = List.filled(inputChannelCount, 0);
-    final maxGridPoints = List.filled(inputChannelCount, 0);
+    final dimensionSize = Uint32List(inputChannelCount);
+    final maxGridPoints = Uint8List(inputChannelCount);
 
     var i = inputChannelCount - 1;
     dimensionSize[i] = outputChannelCount;
@@ -90,23 +89,13 @@ final class ColorProfileCLUT {
     }
     final totalNumGridPoints = numPoints.toInt32().toInt();
     final size = totalNumGridPoints * outputChannelCount;
-    final dataPoints = List.filled(size, 0.0);
 
-    final num = totalNumGridPoints * outputChannelCount;
+    final dataPoints = data.readBytes(size * precision);
 
-    // Read raw data
-    final divisor = precision == 1 ? 255.0 : 65535.0;
-    for (var i = 0; i < num; i++) {
-      final raw = precision == 1
-          ? data.readUnsigned8Number().value
-          : data.readUnsigned16Number().value;
-      dataPoints[i] = raw / divisor;
-    }
-
-    for (var i = 0; i < inputChannelCount; i++) {
+    for (var i = 0; i < inputChannelCount; ++i) {
       maxGridPoints[i] = gridPoints[i] - 1;
     }
-    final offsets = List.filled(1 << inputChannelCount, 0);
+    final offsets = Uint32List(1 << inputChannelCount);
 
     _buildOffsetTable(
       offsets: offsets,
@@ -118,15 +107,16 @@ final class ColorProfileCLUT {
       outputChannelCount: outputChannelCount,
       numGridPoints: totalNumGridPoints,
       gridPoints: gridPoints,
-      dimensionSize: UnmodifiableListView(dimensionSize),
-      data: UnmodifiableListView(dataPoints),
-      maxGridPoints: UnmodifiableListView(maxGridPoints),
-      offsets: UnmodifiableListView(offsets),
+      dimensionSize: dimensionSize,
+      data: dataPoints,
+      maxGridPoints: maxGridPoints,
+      offsets: offsets,
+      precision: precision,
     );
   }
 
-  List<double> interpolate4d(List<double> source) {
-    final dest = List.filled(outputChannelCount, 0.0);
+  Float64List interpolate4d(Float64List source) {
+    final dest = Float64List(outputChannelCount);
     final mw = maxGridPoints[0];
     final mx = maxGridPoints[1];
     final my = maxGridPoints[2];
@@ -169,7 +159,7 @@ final class ColorProfileCLUT {
     final nu = 1.0 - u;
     final nv = 1.0 - v;
 
-    final dF = List.filled(16, 0.0);
+    final dF = Float64List(16);
     dF[0] = ns * nt * nu * nv;
     dF[1] = ns * nt * nu * v;
     dF[2] = ns * nt * u * nv;
@@ -191,10 +181,11 @@ final class ColorProfileCLUT {
         ix * dimensionSize[1] +
         iy * dimensionSize[2] +
         iz * dimensionSize[3];
+
     for (var i = 0; i < outputChannelCount; ++i) {
       var value = 0.0;
       for (var j = 0; j < 16; ++j) {
-        value += data[p + _offsets[j]] * dF[j];
+        value += _getValue(p + _offsets[j]) * dF[j];
       }
       dest[i] = value;
       ++p;
@@ -203,8 +194,8 @@ final class ColorProfileCLUT {
     return dest;
   }
 
-  List<double> interpolate3d(List<double> source) {
-    final dest = List.filled(outputChannelCount, 0.0);
+  Float64List interpolate3d(Float64List source) {
+    final dest = Float64List(outputChannelCount);
 
     final mx = maxGridPoints[0];
     final my = maxGridPoints[1];
@@ -253,14 +244,14 @@ final class ColorProfileCLUT {
     var pv = 0.0;
 
     for (var i = 0; i < outputChannelCount; i++) {
-      pv = data[offset] * dF0 +
-          data[offset + _offsets[1]] * dF1 +
-          data[offset + _offsets[2]] * dF2 +
-          data[offset + _offsets[3]] * dF3 +
-          data[offset + _offsets[4]] * dF4 +
-          data[offset + _offsets[5]] * dF5 +
-          data[offset + _offsets[6]] * dF6 +
-          data[offset + _offsets[7]] * dF7;
+      pv = _getValue(offset) * dF0 +
+          _getValue(offset + _offsets[1]) * dF1 +
+          _getValue(offset + _offsets[2]) * dF2 +
+          _getValue(offset + _offsets[3]) * dF3 +
+          _getValue(offset + _offsets[4]) * dF4 +
+          _getValue(offset + _offsets[5]) * dF5 +
+          _getValue(offset + _offsets[6]) * dF6 +
+          _getValue(offset + _offsets[7]) * dF7;
 
       dest[i] = pv;
       ++offset;
@@ -268,8 +259,8 @@ final class ColorProfileCLUT {
     return dest;
   }
 
-  List<double> interpolate3dTetra(List<double> source) {
-    final dest = List.filled(outputChannelCount, 0.0);
+  Float64List interpolate3dTetra(Float64List source) {
+    final dest = Float64List(outputChannelCount);
     final mx = maxGridPoints[0];
     final my = maxGridPoints[1];
     final mz = maxGridPoints[2];
@@ -303,37 +294,61 @@ final class ColorProfileCLUT {
     for (var i = 0; i < outputChannelCount; ++i) {
       if (t < u) {
         if (t > v) {
-          dest[i] = data[offset] +
-              t * (data[offset + _offsets[6]] - data[offset + _offsets[2]]) +
-              u * (data[offset + _offsets[2]] - data[offset]) +
-              v * (data[offset + _offsets[7]] - data[offset + _offsets[6]]);
+          dest[i] = _getValue(offset) +
+              t *
+                  (_getValue(offset + _offsets[6]) -
+                      _getValue(offset + _offsets[2])) +
+              u * (_getValue(offset + _offsets[2]) - _getValue(offset)) +
+              v *
+                  (_getValue(offset + _offsets[7]) -
+                      _getValue(offset + _offsets[6]));
         } else if (u < v) {
-          dest[i] = data[offset] +
-              t * (data[offset + _offsets[7]] - data[offset + _offsets[3]]) +
-              u * (data[offset + _offsets[3]] - data[offset + _offsets[1]]) +
-              v * (data[offset + _offsets[1]] - data[offset]);
+          dest[i] = _getValue(offset) +
+              t *
+                  (_getValue(offset + _offsets[7]) -
+                      _getValue(offset + _offsets[3])) +
+              u *
+                  (_getValue(offset + _offsets[3]) -
+                      _getValue(offset + _offsets[1])) +
+              v * (_getValue(offset + _offsets[1]) - _getValue(offset));
         } else {
-          dest[i] = data[offset] +
-              t * (data[offset + _offsets[7]] - data[offset + _offsets[3]]) +
-              u * (data[offset + _offsets[2]] - data[offset]) +
-              v * (data[offset + _offsets[3]] - data[offset + _offsets[2]]);
+          dest[i] = _getValue(offset) +
+              t *
+                  (_getValue(offset + _offsets[7]) -
+                      _getValue(offset + _offsets[3])) +
+              u * (_getValue(offset + _offsets[2]) - _getValue(offset)) +
+              v *
+                  (_getValue(offset + _offsets[3]) -
+                      _getValue(offset + _offsets[2]));
         }
       } else {
         if (t < v) {
-          dest[i] = data[offset] +
-              t * (data[offset + _offsets[5]] - data[offset + _offsets[1]]) +
-              u * (data[offset + _offsets[7]] - data[offset + _offsets[5]]) +
-              v * (data[offset + _offsets[1]] - data[offset]);
+          dest[i] = _getValue(offset) +
+              t *
+                  (_getValue(offset + _offsets[5]) -
+                      _getValue(offset + _offsets[1])) +
+              u *
+                  (_getValue(offset + _offsets[7]) -
+                      _getValue(offset + _offsets[5])) +
+              v * (_getValue(offset + _offsets[1]) - _getValue(offset));
         } else if (u < v) {
-          dest[i] = data[offset] +
-              t * (data[offset + _offsets[4]] - data[offset]) +
-              u * (data[offset + _offsets[7]] - data[offset + _offsets[5]]) +
-              v * (data[offset + _offsets[5]] - data[offset + _offsets[4]]);
+          dest[i] = _getValue(offset) +
+              t * (_getValue(offset + _offsets[4]) - _getValue(offset)) +
+              u *
+                  (_getValue(offset + _offsets[7]) -
+                      _getValue(offset + _offsets[5])) +
+              v *
+                  (_getValue(offset + _offsets[5]) -
+                      _getValue(offset + _offsets[4]));
         } else {
-          dest[i] = data[offset] +
-              t * (data[offset + _offsets[4]] - data[offset]) +
-              u * (data[offset + _offsets[6]] - data[offset + _offsets[4]]) +
-              v * (data[offset + _offsets[7]] - data[offset + _offsets[6]]);
+          dest[i] = _getValue(offset) +
+              t * (_getValue(offset + _offsets[4]) - _getValue(offset)) +
+              u *
+                  (_getValue(offset + _offsets[6]) -
+                      _getValue(offset + _offsets[4])) +
+              v *
+                  (_getValue(offset + _offsets[7]) -
+                      _getValue(offset + _offsets[6]));
         }
       }
       ++offset;
@@ -341,10 +356,20 @@ final class ColorProfileCLUT {
     return dest;
   }
 
+  double _getValue(int offset) {
+    if (precision == 1) {
+      return _data[offset] / 255.0;
+    } else {
+      final high = _data[offset * 2];
+      final low = _data[offset * 2 + 1];
+      return (high << 8 | low) / 65535.0;
+    }
+  }
+
   static void _buildOffsetTable({
-    required List<int> offsets,
+    required Uint32List offsets,
     required int inputChannelCount,
-    required List<int> dimensionSize,
+    required Uint32List dimensionSize,
   }) {
     // Helper fields for interpolation
     final int _n001;

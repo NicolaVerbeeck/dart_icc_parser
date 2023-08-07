@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 import 'package:icc_parser/src/cmm/color_profile_pcs.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform_3d.dart';
@@ -17,8 +19,8 @@ abstract class ColorProfileTransform {
 
   final bool doAdjustPCS;
   final bool isInput;
-  final List<double>? pcsScale;
-  final List<double>? pcsOffset;
+  final Float64List? pcsScale;
+  final Float64List? pcsOffset;
 
   const ColorProfileTransform({
     required this.profile,
@@ -28,7 +30,7 @@ abstract class ColorProfileTransform {
     required this.pcsOffset,
   });
 
-  List<double> apply(List<double> source, ColorProfileTransformationStep step);
+  Float64List apply(Float64List source, ColorProfileTransformationStep step);
 
   factory ColorProfileTransform.create({
     required ColorProfile profile,
@@ -58,8 +60,8 @@ abstract class ColorProfileTransform {
     }
   }
 
-  List<double> checkSourceAbsolute(
-    List<double> source,
+  Float64List checkSourceAbsolute(
+    Float64List source,
     ColorProfileTransformationStep step,
   ) {
     if (doAdjustPCS && !isInput && step.useSourcePCSConversion) {
@@ -68,8 +70,8 @@ abstract class ColorProfileTransform {
     return source;
   }
 
-  List<double> checkDestinationAbsolute(
-    List<double> source,
+  Float64List checkDestinationAbsolute(
+    Float64List source,
     ColorProfileTransformationStep step,
   ) {
     if (doAdjustPCS && isInput && step.useDestinationPCSConversion) {
@@ -78,14 +80,14 @@ abstract class ColorProfileTransform {
     return source;
   }
 
-  List<double> adjustPCS(List<double> source) {
+  Float64List adjustPCS(Float64List source) {
     assert(source.length == 3);
     assert(pcsScale != null);
     assert(pcsOffset != null);
 
     final space = intToColorSpaceSignature(profile.header.pcs);
 
-    final dest = List.filled(3, 0.0);
+    final dest = Float64List(3);
     if (space == ColorSpaceSignature.icSigLabData) {
       if (useLegacyPCS) {
         ColorProfilePCSUtils.lab2ToXyz(
@@ -130,8 +132,8 @@ abstract class ColorProfileTransform {
     required bool isInput,
     required bool srcPCSConversion,
     required bool dstPCSConversion,
-    required List<double>? pcsScale,
-    required List<double>? pcsOffset,
+    required Float64List? pcsScale,
+    required Float64List? pcsOffset,
     required ColorProfileInterpolation interpolation,
   }) {
     switch (type) {
@@ -275,8 +277,8 @@ abstract class ColorProfileTransform {
 
   static ({
     bool adjustPCS,
-    List<double>? pcsScale,
-    List<double>? pcsOffset,
+    Float64List? pcsScale,
+    Float64List? pcsOffset,
   }) _begin({
     required ColorProfileRenderingIntent intent,
     required ColorProfile profile,
@@ -284,24 +286,24 @@ abstract class ColorProfileTransform {
     required bool isInput,
   }) {
     var adjustPCS = false;
-    List<double>? pcsScale;
-    List<double>? pcsOffset;
+    Float64List? pcsScale;
+    Float64List? pcsOffset;
     if (intent == ColorProfileRenderingIntent.perceptual &&
         (profile.isVersion2 || !hasPerceptualHandling)) {
       final space = intToColorSpaceSignature(profile.header.pcs);
       if (isSpacePCS(space) &&
           profile.header.resolvedDeviceClass != DeviceClass.abstract) {
         adjustPCS = true;
-        pcsScale = [
+        pcsScale = Float64List.fromList([
           1 - _icPerceptualRefBlackX / _icPerceptualRefWhiteX,
           1 - _icPerceptualRefBlackY / _icPerceptualRefWhiteY,
           1 - _icPerceptualRefBlackZ / _icPerceptualRefWhiteZ,
-        ];
-        pcsOffset = [
+        ]);
+        pcsOffset = Float64List.fromList([
           _icPerceptualRefBlackX * 32768.0 / 65535.0,
           _icPerceptualRefBlackY * 32768.0 / 65535.0,
           _icPerceptualRefBlackZ * 32768.0 / 65535.0,
-        ];
+        ]);
         if (!isInput) {
           pcsScale[0] = 1 / pcsScale[0];
           pcsScale[1] = 1 / pcsScale[1];

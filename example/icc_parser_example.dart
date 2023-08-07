@@ -23,15 +23,28 @@ void main(List<String> args) {
   final cmm = ColorProfileCmm();
 
   final finalTransformations = cmm.buildTransformations(transformations);
-  print("Got transformations: $finalTransformations");
-  printColor(cmm.apply(finalTransformations, [255, 0, 0, 0]));
-  printColor(cmm.apply(finalTransformations, [0, 255, 0, 0]));
-  printColor(cmm.apply(finalTransformations, [0, 0, 255, 0]));
-  printColor(cmm.apply(finalTransformations, [0, 0, 0, 255]));
+
+  const iterations = 8000*8000;
+  final sw = Stopwatch()..start();
+  for (var i = 0; i < iterations; ++i) {
+    cmm.apply(finalTransformations, convert([0, 0, 0, 0]));
+  }
+  final el = sw.elapsedMilliseconds;
+  print('Elapsed: $el ms, ${el / iterations} ms per iteration');
+  sw.stop();
 }
 
 // icccmm:2111 to connect profile 1 lab space to profile 2 lab space
 
 void printColor(List<double> color) {
   print(color.map((e) => (e * 255).toInt()).toList());
+}
+
+Float64List convert(List<double> e) {
+  return Float64List.fromList([
+    e[0] / 255,
+    e[1] / 255,
+    e[2] / 255,
+    e[3] / 255,
+  ]);
 }

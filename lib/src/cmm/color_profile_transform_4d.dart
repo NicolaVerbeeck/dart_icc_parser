@@ -1,9 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform.dart';
 import 'package:icc_parser/src/color_profile.dart';
 import 'package:icc_parser/src/types/color_profile_matrix.dart';
 import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
 import 'package:icc_parser/src/types/tag/lut/color_profile_mbb.dart';
+import 'package:icc_parser/src/utils/list_utils.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -32,8 +35,8 @@ final class ColorProfileTransform4DLut extends ColorProfileTransform {
     required ColorProfile profile,
     required bool doAdjustPCS,
     required bool isInput,
-    required List<double>? pcsScale,
-    required List<double>? pcsOffset,
+    required Float64List? pcsScale,
+    required Float64List? pcsOffset,
   }) {
     final params = _begin(tag);
     return ColorProfileTransform4DLut(
@@ -51,9 +54,9 @@ final class ColorProfileTransform4DLut extends ColorProfileTransform {
   }
 
   @override
-  List<double> apply(List<double> source, ColorProfileTransformationStep step) {
+  Float64List apply(Float64List source, ColorProfileTransformationStep step) {
     final sourcePixel = checkSourceAbsolute(source, step);
-    final pixel = [...sourcePixel];
+    final pixel = sourcePixel.copy();
     if (tag.isInputMatrix) {
       if (bCurves != null) {
         pixel[0] = bCurves![0].apply(pixel[0]);

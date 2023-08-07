@@ -1,15 +1,16 @@
 import 'dart:math';
+import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
+import 'package:icc_parser/src/utils/list_utils.dart';
 import 'package:icc_parser/src/utils/num_utils.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 final class ColorProfileTagCurve extends ColorProfileCurve {
-  final List<double> curve;
+  final Float64List curve;
 
   int get _maxIndex => curve.length - 1;
 
@@ -30,12 +31,14 @@ final class ColorProfileTagCurve extends ColorProfileCurve {
   }
 
   factory ColorProfileTagCurve.fromBytesWithSize(
-      DataStream data, int numEntries) {
-    final curveData = List.generate(
+    DataStream data,
+    int numEntries,
+  ) {
+    final curveData = generateFloat64List(
       numEntries,
       (_) => data.readUnsigned16Number().value / 65535,
     );
-    return ColorProfileTagCurve(UnmodifiableListView(curveData));
+    return ColorProfileTagCurve(curveData);
   }
 
   @override

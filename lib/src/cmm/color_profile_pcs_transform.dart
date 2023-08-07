@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 import 'package:icc_parser/src/cmm/color_profile_pcs.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform.dart';
 import 'package:icc_parser/src/color_profile.dart';
 import 'package:icc_parser/src/types/color_profile_profile_header.dart';
+import 'package:icc_parser/src/utils/list_utils.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -28,10 +31,8 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
     }
 
     final sourceSpace = source.getDestinationColorSpace();
-    final numberSourceSamples = sourceSpace.numSamples;
 
     final destSpace = destination.getSourceColorSpace();
-    final numberDestSamples = destSpace.numSamples;
 
     final steps = <_ColorProfilePcsStep>[];
 
@@ -98,13 +99,13 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
   }
 
   @override
-  List<double> apply(List<double> source, ColorProfileTransformationStep step) {
+  Float64List apply(Float64List source, ColorProfileTransformationStep step) {
     if (_steps.isEmpty) {
       return source.sublist(0, getSourceColorSpace().numSamples);
     }
-    var p1 = [0.0, 0.0, 0.0];
-    var p2 = [0.0, 0.0, 0.0];
-    List<double> temp;
+    var p1 = Float64List(3);
+    var p2 = Float64List(3);
+    Float64List temp;
     var varSource = source;
     for (final step in _steps) {
       step.apply(source: varSource, destination: p1);
@@ -119,14 +120,14 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
 
 abstract interface class _ColorProfilePcsStep {
   void apply({
-    required List<double> source,
-    required List<double> destination,
+    required Float64List source,
+    required Float64List destination,
   });
 }
 
 @immutable
 final class _ColorProfileLab2ToXyz implements _ColorProfilePcsStep {
-  final List<double> xyzWhite;
+  final Float64List xyzWhite;
 
   const _ColorProfileLab2ToXyz({
     required this.xyzWhite,
@@ -137,20 +138,20 @@ final class _ColorProfileLab2ToXyz implements _ColorProfilePcsStep {
   ) {
     final xyzWhite = profile.getNormIlluminantXYZ();
     return _ColorProfileLab2ToXyz(
-      xyzWhite: xyzWhite.map((e) => e.value).toList(),
+      xyzWhite: Float64List.fromList(xyzWhite.map((e) => e.value).toList()),
     );
   }
 
   @override
   void apply({
-    required List<double> source,
-    required List<double> destination,
+    required Float64List source,
+    required Float64List destination,
   }) {
-    final lab = [
+    final lab = threeDoubles(
       source[0] * (65535.0 / 65280.0) * 100.0,
       source[1] * 65535.0 / 65280.0 * 255.0 - 128.0,
       source[2] * 65535.0 / 65280.0 * 255.0 - 128.0,
-    ];
+    );
 
     ColorProfilePCSUtils.icLabToXYZ(destination, lab: lab, whiteXYZ: xyzWhite);
   }
@@ -158,7 +159,7 @@ final class _ColorProfileLab2ToXyz implements _ColorProfilePcsStep {
 
 @immutable
 final class _ColorProfileXyzToLab2 implements _ColorProfilePcsStep {
-  final List<double> xyzWhite;
+  final Float64List xyzWhite;
 
   const _ColorProfileXyzToLab2({
     required this.xyzWhite,
@@ -169,16 +170,16 @@ final class _ColorProfileXyzToLab2 implements _ColorProfilePcsStep {
   ) {
     final xyzWhite = profile.getNormIlluminantXYZ();
     return _ColorProfileXyzToLab2(
-      xyzWhite: xyzWhite.map((e) => e.value).toList(),
+      xyzWhite: Float64List.fromList(xyzWhite.map((e) => e.value).toList()),
     );
   }
 
   @override
   void apply({
-    required List<double> source,
-    required List<double> destination,
+    required Float64List source,
+    required Float64List destination,
   }) {
-    final lab = [0.0, 0.0, 0.0];
+    final lab = Float64List(3);
 
     ColorProfilePCSUtils.icXYZtoLab(lab, xyz: source, whiteXYZ: xyzWhite);
 
@@ -190,7 +191,7 @@ final class _ColorProfileXyzToLab2 implements _ColorProfilePcsStep {
 
 @immutable
 final class _ColorProfileLabToXyz implements _ColorProfilePcsStep {
-  final List<double> xyzWhite;
+  final Float64List xyzWhite;
 
   const _ColorProfileLabToXyz({
     required this.xyzWhite,
@@ -201,20 +202,20 @@ final class _ColorProfileLabToXyz implements _ColorProfilePcsStep {
   ) {
     final xyzWhite = profile.getNormIlluminantXYZ();
     return _ColorProfileLabToXyz(
-      xyzWhite: xyzWhite.map((e) => e.value).toList(),
+      xyzWhite: Float64List.fromList(xyzWhite.map((e) => e.value).toList()),
     );
   }
 
   @override
   void apply({
-    required List<double> source,
-    required List<double> destination,
+    required Float64List source,
+    required Float64List destination,
   }) {
-    final lab = [
+    final lab = threeDoubles(
       source[0] * 100.0,
       source[1] * 255.0 - 128.0,
       source[2] * 255.0 - 128.0,
-    ];
+    );
 
     ColorProfilePCSUtils.icLabToXYZ(destination, lab: lab, whiteXYZ: xyzWhite);
   }
@@ -222,7 +223,7 @@ final class _ColorProfileLabToXyz implements _ColorProfilePcsStep {
 
 @immutable
 final class _ColorProfileXyzToLab implements _ColorProfilePcsStep {
-  final List<double> xyzWhite;
+  final Float64List xyzWhite;
 
   const _ColorProfileXyzToLab({
     required this.xyzWhite,
@@ -233,16 +234,16 @@ final class _ColorProfileXyzToLab implements _ColorProfilePcsStep {
   ) {
     final xyzWhite = profile.getNormIlluminantXYZ();
     return _ColorProfileXyzToLab(
-      xyzWhite: xyzWhite.map((e) => e.value).toList(),
+      xyzWhite: Float64List.fromList(xyzWhite.map((e) => e.value).toList()),
     );
   }
 
   @override
   void apply({
-    required List<double> source,
-    required List<double> destination,
+    required Float64List source,
+    required Float64List destination,
   }) {
-    final lab = [0.0, 0.0, 0.0];
+    final lab = Float64List(3);
 
     ColorProfilePCSUtils.icXYZtoLab(lab, xyz: source, whiteXYZ: xyzWhite);
 
@@ -254,7 +255,7 @@ final class _ColorProfileXyzToLab implements _ColorProfilePcsStep {
 
 @immutable
 final class _ColorProfileScale3 implements _ColorProfilePcsStep {
-  final List<double> scale;
+  final Float64List scale;
 
   const _ColorProfileScale3({
     required this.scale,
@@ -266,14 +267,14 @@ final class _ColorProfileScale3 implements _ColorProfilePcsStep {
     double v3,
   ) {
     return _ColorProfileScale3(
-      scale: [v1, v2, v3],
+      scale: threeDoubles(v1, v2, v3),
     );
   }
 
   @override
   void apply({
-    required List<double> source,
-    required List<double> destination,
+    required Float64List source,
+    required Float64List destination,
   }) {
     destination[0] = source[0] * scale[0];
     destination[1] = source[1] * scale[1];
@@ -283,7 +284,7 @@ final class _ColorProfileScale3 implements _ColorProfilePcsStep {
 
 @immutable
 final class _ColorProfileOffset3 implements _ColorProfilePcsStep {
-  final List<double> offset;
+  final Float64List offset;
 
   const _ColorProfileOffset3({
     required this.offset,
@@ -297,22 +298,22 @@ final class _ColorProfileOffset3 implements _ColorProfilePcsStep {
   ]) {
     if (convertIntXyzOffset) {
       return _ColorProfileOffset3(
-        offset: [
+        offset: threeDoubles(
           v1 * 65535.0 / 32768.0,
           v2 * 65535.0 / 32768.0,
           v3 * 65535.0 / 32768.0,
-        ],
+        ),
       );
     }
     return _ColorProfileOffset3(
-      offset: [v1, v2, v3],
+      offset: threeDoubles(v1, v2, v3),
     );
   }
 
   @override
   void apply({
-    required List<double> source,
-    required List<double> destination,
+    required Float64List source,
+    required Float64List destination,
   }) {
     destination[0] = source[0] + offset[0];
     destination[1] = source[1] + offset[1];
@@ -336,8 +337,8 @@ final class _ColorProfileXYZConvertStep implements _ColorProfilePcsStep {
 
   @override
   void apply({
-    required List<double> source,
-    required List<double> destination,
+    required Float64List source,
+    required Float64List destination,
   }) {}
 }
 

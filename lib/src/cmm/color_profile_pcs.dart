@@ -1,4 +1,7 @@
 import 'dart:math';
+import 'dart:typed_data';
+
+import 'package:icc_parser/src/utils/list_utils.dart';
 
 /// Utility class for converting between Lab and XYZ color spaces from various
 /// versions
@@ -10,8 +13,8 @@ abstract class ColorProfilePCSUtils {
   static const _icD50XYZ = [0.9642, 1.0000, 0.8249];
 
   static void lab2ToXyz({
-    required List<double> source,
-    required List<double> dest,
+    required Float64List source,
+    required Float64List dest,
     required bool noClip,
   }) {
     lab2ToLab4(source: source, dest: dest, noClip: noClip);
@@ -19,8 +22,8 @@ abstract class ColorProfilePCSUtils {
   }
 
   static void lab2ToLab4({
-    required List<double> source,
-    required List<double> dest,
+    required Float64List source,
+    required Float64List dest,
     required bool noClip,
   }) {
     const factor = 65535.0 / 65280.0;
@@ -36,8 +39,8 @@ abstract class ColorProfilePCSUtils {
   }
 
   static void xyzToLab2({
-    required List<double> source,
-    required List<double> dest,
+    required Float64List source,
+    required Float64List dest,
     required bool noClip,
   }) {
     xyzToLab(source: source, dest: dest, noClip: noClip);
@@ -45,11 +48,11 @@ abstract class ColorProfilePCSUtils {
   }
 
   static void labToXyz({
-    required List<double> source,
-    required List<double> dest,
+    required Float64List source,
+    required Float64List dest,
     required bool noClip,
   }) {
-    final List<double> lab = [...source];
+    final lab = source.copy();
     icLabFromPcs(lab);
     icLabToXYZ(lab);
     icXyzToPcs(lab);
@@ -65,16 +68,16 @@ abstract class ColorProfilePCSUtils {
     }
   }
 
-  static void icLabFromPcs(List<double> pixel) {
+  static void icLabFromPcs(Float64List pixel) {
     pixel[0] *= 100;
     pixel[1] = (pixel[1] * 255.0) - 128.0;
     pixel[2] = (pixel[2] * 255.0) - 128.0;
   }
 
   static void icLabToXYZ(
-    List<double> pixel, {
-    List<double>? lab,
-    List<double>? whiteXYZ,
+    Float64List pixel, {
+    Float64List? lab,
+    Float64List? whiteXYZ,
   }) {
     final useLab = lab ?? pixel;
     final whitePoint = whiteXYZ ?? _icD50XYZ;
@@ -86,15 +89,15 @@ abstract class ColorProfilePCSUtils {
   }
 
   static void xyzToLab({
-    required List<double> source,
-    required List<double> dest,
+    required Float64List source,
+    required Float64List dest,
     required bool noClip,
   }) {
-    final xyz = List.filled(3, 0.0);
+    final xyz = Float64List(3);
     if (!noClip) {
-      xyz[0] = source[0].clamp(0, 1);
-      xyz[1] = source[1].clamp(0, 1);
-      xyz[2] = source[2].clamp(0, 1);
+      xyz[0] = source[0].clamp(0.0, 1.0);
+      xyz[1] = source[1].clamp(0.0, 1.0);
+      xyz[2] = source[2].clamp(0.0, 1.0);
     } else {
       xyz[0] = source[0];
       xyz[1] = source[1];
@@ -104,9 +107,19 @@ abstract class ColorProfilePCSUtils {
     icXyzFromPcs(xyz);
     icXYZtoLab(xyz);
     icLabToPcs(xyz);
+
+    if (!noClip) {
+      dest[0] = xyz[0].clamp(0.0, 1.0);
+      dest[1] = xyz[1].clamp(0.0, 1.0);
+      dest[2] = xyz[2].clamp(0.0, 1.0);
+    } else {
+      dest[0] = xyz[0];
+      dest[1] = xyz[1];
+      dest[2] = xyz[2];
+    }
   }
 
-  static double icCubeth(double v){
+  static double icCubeth(double v) {
     if (v > 0.008856) {
       return pow(v, 1.0 / 3.0).toDouble();
     } else {
@@ -124,14 +137,14 @@ abstract class ColorProfilePCSUtils {
     }
   }
 
-  static void icXyzToPcs(List<double> pixel) {
+  static void icXyzToPcs(Float64List pixel) {
     const factor = 32768.0 / 65535.0;
     pixel[0] *= factor;
     pixel[1] *= factor;
     pixel[2] *= factor;
   }
 
-  static void icXyzFromPcs(List<double> xyz) {
+  static void icXyzFromPcs(Float64List xyz) {
     const factor = 65535.0 / 32768.0;
     xyz[0] *= factor;
     xyz[1] *= factor;
@@ -139,9 +152,9 @@ abstract class ColorProfilePCSUtils {
   }
 
   static void icXYZtoLab(
-    List<double> lab, {
-    List<double>? xyz,
-    List<double>? whiteXYZ,
+    Float64List lab, {
+    Float64List? xyz,
+    Float64List? whiteXYZ,
   }) {
     final whitePoint = whiteXYZ ?? _icD50XYZ;
     final useXyz = xyz ?? lab;
@@ -155,15 +168,15 @@ abstract class ColorProfilePCSUtils {
     lab[2] = 200.0 * (yn - zn);
   }
 
-  static void icLabToPcs(List<double> lab) {
+  static void icLabToPcs(Float64List lab) {
     lab[0] /= 100.0;
     lab[1] = (lab[1] + 128.0) / 255.0;
     lab[2] = (lab[2] + 128.0) / 255.0;
   }
 
   static void lab4ToLab2({
-    required List<double> source,
-    required List<double> dest,
+    required Float64List source,
+    required Float64List dest,
   }) {
     const factor = 65280.0 / 65535.0;
     dest[0] = source[0] * factor;

@@ -1,11 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:icc_parser/src/cmm/color_profile_pcs_transform.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform.dart';
+import 'package:icc_parser/src/utils/list_utils.dart';
 import 'package:meta/meta.dart';
 
 class ColorProfileCmm {
 
-  List<double> apply(List<ColorProfileTransformationStep> steps, List<double> source) {
-    var pixel = [...source];
+  Float64List apply(List<ColorProfileTransformationStep> steps, Float64List source) {
+    var pixel = source.copy();
     for (final step in steps) {
       pixel = step.transform.apply(pixel, step);
     }

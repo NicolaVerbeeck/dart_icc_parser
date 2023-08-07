@@ -1,21 +1,22 @@
-import 'dart:collection';
+import 'dart:typed_data';
 
 import 'package:icc_parser/src/utils/data_stream.dart';
+import 'package:icc_parser/src/utils/list_utils.dart';
 import 'package:icc_parser/src/utils/num_utils.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 final class ColorProfileMatrix {
-  final List<double> matrix;
+  final Float64List matrix;
 
   const ColorProfileMatrix(this.matrix) : assert(matrix.length == 12);
 
   factory ColorProfileMatrix.fromBytes(DataStream stream) {
-    final matrix = List.generate(
+    final matrix = generateFloat64List(
       12,
       (_) => stream.readSigned15Fixed16Number().value,
     );
-    return ColorProfileMatrix(UnmodifiableListView(matrix));
+    return ColorProfileMatrix(matrix);
   }
 
   bool isIdentity() {
@@ -37,7 +38,7 @@ final class ColorProfileMatrix {
     return true;
   }
 
-  void apply(List<double> pixel) {
+  void apply(Float64List pixel) {
     final a = pixel[0];
     final b = pixel[1];
     final c = pixel[2];
