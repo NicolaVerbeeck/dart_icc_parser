@@ -4,6 +4,7 @@ import 'package:icc_parser/src/types/tag/lut/color_profile_tag_lut16.dart';
 import 'package:icc_parser/src/types/tag/lut/color_profile_tag_lut8.dart';
 import 'package:icc_parser/src/types/tag/lut/color_profile_tag_lut_a_to_b.dart';
 import 'package:icc_parser/src/types/tag/lut/color_profile_tag_lut_b_to_a.dart';
+import 'package:icc_parser/src/types/tag/xyz/color_profile_xyz_tag.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 
 abstract interface class ColorProfileTag {
@@ -29,6 +30,8 @@ abstract interface class ColorProfileTag {
         return ColorProfileTagLutAToB.fromBytes(stream, size: size);
       case ColorProfileTagType.icSigLutBtoAType:
         return ColorProfileTagLutBToA.fromBytes(stream, size: size);
+      case ColorProfileTagType.icSigXYZType:
+        return ColorProfileXYZTag.fromBytes(stream, size: size);
       //ignore: no_default_cases
       default:
         throw Exception('Unsupported tag type: $signature');

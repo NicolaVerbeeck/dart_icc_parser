@@ -4,6 +4,7 @@ import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 import 'package:icc_parser/src/cmm/color_profile_pcs.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform_3d.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform_4d.dart';
+import 'package:icc_parser/src/cmm/color_profile_transform_matrix_trc.dart';
 import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/color_profile.dart';
 import 'package:icc_parser/src/types/color_profile_profile_header.dart';
@@ -183,6 +184,27 @@ abstract class ColorProfileTransform {
       if (tag?.type == ColorProfileTagType.icSigMultiProcessElementType) {
         throw Exception('Multi processing elements are not supported');
       }
+      if (tag == null && profile.header.version.value < 0x05000000) {
+        if (profile.header.resolvedColorSpace ==
+            ColorSpaceSignature.icSigRgbData) {
+          final params = _begin(
+            intent: intent,
+            profile: profile,
+            hasPerceptualHandling: true,
+            isInput: isInput,
+          );
+          return ColorProfileTransformMatrixTRC.create(
+            profile: profile,
+            doAdjustPCS: params.adjustPCS,
+            isInput: isInput,
+            pcsScale: params.pcsScale,
+            pcsOffset: params.pcsOffset,
+          );
+        } else if (profile.header.resolvedColorSpace ==
+            ColorSpaceSignature.icSigGrayData) {
+          // TODO Implement
+        }
+      }
       if (tag == null) {
         throw Exception('Could not find tag for rendering intent');
       }
@@ -236,6 +258,27 @@ abstract class ColorProfileTransform {
     }
     if (tag?.type == ColorProfileTagType.icSigMultiProcessElementType) {
       throw Exception('Multi processing elements are not supported');
+    }
+    if (tag == null && profile.header.version.value < 0x05000000) {
+      if (profile.header.resolvedColorSpace ==
+          ColorSpaceSignature.icSigRgbData) {
+        final params = _begin(
+          intent: intent,
+          profile: profile,
+          hasPerceptualHandling: true,
+          isInput: isInput,
+        );
+        return ColorProfileTransformMatrixTRC.create(
+          profile: profile,
+          doAdjustPCS: params.adjustPCS,
+          isInput: isInput,
+          pcsScale: params.pcsScale,
+          pcsOffset: params.pcsOffset,
+        );
+      } else if (profile.header.resolvedColorSpace ==
+          ColorSpaceSignature.icSigGrayData) {
+        // TODO Implement
+      }
     }
     if (tag == null) {
       throw Exception('Could not find tag for rendering intent');
