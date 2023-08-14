@@ -5,9 +5,16 @@ import 'package:icc_parser/src/cmm/color_profile_transform.dart';
 import 'package:icc_parser/src/utils/list_utils.dart';
 import 'package:meta/meta.dart';
 
+/// Simple color management system based on ICC profiles.
 class ColorProfileCmm {
-
-  Float64List apply(List<ColorProfileTransformationStep> steps, Float64List source) {
+  /// Apply the given transformations to the given pixel. The pixel should have
+  /// at least the number of components as the first transformation's source
+  ///
+  /// Create [steps] by using [buildTransformations] method.
+  Float64List apply(
+    List<ColorProfileTransformationStep> steps,
+    Float64List source,
+  ) {
     var pixel = source.copy();
     for (final step in steps) {
       pixel = step.transform.apply(pixel, step);
@@ -15,6 +22,7 @@ class ColorProfileCmm {
     return pixel;
   }
 
+  /// Build a list of transformation steps from the given list of transforms.
   List<ColorProfileTransformationStep> buildTransformations(
     List<ColorProfileTransform> transformations, {
     bool usePCSConversions = false,
@@ -78,12 +86,19 @@ class _TransformationStepHolder {
   });
 }
 
+/// A single step in the color profile transformation.
 @immutable
 final class ColorProfileTransformationStep {
+  /// The transformation to apply.
   final ColorProfileTransform transform;
+
+  /// Whether to convert the destination to the PCS color space.
   final bool useDestinationPCSConversion;
+
+  /// Whether to convert the source to the PCS color space.
   final bool useSourcePCSConversion;
 
+  /// Creates a new transformation step.
   const ColorProfileTransformationStep({
     required this.transform,
     required this.useDestinationPCSConversion,

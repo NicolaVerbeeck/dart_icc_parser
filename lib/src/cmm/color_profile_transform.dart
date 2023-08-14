@@ -14,15 +14,25 @@ import 'package:icc_parser/src/types/tag/color_profile_tags.dart';
 import 'package:icc_parser/src/types/tag/lut/color_profile_mbb.dart';
 import 'package:meta/meta.dart';
 
+/// A color space transformation holder based on a [ColorProfile].
 @immutable
 abstract class ColorProfileTransform {
+  /// The [ColorProfile] that is used as source for the transformation
   final ColorProfile profile;
 
+  /// Whether to adjust the PCS (Profile Connection Space) or not.
   final bool doAdjustPCS;
+
+  /// Whether the transformation is an input or output transformation.
   final bool isInput;
+
+  /// The optional PCS scale.
   final Float64List? pcsScale;
+
+  /// The optional PCS offset.
   final Float64List? pcsOffset;
 
+  /// Create a new [ColorProfileTransform].
   const ColorProfileTransform({
     required this.profile,
     required this.doAdjustPCS,
@@ -31,8 +41,14 @@ abstract class ColorProfileTransform {
     required this.pcsOffset,
   });
 
+  /// Apply the transformation to the [source] using extra information from [step]
+  /// [source] must hold at least the number of channels defined for this
+  /// transform in [ColorProfile] (depending on input or output)
   Float64List apply(Float64List source, ColorProfileTransformationStep step);
 
+  /// Create a new [ColorProfileTransform] from a [ColorProfile] definition
+  /// Note that not all transformations are supported at this time, an
+  /// exception will be thrown if an unsupported transformation is found.
   factory ColorProfileTransform.create({
     required ColorProfile profile,
     required bool isInput,
@@ -61,6 +77,7 @@ abstract class ColorProfileTransform {
     }
   }
 
+  @protected
   Float64List checkSourceAbsolute(
     Float64List source,
     ColorProfileTransformationStep step,
@@ -71,6 +88,7 @@ abstract class ColorProfileTransform {
     return source;
   }
 
+  @protected
   Float64List checkDestinationAbsolute(
     Float64List source,
     ColorProfileTransformationStep step,
@@ -81,6 +99,7 @@ abstract class ColorProfileTransform {
     return source;
   }
 
+  @protected
   Float64List adjustPCS(Float64List source) {
     assert(source.length == 3);
     assert(pcsScale != null);
@@ -120,8 +139,10 @@ abstract class ColorProfileTransform {
     return dest;
   }
 
+  @protected
   bool get useLegacyPCS => false;
 
+  @protected
   bool get isAbstract =>
       profile.header.resolvedDeviceClass == DeviceClass.abstract;
 
@@ -365,6 +386,7 @@ abstract class ColorProfileTransform {
     );
   }
 
+  /// Gets the color space of the transformation's destination.
   ColorSpaceSignature getDestinationColorSpace() {
     if (isInput) {
       return intToColorSpaceSignature(profile.header.pcs);
@@ -373,6 +395,7 @@ abstract class ColorProfileTransform {
     }
   }
 
+  /// Gets the color space of the transformation's source.
   ColorSpaceSignature getSourceColorSpace() {
     if (isInput) {
       return profile.header.resolvedColorSpace;

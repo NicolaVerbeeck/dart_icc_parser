@@ -31,7 +31,6 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
     }
 
     final sourceSpace = source.getDestinationColorSpace();
-
     final destSpace = destination.getSourceColorSpace();
 
     final steps = <_ColorProfilePcsStep>[];

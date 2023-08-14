@@ -3,9 +3,12 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:icc_parser/icc_parser.dart';
-import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 
 void main(List<String> args) {
+  if (args.isEmpty) {
+    print("Usage: dart icc_parser_example.dart <cmyk_icc_file> [icc_file ...]");
+    exit(1);
+  }
   final transformations = args.mapIndexed((index, e) {
     final bytes = ByteData.view(File(e).readAsBytesSync().buffer);
     final stream =
@@ -23,28 +26,16 @@ void main(List<String> args) {
   final cmm = ColorProfileCmm();
 
   final finalTransformations = cmm.buildTransformations(transformations);
+  print("Got transformations: $finalTransformations");
 
-  const iterations = 8000*8000;
-  final sw = Stopwatch()..start();
-  for (var i = 0; i < iterations; ++i) {
-    cmm.apply(finalTransformations, convert([0, 0, 0, 0]));
-  }
-  final el = sw.elapsedMilliseconds;
-  print('Elapsed: $el ms, ${el / iterations} ms per iteration');
-  sw.stop();
+  printColor(
+      cmm.apply(finalTransformations, Float64List.fromList([0, 0, 0, 0])));
+  printColor(cmm.apply(
+      finalTransformations, Float64List.fromList([0.2, 0.63, 0.45, 0.06])));
+  printColor(
+      cmm.apply(finalTransformations, Float64List.fromList([0, 0, 0, 1])));
 }
-
-// icccmm:2111 to connect profile 1 lab space to profile 2 lab space
 
 void printColor(List<double> color) {
-  print(color.map((e) => (e * 255).toInt()).toList());
-}
-
-Float64List convert(List<double> e) {
-  return Float64List.fromList([
-    e[0] / 255,
-    e[1] / 255,
-    e[2] / 255,
-    e[3] / 255,
-  ]);
+  print(color.map((e) => (e * 255).round().clamp(0, 255)).toList());
 }
