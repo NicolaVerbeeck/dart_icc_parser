@@ -64,7 +64,6 @@ final class ColorProfile {
         .firstWhereOrNull((element) => element.signature.value == tag.code);
     if (entry == null) return null;
 
-    print('Using tag $tag');
     return entry.read(stream);
   }
 
