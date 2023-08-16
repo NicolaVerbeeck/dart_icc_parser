@@ -18,6 +18,7 @@ class ColorProfileCmm {
     var pixel = source.copy();
     for (final step in steps) {
       pixel = step.transform.apply(pixel, step);
+      print('\tpixel: $pixel');
     }
     return pixel;
   }

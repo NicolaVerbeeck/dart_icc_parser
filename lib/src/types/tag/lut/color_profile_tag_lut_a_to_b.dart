@@ -137,10 +137,12 @@ class ColorProfileTagLutAToB extends ColorProfileMBB {
 
     final bCurves = List<ColorProfileCurve>.generate(
       channelCount,
-      (_) {
+      (i) {
         final curve =
             ColorProfileCurve.fromBytes(data, size: end - data.position);
-        data.sync32(nextOffset);
+        if (i + i < channelCount) {
+          data.sync32(nextOffset);
+        }
         return curve;
       },
     );

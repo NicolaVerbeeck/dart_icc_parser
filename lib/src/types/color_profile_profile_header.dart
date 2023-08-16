@@ -90,6 +90,32 @@ final class ColorProfileProfileHeader {
         ' resolvedColorSpace: $resolvedColorSpace,'
         ' resolvedPlatform: $resolvedPlatform}';
   }
+
+  /// Write the header to the provided [data] starting at the given [offset].
+  /// The [data] must be at least 128 bytes long after [offset].
+  void toBytes(ByteData data, int offset) {
+    data.setUint32(offset, size.value);
+    for (var i = 0; i < 4; ++i) {
+      data.setUint8(offset + 4 + i, cmmType[i]);
+    }
+    data.setUint32(offset + 8, version.value);
+    data.setUint32(offset + 12, deviceClass.value);
+    data.setUint32(offset + 16, colorSpace.value);
+    data.setUint32(offset + 20, pcs.value);
+    dateTime.toBytes(data, offset + 24);
+    data.setUint32(offset + 36, signature.value);
+    data.setUint32(offset + 40, platform.value);
+    data.setUint32(offset + 44, flags.value);
+    data.setUint32(offset + 48, manufacturer.value);
+    data.setUint32(offset + 52, model.value);
+    attributes.toBytes(data, offset + 56);
+    data.setUint32(offset + 64, renderingIntent.value);
+    illuminant.toBytes(data, offset + 68);
+    data.setUint32(offset + 80, creator.value);
+    for (var i = 0; i < 16; ++i) {
+      data.setUint8(offset + 84 + i, profileID[0]);
+    }
+  }
 }
 
 DeviceClass _resolveDeviceClass(Unsigned32Number deviceClass) {
