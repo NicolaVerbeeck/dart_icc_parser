@@ -111,6 +111,17 @@ final class DateTimeNumber {
   String toString() {
     return 'DateTimeNumber{year: $year, month: $month, day: $day, hour: $hour, minute: $minute, second: $second}';
   }
+
+  /// Writes the [DateTimeNumber] to the given [data] starting at [offset].
+  /// [data] must hold at least 12 bytes starting at [offset].
+  void toBytes(ByteData data, int offset) {
+    data.setUint16(offset, year);
+    data.setUint16(offset + 2, month);
+    data.setUint16(offset + 4, day);
+    data.setUint16(offset + 6, hour);
+    data.setUint16(offset + 8, minute);
+    data.setUint16(offset + 10, second);
+  }
 }
 
 /// Represents an offset and size of an entry in the structure
@@ -243,6 +254,13 @@ final class Signed15Fixed16Number {
   String toString() {
     return 'Signed15Fixed16Number{integerPart: $integerPart, '
         'fractionalPart: $fractionalPart, value: $value}';
+  }
+
+  /// Writes the [Signed15Fixed16Number] to the given [data] starting at [offset].
+  /// [data] must hold at least 4 bytes starting at [offset].
+  void toBytes(ByteData data, int offset) {
+    data.setInt16(offset, integerPart);
+    data.setUint16(offset + 2, fractionalPart);
   }
 }
 
@@ -480,6 +498,15 @@ final class Unsigned64Number {
   String toString() {
     return 'Unsigned64Number{value: $value}';
   }
+
+  /// Writes the value to the given [data] starting at [offset].
+  /// [data] must hold at least 8 bytes starting at [offset].
+  void toBytes(ByteData data, int offset) {
+    final bytes = value.toBytes();
+    for (var i = 0; i < 8; ++i) {
+      data.setUint8(offset + i, bytes[bytes.length - i - 1]);
+    }
+  }
 }
 
 /// Fixed 8 byte unsigned integer
@@ -566,5 +593,13 @@ final class XYZNumber {
   @override
   String toString() {
     return 'XYZNumber{x: $x, y: $y, z: $z}';
+  }
+
+  /// Writes the value to the given [data] starting at [offset].
+  /// [data] must hold at least 12 bytes starting at [offset].
+  void toBytes(ByteData data, int offset) {
+    x.toBytes(data, offset);
+    y.toBytes(data, offset + 4);
+    z.toBytes(data, offset + 8);
   }
 }

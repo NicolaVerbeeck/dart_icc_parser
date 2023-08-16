@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:collection/collection.dart';
 import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/types/color_profile_primitives.dart';
@@ -62,6 +64,7 @@ final class ColorProfile {
         .firstWhereOrNull((element) => element.signature.value == tag.code);
     if (entry == null) return null;
 
+    print('Using tag $tag');
     return entry.read(stream);
   }
 
@@ -74,4 +77,26 @@ final class ColorProfile {
   /// Returns the observer of this profile.
   ColorProfileStandardObserver get pccObserver =>
       ColorProfileStandardObserver.standardObserver1931TwoDegrees;
+
+  /// Writes the profile to a byte array.
+  Uint8List write() {
+    var size = 128 + 4 + tagTable.length * 12;
+    for (final tag in tagTable.tags) {
+      size += tag.elementSize.value;
+    }
+    final data = ByteData(size);
+    header.toBytes(data, 0);
+
+    tagTable.toBytes(data, 128);
+    var offset = 128 + 4 + tagTable.length * 12;
+    for (final tag in tagTable.tags) {
+      stream.seek(tag.offset.value);
+      final list = stream.readBytes(tag.elementSize.value);
+      data.buffer.asUint8List(offset, tag.elementSize.value).setAll(0, list);
+      offset += tag.elementSize.value;
+    }
+    data.setUint32(0, offset); // Update total size
+
+    return Uint8List.view(data.buffer);
+  }
 }

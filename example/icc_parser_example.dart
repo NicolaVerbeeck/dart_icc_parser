@@ -28,12 +28,15 @@ void main(List<String> args) {
   final finalTransformations = cmm.buildTransformations(transformations);
   print("Got transformations: $finalTransformations");
 
-  printColor(
-      cmm.apply(finalTransformations, Float64List.fromList([0, 0, 0, 0])));
+  printColor(cmm.apply(
+      finalTransformations, Float64List.fromList([0.61, 0.06, 0, 0])));
   printColor(cmm.apply(
       finalTransformations, Float64List.fromList([0.2, 0.63, 0.45, 0.06])));
   printColor(
       cmm.apply(finalTransformations, Float64List.fromList([0, 0, 0, 1])));
+
+  printColor(cmm.apply(finalTransformations.sublist(1),
+      Float64List.fromList([0.72, 0.4784, 0.30196])));
 }
 
 void printColor(List<double> color) {

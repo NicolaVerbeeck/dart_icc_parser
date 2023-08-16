@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:icc_parser/src/types/color_profile_tag_entry.dart';
@@ -53,5 +54,20 @@ final class ColorProfileTagTable
   @override
   String toString() {
     return 'ICCTagTable{tags: $tags}';
+  }
+
+  void toBytes(ByteData data, int offset) {
+    data.setUint32(offset, tags.length);
+    var tagOffset = offset + 4 + tags.length * 12;
+    for (var i = 0; i < tags.length; ++i) {
+      final tag = tags[i];
+
+      final tagWriteOffset = offset + 4 + i * 12;
+
+      data.setUint32(tagWriteOffset, tag.signature.value);
+      data.setUint32(tagWriteOffset + 4, tagOffset);
+      data.setUint32(tagWriteOffset + 8, tag.elementSize.value);
+      tagOffset += tag.elementSize.value;
+    }
   }
 }
