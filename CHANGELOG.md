@@ -1,3 +1,7 @@
+## 0.0.4
+
+- Remove print statements again
+
 ## 0.0.3
 
 - Remove print statements
