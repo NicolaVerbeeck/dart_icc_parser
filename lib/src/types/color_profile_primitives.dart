@@ -31,10 +31,12 @@ final class Float32Number {
   @override
   int get hashCode => value.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Float32Number{value: $value}';
   }
+// coverage:ignore-end
 }
 
 /// Date time representation, in UTC
@@ -107,10 +109,13 @@ final class DateTimeNumber {
       minute.hashCode ^
       second.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'DateTimeNumber{year: $year, month: $month, day: $day, hour: $hour, minute: $minute, second: $second}';
   }
+
+// coverage:ignore-end
 
   /// Writes the [DateTimeNumber] to the given [data] starting at [offset].
   /// [data] must hold at least 12 bytes starting at [offset].
@@ -141,12 +146,12 @@ final class PositionNumber {
   });
 
   /// Creates a new [PositionNumber] from the given [bytes] starting at [offset].
-  /// [bytes] must hold at least 4 bytes starting at [offset].
+  /// [bytes] must hold at least 8 bytes starting at [offset].
   factory PositionNumber.fromBytes(ByteData bytes, {int offset = 0}) {
-    assert(bytes.lengthInBytes >= offset + 4);
+    assert(bytes.lengthInBytes >= offset + 8);
     return PositionNumber(
       offset: bytes.getUint32(offset),
-      size: bytes.getUint32(offset + 2),
+      size: bytes.getUint32(offset + 4),
     );
   }
 
@@ -161,10 +166,12 @@ final class PositionNumber {
   @override
   int get hashCode => offset.hashCode ^ size.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'PositionNumber{offset: $offset, size: $size}';
   }
+// coverage:ignore-end
 }
 
 /// An 8-byte value, used to associate a normalized device code with a measurement
@@ -184,13 +191,13 @@ final class Response16Number {
   });
 
   /// Creates a new [Response16Number] from the given [bytes] starting at [offset].
-  /// [bytes] must hold at least 4 bytes starting at [offset].
+  /// [bytes] must hold at least 8 bytes starting at [offset].
   factory Response16Number.fromBytes(ByteData bytes, {int offset = 0}) {
-    assert(bytes.lengthInBytes >= offset + 4);
+    assert(bytes.lengthInBytes >= offset + 8);
     return Response16Number(
       number: bytes.getUint16(offset),
       measurementValue:
-          Signed15Fixed16Number.fromBytes(bytes, offset: offset + 2),
+          Signed15Fixed16Number.fromBytes(bytes, offset: offset + 4),
     );
   }
 
@@ -205,10 +212,12 @@ final class Response16Number {
   @override
   int get hashCode => number.hashCode ^ measurementValue.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Response16Number{number: $number, measurementValue: $measurementValue}';
   }
+// coverage:ignore-end
 }
 
 /// Fixed 4 byte quantity which has 16 fractional bits and 15 integer bits, preceded by a sign bit
@@ -250,11 +259,13 @@ final class Signed15Fixed16Number {
   @override
   int get hashCode => integerPart.hashCode ^ fractionalPart.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Signed15Fixed16Number{integerPart: $integerPart, '
         'fractionalPart: $fractionalPart, value: $value}';
   }
+// coverage:ignore-end
 
   /// Writes the [Signed15Fixed16Number] to the given [data] starting at [offset].
   /// [data] must hold at least 4 bytes starting at [offset].
@@ -303,10 +314,12 @@ final class Unsigned16Fixed16Number {
   @override
   int get hashCode => integerPart.hashCode ^ fractionalPart.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Unsigned16Fixed16Number{integerPart: $integerPart, fractionalPart: $fractionalPart}';
   }
+// coverage:ignore-end
 }
 
 /// Fixed 2 byte quantity which has 15 fractional bits and 1 integer bit (unsigned)
@@ -350,10 +363,12 @@ final class Unsigned1Fixed15Number {
   @override
   int get hashCode => integerPart.hashCode ^ fractionalPart.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Unsigned1Fixed15Number{integerPart: $integerPart, fractionalPart: $fractionalPart}';
   }
+// coverage:ignore-end
 }
 
 /// Fixed 2 byte quantity which has 8 fractional bits and 8 integer bits (unsigned)
@@ -395,10 +410,12 @@ final class Unsigned8Fixed8Number {
   @override
   int get hashCode => integerPart.hashCode ^ fractionalPart.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Unsigned8Fixed8Number{integerPart: $integerPart, fractionalPart: $fractionalPart}';
   }
+// coverage:ignore-end
 }
 
 /// Fixed 2 byte unsigned integer
@@ -427,10 +444,12 @@ final class Unsigned16Number {
   @override
   int get hashCode => value.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Unsigned16Number{value: $value}';
   }
+// coverage:ignore-end
 }
 
 /// Fixed 4 byte unsigned integer
@@ -459,10 +478,12 @@ final class Unsigned32Number {
   @override
   int get hashCode => value.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Unsigned32Number{value: $value}';
   }
+// coverage:ignore-end
 }
 
 /// Fixed 8 byte unsigned integer
@@ -494,10 +515,12 @@ final class Unsigned64Number {
   @override
   int get hashCode => value.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Unsigned64Number{value: $value}';
   }
+// coverage:ignore-end
 
   /// Writes the value to the given [data] starting at [offset].
   /// [data] must hold at least 8 bytes starting at [offset].
@@ -535,10 +558,12 @@ final class Unsigned8Number {
   @override
   int get hashCode => value.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Unsigned8Number{value: $value}';
   }
+  // coverage:ignore-end
 }
 
 /// A set of 3 [Signed15Fixed16Number]s used to encode CIEXYZ, nCIEXYZ
@@ -590,10 +615,12 @@ final class XYZNumber {
   @override
   int get hashCode => x.hashCode ^ y.hashCode ^ z.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'XYZNumber{x: $x, y: $y, z: $z}';
   }
+// coverage:ignore-end
 
   /// Writes the value to the given [data] starting at [offset].
   /// [data] must hold at least 12 bytes starting at [offset].
