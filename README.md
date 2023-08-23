@@ -1,3 +1,5 @@
+[![Version](https://img.shields.io/pub/v/icc_parser.svg)](https://pub.dev/packages/icc_parser) [![codecov](https://codecov.io/gh/NicolaVerbeeck/dart_icc_parser/graph/badge.svg?token=PRSHAXR5EM)](https://codecov.io/gh/NicolaVerbeeck/dart_icc_parser)
+
 Pure dart implementation of (a subset of) ICC 4.4 color profiles and transformations.
 
 ## Features
