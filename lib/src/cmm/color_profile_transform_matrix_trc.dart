@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform.dart';
 import 'package:icc_parser/src/color_profile.dart';
-import 'package:icc_parser/src/types/color_profile_profile_header.dart';
+import 'package:icc_parser/src/types/color_profile_header.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tags.dart';
 import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
 import 'package:icc_parser/src/types/tag/curve/color_profile_tag_curve.dart';

@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:icc_parser/src/types/color_profile_primitives.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class ColorProfileProfileHeader {
+final class ColorProfileHeader {
   final Unsigned32Number size;
   final Uint8List cmmType;
   final Unsigned32Number version;
@@ -24,14 +25,14 @@ final class ColorProfileProfileHeader {
   final Unsigned32Number creator;
   final Uint8List profileID;
 
-  DeviceClass get resolvedDeviceClass => _resolveDeviceClass(deviceClass);
+  DeviceClass get resolvedDeviceClass => resolveDeviceClass(deviceClass);
 
   ColorSpaceSignature get resolvedColorSpace =>
-      intToColorSpaceSignature(colorSpace);
+      resolveColorSpaceSignature(colorSpace);
 
-  PlatformSignature get resolvedPlatform => _resolvePlatform(platform);
+  PlatformSignature get resolvedPlatform => resolvePlatform(platform);
 
-  const ColorProfileProfileHeader({
+  const ColorProfileHeader({
     required this.size,
     required this.cmmType,
     required this.version,
@@ -51,8 +52,8 @@ final class ColorProfileProfileHeader {
     required this.profileID,
   });
 
-  factory ColorProfileProfileHeader.fromBytes(DataStream bytes) {
-    return ColorProfileProfileHeader(
+  factory ColorProfileHeader.fromBytes(DataStream bytes) {
+    return ColorProfileHeader(
       size: bytes.readUnsigned32Number(),
       cmmType: bytes.readBytes(4),
       version: bytes.readUnsigned32Number(),
@@ -74,6 +75,50 @@ final class ColorProfileProfileHeader {
   }
 
   @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ColorProfileHeader &&
+          runtimeType == other.runtimeType &&
+          size == other.size &&
+          const DeepCollectionEquality().equals(cmmType, other.cmmType) &&
+          version == other.version &&
+          deviceClass == other.deviceClass &&
+          colorSpace == other.colorSpace &&
+          pcs == other.pcs &&
+          dateTime == other.dateTime &&
+          signature == other.signature &&
+          platform == other.platform &&
+          flags == other.flags &&
+          manufacturer == other.manufacturer &&
+          model == other.model &&
+          attributes == other.attributes &&
+          renderingIntent == other.renderingIntent &&
+          illuminant == other.illuminant &&
+          creator == other.creator &&
+          const DeepCollectionEquality().equals(profileID, other.profileID);
+
+  @override
+  int get hashCode =>
+      size.hashCode ^
+      const DeepCollectionEquality().hash(cmmType) ^
+      version.hashCode ^
+      deviceClass.hashCode ^
+      colorSpace.hashCode ^
+      pcs.hashCode ^
+      dateTime.hashCode ^
+      signature.hashCode ^
+      platform.hashCode ^
+      flags.hashCode ^
+      manufacturer.hashCode ^
+      model.hashCode ^
+      attributes.hashCode ^
+      renderingIntent.hashCode ^
+      illuminant.hashCode ^
+      creator.hashCode ^
+      const DeepCollectionEquality().hash(profileID);
+
+  // coverage:ignore-start
+  @override
   String toString() {
     return 'ICCProfileHeader{size: $size,'
         ' cmmType: $cmmType, version: $version,'
@@ -90,6 +135,8 @@ final class ColorProfileProfileHeader {
         ' resolvedColorSpace: $resolvedColorSpace,'
         ' resolvedPlatform: $resolvedPlatform}';
   }
+
+  // coverage:ignore-end
 
   /// Write the header to the provided [data] starting at the given [offset].
   /// The [data] must be at least 128 bytes long after [offset].
@@ -113,33 +160,20 @@ final class ColorProfileProfileHeader {
     illuminant.toBytes(data, offset + 68);
     data.setUint32(offset + 80, creator.value);
     for (var i = 0; i < 16; ++i) {
-      data.setUint8(offset + 84 + i, profileID[0]);
+      data.setUint8(offset + 84 + i, profileID[i]);
     }
   }
 }
 
-DeviceClass _resolveDeviceClass(Unsigned32Number deviceClass) {
-  switch (deviceClass.value) {
-    case 0x73636E72:
-      return DeviceClass.input;
-    case 0x6D6E7472:
-      return DeviceClass.display;
-    case 0x70727472:
-      return DeviceClass.output;
-    case 0x6C696E6B:
-      return DeviceClass.link;
-    case 0x73706163:
-      return DeviceClass.colorSpace;
-    case 0x61627374:
-      return DeviceClass.abstract;
-    case 0x6E6D636C:
-      return DeviceClass.namedColor;
-    default:
-      return DeviceClass.unknown;
-  }
+DeviceClass resolveDeviceClass(Unsigned32Number deviceClass) {
+  final rawValue = deviceClass.value;
+  return DeviceClass.values.firstWhere(
+    (element) => element.code == rawValue,
+    orElse: () => DeviceClass.unknown,
+  );
 }
 
-ColorSpaceSignature intToColorSpaceSignature(
+ColorSpaceSignature resolveColorSpaceSignature(
   Unsigned32Number colorSpace,
 ) {
   final rawValue = colorSpace.value;
@@ -148,32 +182,28 @@ ColorSpaceSignature intToColorSpaceSignature(
   );
 }
 
-PlatformSignature _resolvePlatform(Unsigned32Number platform) {
-  switch (platform.value) {
-    case 0x4150504C:
-      return PlatformSignature.apple;
-    case 0x4D534654:
-      return PlatformSignature.microsoft;
-    case 0x53474920:
-      return PlatformSignature.siliconGraphics;
-    case 0x53554E57:
-      return PlatformSignature.sunMicrosystems;
-    case 0:
-      return PlatformSignature.undefined;
-    default:
-      return PlatformSignature.unknown;
-  }
+PlatformSignature resolvePlatform(Unsigned32Number platform) {
+  final rawValue = platform.value;
+  return PlatformSignature.values.firstWhere(
+    (element) => element.code == rawValue,
+    orElse: () => PlatformSignature.unknown,
+  );
 }
 
 enum DeviceClass {
-  input,
-  display,
-  output,
-  link,
-  colorSpace,
-  abstract,
-  namedColor,
-  unknown,
+  input(0x73636E72),
+  display(0x6D6E7472),
+  output(0x70727472),
+  link(0x6C696E6B),
+  colorSpace(0x73706163),
+  abstract(0x61627374),
+  namedColor(0x6E6D636C),
+  unknown(0),
+  ;
+
+  final int code;
+
+  const DeviceClass(this.code);
 }
 
 enum ColorSpaceSignature {
@@ -231,36 +261,6 @@ enum ColorSpaceSignature {
   icSig15colorData(0x46434C52, 15),
   /* 'nmcl' */
   icSigNamedData(0x6e6d636c, -1),
-  /* '1CLR' */
-  icSigMCH1Data(0x31434C52, 1),
-  /* '2CLR' */
-  icSigMCH2Data(0x32434C52, 2),
-  /* '3CLR' */
-  icSigMCH3Data(0x33434C52, 3),
-  /* '4CLR' */
-  icSigMCH4Data(0x34434C52, 4),
-  /* '5CLR' */
-  icSigMCH5Data(0x35434C52, 5),
-  /* '6CLR' */
-  icSigMCH6Data(0x36434C52, 6),
-  /* '7CLR' */
-  icSigMCH7Data(0x37434C52, 7),
-  /* '8CLR' */
-  icSigMCH8Data(0x38434C52, 8),
-  /* '9CLR' */
-  icSigMCH9Data(0x39434C52, 9),
-  /* 'ACLR' */
-  icSigMCHAData(0x41434C52, 10),
-  /* 'BCLR' */
-  icSigMCHBData(0x42434C52, 11),
-  /* 'CCLR' */
-  icSigMCHCData(0x43434C52, 12),
-  /* 'DCLR' */
-  icSigMCHDData(0x44434C52, 13),
-  /* 'ECLR' */
-  icSigMCHEData(0x45434C52, 14),
-  /* 'FCLR' */
-  icSigMCHFData(0x46434C52, 15),
   /* "nc0000" */
   icSigNChannelData(0x6e630000, -1),
   /* "mc0000" */
@@ -274,10 +274,15 @@ enum ColorSpaceSignature {
 }
 
 enum PlatformSignature {
-  apple,
-  microsoft,
-  siliconGraphics,
-  sunMicrosystems,
-  undefined,
-  unknown,
+  apple(0x4150504C),
+  microsoft(0x4D534654),
+  siliconGraphics(0x53474920),
+  sunMicrosystems(0x53554E57),
+  undefined(0),
+  unknown(-1),
+  ;
+
+  final int code;
+
+  const PlatformSignature(this.code);
 }

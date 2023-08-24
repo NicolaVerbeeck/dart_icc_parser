@@ -7,7 +7,7 @@ import 'package:icc_parser/src/cmm/color_profile_transform_4d.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform_matrix_trc.dart';
 import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/color_profile.dart';
-import 'package:icc_parser/src/types/color_profile_profile_header.dart';
+import 'package:icc_parser/src/types/color_profile_header.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tags.dart';
@@ -105,7 +105,7 @@ abstract class ColorProfileTransform {
     assert(pcsScale != null);
     assert(pcsOffset != null);
 
-    final space = intToColorSpaceSignature(profile.header.pcs);
+    final space = resolveColorSpaceSignature(profile.header.pcs);
 
     final dest = Float64List(3);
     if (space == ColorSpaceSignature.icSigLabData) {
@@ -304,7 +304,7 @@ abstract class ColorProfileTransform {
     if (tag == null) {
       throw Exception('Could not find tag for rendering intent');
     }
-    switch (intToColorSpaceSignature(profile.header.pcs)) {
+    switch (resolveColorSpaceSignature(profile.header.pcs)) {
       case ColorSpaceSignature.icSigXYZData:
       case ColorSpaceSignature.icSigLabData:
         final params = _begin(
@@ -354,7 +354,7 @@ abstract class ColorProfileTransform {
     Float64List? pcsOffset;
     if (intent == ColorProfileRenderingIntent.perceptual &&
         (profile.isVersion2 || !hasPerceptualHandling)) {
-      final space = intToColorSpaceSignature(profile.header.pcs);
+      final space = resolveColorSpaceSignature(profile.header.pcs);
       if (isSpacePCS(space) &&
           profile.header.resolvedDeviceClass != DeviceClass.abstract) {
         adjustPCS = true;
@@ -389,7 +389,7 @@ abstract class ColorProfileTransform {
   /// Gets the color space of the transformation's destination.
   ColorSpaceSignature getDestinationColorSpace() {
     if (isInput) {
-      return intToColorSpaceSignature(profile.header.pcs);
+      return resolveColorSpaceSignature(profile.header.pcs);
     } else {
       return profile.header.resolvedColorSpace;
     }
@@ -400,7 +400,7 @@ abstract class ColorProfileTransform {
     if (isInput) {
       return profile.header.resolvedColorSpace;
     } else {
-      return intToColorSpaceSignature(profile.header.pcs);
+      return resolveColorSpaceSignature(profile.header.pcs);
     }
   }
 }
