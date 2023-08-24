@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:icc_parser/src/cmm/enums.dart';
+import 'package:icc_parser/src/types/color_profile_header.dart';
 import 'package:icc_parser/src/types/color_profile_primitives.dart';
-import 'package:icc_parser/src/types/color_profile_profile_header.dart';
 import 'package:icc_parser/src/types/color_profile_tag_table.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tags.dart';
@@ -20,7 +20,7 @@ final class ColorProfile {
   final DataStream stream;
 
   /// The header of the color profile.
-  final ColorProfileProfileHeader header;
+  final ColorProfileHeader header;
 
   /// The tag table of the color profile
   final ColorProfileTagTable tagTable;
@@ -32,7 +32,7 @@ final class ColorProfile {
   ///
   /// Note: [stream] is retained by the created color profile.
   factory ColorProfile.fromBytes(DataStream stream) {
-    final header = ColorProfileProfileHeader.fromBytes(stream);
+    final header = ColorProfileHeader.fromBytes(stream);
     stream.seek(128); // Total header size is 128 bytes
     final tagTable = ColorProfileTagTable.fromBytes(stream);
 
