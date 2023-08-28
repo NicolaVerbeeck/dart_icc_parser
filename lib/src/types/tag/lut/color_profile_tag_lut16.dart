@@ -57,7 +57,10 @@ final class ColorProfileTagLut16 extends ColorProfileMBB {
     final bCurves = List<ColorProfileCurve>.generate(
       inputChannelCount.value,
       (_) => ColorProfileTagCurve.fromBytesWithSize(
-          data, inputTableEntriesCount.value),
+        data,
+        inputTableEntriesCount.value,
+        entrySize: 2,
+      ),
     );
 
     final clut = ColorProfileCLUT.fromBytes(
@@ -71,7 +74,10 @@ final class ColorProfileTagLut16 extends ColorProfileMBB {
     final aCurves = List<ColorProfileCurve>.generate(
         outputChannelCount.value,
         (_) => ColorProfileTagCurve.fromBytesWithSize(
-            data, outputTableEntriesCount.value));
+              data,
+              outputTableEntriesCount.value,
+              entrySize: 2,
+            ));
 
     return ColorProfileTagLut16(
       inputChannelCount: inputChannelCount.value,

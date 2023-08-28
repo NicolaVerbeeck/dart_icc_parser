@@ -19,7 +19,7 @@ abstract class ColorProfileCurve implements ColorProfileTag {
     data.seek(pos);
 
     if (signature == ColorProfileTagType.icSigCurveType.code) {
-      return ColorProfileTagCurve.fromBytes(data);
+      return ColorProfileTagCurve.fromBytes(data, entrySize: 2);
     } else if (signature == ColorProfileTagType.icSigParametricCurveType.code) {
       return ColorProfileTagParametricCurve.fromBytes(
         data,
