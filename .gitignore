@@ -11,3 +11,4 @@ coverage/
 *.exe
 coverage.lcov
 test/coverage_helper_test.dart
+!test/resources/*.icc
