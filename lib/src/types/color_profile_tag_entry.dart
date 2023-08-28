@@ -20,8 +20,11 @@ final class ColorProfileTagEntry {
   /// Size of the tag data element in bytes
   final Unsigned32Number elementSize;
 
+  /// Parse the signature to a known [ICCColorProfileTag] if it is known
   ICCColorProfileTag? get knownTag => parseICCColorProfileTag(signature);
 
+  /// Reads and tries to parse the tag type from the given [bytes] with extra
+  /// [offset]. If the tag type is not supported, returns `null`.
   ColorProfileTagType? tagType(ByteData bytes, {int offset = 0}) {
     return tagTypeFromInt(
       Unsigned32Number.fromBytes(bytes, offset: offset + this.offset.value),
@@ -45,6 +48,7 @@ final class ColorProfileTagEntry {
     );
   }
 
+  /// Read and create a [ColorProfileTag] from the given [data].
   ColorProfileTag read(DataStream data) {
     data.seek(offset.value);
     return ColorProfileTag.fromBytes(data, size: elementSize.value);
@@ -63,9 +67,11 @@ final class ColorProfileTagEntry {
   int get hashCode =>
       signature.hashCode ^ offset.hashCode ^ elementSize.hashCode;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'ICCTag{signature: $signature, offset: $offset,'
         ' elementSize: $elementSize, knownTag: $knownTag}';
   }
+// coverage:ignore-end
 }

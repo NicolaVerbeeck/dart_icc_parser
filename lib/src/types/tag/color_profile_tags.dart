@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/types/color_profile_primitives.dart';
 
@@ -176,8 +177,7 @@ enum ICCColorProfileTag {
 /// the value is not a valid tag code.
 ICCColorProfileTag? parseICCColorProfileTag(Unsigned32Number value) {
   final rawValue = value.value;
-  final index = ICCColorProfileTag.values
-      .indexWhere((element) => element.code == rawValue);
-  if (index < 0) return null;
-  return ICCColorProfileTag.values[index];
+  return ICCColorProfileTag.values.firstWhereOrNull(
+    (element) => element.code == rawValue,
+  );
 }

@@ -49,12 +49,14 @@ final class ColorProfileTagTable
           const DeepCollectionEquality().equals(tags, other.tags);
 
   @override
-  int get hashCode => tags.hashCode;
+  int get hashCode => const DeepCollectionEquality().hash(tags);
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'ICCTagTable{tags: $tags}';
   }
+  // coverage:ignore-end
 
   void toBytes(ByteData data, int offset) {
     data.setUint32(offset, tags.length);
