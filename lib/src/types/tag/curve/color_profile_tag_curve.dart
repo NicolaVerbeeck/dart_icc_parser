@@ -19,7 +19,10 @@ final class ColorProfileTagCurve extends ColorProfileCurve {
 
   const ColorProfileTagCurve(this.curve);
 
-  factory ColorProfileTagCurve.fromBytes(DataStream data) {
+  factory ColorProfileTagCurve.fromBytes(
+    DataStream data, {
+    required int entrySize,
+  }) {
     final signature = data.readUnsigned32Number().value;
     assert(signature == ColorProfileTagType.icSigCurveType.code);
 
@@ -27,16 +30,23 @@ final class ColorProfileTagCurve extends ColorProfileCurve {
 
     final numEntries = data.readUnsigned32Number().value;
 
-    return ColorProfileTagCurve.fromBytesWithSize(data, numEntries);
+    return ColorProfileTagCurve.fromBytesWithSize(
+      data,
+      numEntries,
+      entrySize: entrySize,
+    );
   }
 
   factory ColorProfileTagCurve.fromBytesWithSize(
     DataStream data,
-    int numEntries,
-  ) {
+    int numEntries, {
+    required int entrySize,
+  }) {
     final curveData = generateFloat64List(
       numEntries,
-      (_) => data.readUnsigned16Number().value / 65535,
+      (_) => entrySize == 1
+          ? (data.readUnsigned8Number().value / 255)
+          : (data.readUnsigned16Number().value / 65535),
     );
     return ColorProfileTagCurve(curveData);
   }
