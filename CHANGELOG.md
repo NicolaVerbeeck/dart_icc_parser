@@ -1,3 +1,7 @@
+## 0.1.0
+
+- Fixed issue where conversion from 3D lut would not always have the correct size
+
 ## 0.0.4
 
 - Remove print statements again

@@ -23,22 +23,61 @@ void main(List<String> args) {
       useD2BTags: true,
     );
   }).toList();
+  final reverseTransformations = args.reversed.mapIndexed((index, e) {
+    final bytes = ByteData.view(File(e).readAsBytesSync().buffer);
+    final stream =
+        DataStream(data: bytes, offset: 0, length: bytes.lengthInBytes);
+    final profile = ColorProfile.fromBytes(stream);
+    return ColorProfileTransform.create(
+      profile: profile,
+      isInput: index == 0,
+      intent: ColorProfileRenderingIntent.perceptual,
+      interpolation: ColorProfileInterpolation.tetrahedral,
+      lutType: ColorProfileTransformLutType.color,
+      useD2BTags: true,
+    );
+  }).toList();
+
   final cmm = ColorProfileCmm();
+  final reverseCMM = ColorProfileCmm();
 
   final finalTransformations = cmm.buildTransformations(transformations);
+  final finalReverseTransformations =
+      reverseCMM.buildTransformations(reverseTransformations);
   print("Got transformations: $finalTransformations");
+  print("Got reverse transformations: $finalReverseTransformations");
 
-  printColor(cmm.apply(
-      finalTransformations, Float64List.fromList([0.61, 0.06, 0, 0])));
-  printColor(cmm.apply(
-      finalTransformations, Float64List.fromList([0.2, 0.63, 0.45, 0.06])));
-  printColor(
-      cmm.apply(finalTransformations, Float64List.fromList([0, 0, 0, 1])));
+  final input1CMYK = Float64List.fromList([0.61, 0.06, 0, 0]);
+  final input2CMYK = Float64List.fromList([0.2, 0.63, 0.45, 0.06]);
+  final input3CMYK = Float64List.fromList([0, 0, 0, 1]);
+
+  final col1 = cmm.apply(finalTransformations, input1CMYK);
+  final col2 = cmm.apply(finalTransformations, input2CMYK);
+  final col3 = cmm.apply(finalTransformations, input3CMYK);
+
+  printColor(col1);
+  printColor(col2);
+  printColor(col3);
 
   printColor(cmm.apply(finalTransformations.sublist(1),
       Float64List.fromList([0.72, 0.4784, 0.30196])));
+
+  print('Control ->');
+  printFloatColor(input1CMYK);
+  printFloatColor(input2CMYK);
+  printFloatColor(input3CMYK);
+
+  print('Reverse ->');
+
+  printFloatColor(reverseCMM.apply(finalReverseTransformations, col1));
+  printFloatColor(reverseCMM.apply(finalReverseTransformations, col2));
+  printFloatColor(reverseCMM.apply(finalReverseTransformations, col3));
 }
 
 void printColor(List<double> color) {
   print(color.map((e) => (e * 255).round().clamp(0, 255)).toList());
+}
+
+void printFloatColor(List<double> color) {
+  print(color);
 }

@@ -63,63 +63,67 @@ final class ColorProfileTransform3DLut extends ColorProfileTransform {
   @override
   Float64List apply(Float64List source, ColorProfileTransformationStep step) {
     final sourcePixel = checkSourceAbsolute(source, step);
-    final pixel = sourcePixel.copy();
+    final pixel = sourcePixel.copyWithSize(tag.outputChannelCount);
     if (tag.isInputMatrix) {
-      if (bCurves != null) {
-        pixel[0] = bCurves![0].apply(pixel[0]);
-        pixel[1] = bCurves![1].apply(pixel[1]);
-        pixel[2] = bCurves![2].apply(pixel[2]);
-      }
-      if (matrix != null) {
-        matrix!.apply(pixel);
-      }
-      if (mCurves != null) {
-        pixel[0] = mCurves![0].apply(pixel[0]);
-        pixel[1] = mCurves![1].apply(pixel[1]);
-        pixel[2] = mCurves![2].apply(pixel[2]);
-      }
-      if (tag.clut != null) {
-        final res = switch (interpolation) {
-          ColorProfileInterpolation.linear => tag.clut!.interpolate3d(pixel),
-          ColorProfileInterpolation.tetrahedral =>
-            tag.clut!.interpolate3dTetra(pixel),
-        };
-        pixel[0] = res[0];
-        pixel[1] = res[1];
-        pixel[2] = res[2];
-      }
-      if (aCurves != null) {
-        pixel[0] = aCurves![0].apply(pixel[0]);
-        pixel[1] = aCurves![1].apply(pixel[1]);
-        pixel[2] = aCurves![2].apply(pixel[2]);
-      }
-    } else {
-      if (aCurves != null) {
-        pixel[0] = aCurves![0].apply(pixel[0]);
-        pixel[1] = aCurves![1].apply(pixel[1]);
-        pixel[2] = aCurves![2].apply(pixel[2]);
-      }
-      if (tag.clut != null) {
-        final res = switch (interpolation) {
-          ColorProfileInterpolation.linear => tag.clut!.interpolate3d(pixel),
-          ColorProfileInterpolation.tetrahedral =>
-            tag.clut!.interpolate3dTetra(pixel),
-        };
-        pixel[0] = res[0];
-        pixel[1] = res[1];
-        pixel[2] = res[2];
-      }
-      if (mCurves != null) {
-        for (var i = 0; i < tag.outputChannelCount; i++) {
-          pixel[i] = mCurves![i].apply(pixel[i]);
+      final _bCurves = bCurves;
+      if (_bCurves != null) {
+        for (var i = 0; i < _bCurves.length; ++i) {
+          pixel[i] = _bCurves[i].apply(pixel[i]);
         }
       }
       if (matrix != null) {
         matrix!.apply(pixel);
       }
-      if (bCurves != null) {
+      final _mCurves = mCurves;
+      if (_mCurves != null) {
+        for (var i = 0; i < _mCurves.length; ++i) {
+          pixel[i] = _mCurves[i].apply(pixel[i]);
+        }
+      }
+      if (tag.clut != null) {
+        final res = switch (interpolation) {
+          ColorProfileInterpolation.linear => tag.clut!.interpolate3d(pixel),
+          ColorProfileInterpolation.tetrahedral =>
+            tag.clut!.interpolate3dTetra(pixel),
+        };
+        // Copy res into pixel
+        pixel.copyFrom(res);
+      }
+      final _aCurves = aCurves;
+      if (_aCurves != null) {
+        for (var i = 0; i < _aCurves.length; ++i) {
+          pixel[i] = _aCurves[i].apply(pixel[i]);
+        }
+      }
+    } else {
+      final _aCurves = aCurves;
+      if (_aCurves != null) {
+        for (var i = 0; i < _aCurves.length; ++i) {
+          pixel[i] = _aCurves[i].apply(pixel[i]);
+        }
+      }
+      if (tag.clut != null) {
+        final res = switch (interpolation) {
+          ColorProfileInterpolation.linear => tag.clut!.interpolate3d(pixel),
+          ColorProfileInterpolation.tetrahedral =>
+            tag.clut!.interpolate3dTetra(pixel),
+        };
+        // Copy res into pixel
+        pixel.copyFrom(res);
+      }
+      final _mCurves = mCurves;
+      if (_mCurves != null) {
         for (var i = 0; i < tag.outputChannelCount; i++) {
-          pixel[i] = bCurves![i].apply(pixel[i]);
+          pixel[i] = _mCurves[i].apply(pixel[i]);
+        }
+      }
+      if (matrix != null) {
+        matrix!.apply(pixel);
+      }
+      final _bCurves = bCurves;
+      if (_bCurves != null) {
+        for (var i = 0; i < tag.outputChannelCount; i++) {
+          pixel[i] = _bCurves[i].apply(pixel[i]);
         }
       }
     }
