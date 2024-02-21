@@ -23,5 +23,41 @@ void main() {
       expect(copy, [5.0, 2.0, 3.0]);
       expect(copy, isNot(same(list)));
     });
+    test('Test Float64List copyWithSize to smaller', () {
+      final list = Float64List.fromList([5.0, 2.0, 3.0]);
+      final copy = list.copyWithSize(2);
+      expect(copy, [5.0, 2.0]);
+      expect(copy, isNot(same(list)));
+    });
+    test('Test Float64List copyWithSize to same', () {
+      final list = Float64List.fromList([5.0, 2.0, 3.0]);
+      final copy = list.copyWithSize(3);
+      expect(copy, [5.0, 2.0, 3.0]);
+      expect(copy, isNot(same(list)));
+    });
+    test('Test Float64List copyWithSize to larger', () {
+      final list = Float64List.fromList([5.0, 2.0, 3.0]);
+      final copy = list.copyWithSize(5);
+      expect(copy, [5.0, 2.0, 3.0, 0.0, 0.0]);
+      expect(copy, isNot(same(list)));
+    });
+    test('test Float64List copyFrom same size', () {
+      final list = Float64List.fromList([5.0, 2.0, 3.0]);
+      final copy = Float64List.fromList([1.0, 2.0, 3.0]);
+      copy.copyFrom(list);
+      expect(copy, [5.0, 2.0, 3.0]);
+    });
+    test('test Float64List copyFrom smaller size', () {
+      final list = Float64List.fromList([5.0, 2.0, 3.0]);
+      final copy = Float64List.fromList([1.0, 2.0]);
+      copy.copyFrom(list);
+      expect(copy, [5.0, 2.0]);
+    });
+    test('test Float64List copyFrom larger size', () {
+      final list = Float64List.fromList([5.0, 2.0]);
+      final copy = Float64List.fromList([1.0, 2.0, 3.0]);
+      copy.copyFrom(list);
+      expect(copy, [5.0, 2.0, 3.0]);
+    });
   });
 }

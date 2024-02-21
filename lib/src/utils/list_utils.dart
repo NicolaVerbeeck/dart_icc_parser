@@ -36,4 +36,33 @@ extension Float64ListExtension on Float64List {
   Float64List copy() {
     return Float64List.fromList(this);
   }
+
+  Float64List copyWithSize(int size) {
+    if (this.length == size) {
+      return Float64List.fromList(this);
+    } else if (this.length > size) {
+      return Float64List.fromList(this.sublist(0, size));
+    }
+    final list = Float64List(size);
+    for (var i = 0; i < this.length; ++i) {
+      list[i] = this[i];
+    }
+    return list;
+  }
+
+  void copyFrom(Float64List other) {
+    if (length == other.length) {
+      for (var i = 0; i < length; ++i) {
+        this[i] = other[i];
+      }
+    } else if (other.length < length) {
+      for (var i = 0; i < other.length; ++i) {
+        this[i] = other[i];
+      }
+    } else {
+      for (var i = 0; i < length; ++i) {
+        this[i] = other[i];
+      }
+    }
+  }
 }
