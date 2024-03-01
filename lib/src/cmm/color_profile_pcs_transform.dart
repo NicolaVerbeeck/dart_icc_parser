@@ -81,6 +81,46 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
               steps.add(_ColorProfileXyzToLab.create(destination.profile));
             }
             break;
+          case ColorSpaceSignature.icSigXYZData:
+            if (source.useLegacyPCS) {
+              steps.add(_ColorProfileLab2ToXyz.create(source.profile));
+            } else {
+              steps.add(_ColorProfileLabToXyz.create(source.profile));
+            }
+            if (source.doAdjustPCS) {
+              steps.add(_ColorProfileScale3.create(
+                source.pcsScale![0],
+                source.pcsScale![1],
+                source.pcsScale![2],
+              ));
+              steps.add(_ColorProfileOffset3.create(
+                source.pcsOffset![0],
+                source.pcsOffset![1],
+                source.pcsOffset![2],
+              ));
+            }
+            final xyzConvertStep = _ColorProfileXYZConvertStep.create(
+              source,
+              destination,
+            );
+            if (xyzConvertStep != null) {
+              steps.add(xyzConvertStep);
+            }
+            if (destination.doAdjustPCS) {
+              steps.add(_ColorProfileOffset3.create(
+                destination.pcsOffset![0] / destination.pcsScale![0],
+                destination.pcsOffset![1] / destination.pcsScale![1],
+                destination.pcsOffset![2] / destination.pcsScale![2],
+              ));
+              steps.add(_ColorProfileScale3.create(
+                destination.pcsScale![0],
+                destination.pcsScale![1],
+                destination.pcsScale![2],
+              ));
+            }
+            const scale = 32768 / 65535;
+            steps.add(_ColorProfileScale3.create(scale, scale, scale));
+            break;
           // ignore: no_default_cases
           default:
             break;
