@@ -26,7 +26,7 @@ void main(List<String> args) {
       .sublist(2)
       .map((e) =>
           ICCColorProfileTag.values.firstWhere((element) => element.name == e))
-      .toList();
+      .toSet();
 
   final tagTable = profile.tagTable;
   final tagDataTable = <ColorProfileTagEntry, Uint8List>{};

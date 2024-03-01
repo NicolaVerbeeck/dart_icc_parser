@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Add missing support for PCS connection with target XYZ from lab
+
 ## 0.1.0
 
 - Fixed issue where conversion from 3D lut would not always have the correct size
