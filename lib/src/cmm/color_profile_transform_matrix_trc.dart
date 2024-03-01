@@ -180,7 +180,7 @@ final class ColorProfileTransformMatrixTRC extends ColorProfileTransform {
         matrix[2] * (m37 - m64);
 
     if (det > -epsilon && det < epsilon) {
-      throw Exception('Could not invert matrix');
+      throw Exception('Could not invert matrix -> $matrix');
     }
 
     final co = Float64List(9);

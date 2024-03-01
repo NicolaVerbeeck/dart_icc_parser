@@ -140,6 +140,7 @@ abstract class ColorProfileTransform {
   }
 
   @protected
+  @visibleForTesting
   bool get useLegacyPCS => false;
 
   @protected
