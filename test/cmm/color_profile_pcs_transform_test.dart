@@ -42,6 +42,11 @@ void main() {
           const Signed15Fixed16Number(integerPart: 3, fractionalPart: 4),
           const Signed15Fixed16Number(integerPart: 5, fractionalPart: 6),
         ]);
+        when(() => mockDestination.getNormIlluminantXYZ()).thenReturn([
+          const Signed15Fixed16Number(integerPart: 7, fractionalPart: 8),
+          const Signed15Fixed16Number(integerPart: 9, fractionalPart: 9),
+          const Signed15Fixed16Number(integerPart: 10, fractionalPart: 11),
+        ]);
         when(() => mockSource.illuminant)
             .thenReturn(ColorProfileIlluminant.illuminantD50);
         when(() => mockDestination.illuminant)
@@ -62,6 +67,12 @@ void main() {
         setUp(() {
           when(() => destination.getSourceColorSpace())
               .thenReturn(ColorSpaceSignature.icSigLabData);
+          when(() => destination.doAdjustPCS).thenReturn(true);
+          when(() => destination.pcsScale)
+              .thenReturn(Float64List.fromList([7, 8, 9]));
+          when(() => destination.pcsOffset)
+              .thenReturn(Float64List.fromList([10, 11, 12]));
+          when(() => destination.useLegacyPCS).thenReturn(true);
         });
         test('if source uses legacy pcs, it adds lab2XYZ', () {
           when(() => source.useLegacyPCS).thenReturn(true);

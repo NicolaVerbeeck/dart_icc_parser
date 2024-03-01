@@ -87,8 +87,6 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
         );
         if (xyzConvertStep != null) {
           steps.add(xyzConvertStep);
-        } else {
-          return steps;
         }
         if (destination.doAdjustPCS) {
           steps.add(ColorProfileOffset3.create(
@@ -132,8 +130,6 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
         );
         if (xyzConvertStep != null) {
           steps.add(xyzConvertStep);
-        } else {
-          return steps;
         }
         if (destination.doAdjustPCS) {
           steps.add(ColorProfileOffset3.create(
@@ -186,8 +182,6 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
         );
         if (xyzConvertStep != null) {
           steps.add(xyzConvertStep);
-        } else {
-          return steps;
         }
         if (destination.doAdjustPCS) {
           steps.add(ColorProfileOffset3.create(
@@ -228,8 +222,6 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
         );
         if (xyzConvertStep != null) {
           steps.add(xyzConvertStep);
-        } else {
-          return steps;
         }
         if (destination.doAdjustPCS) {
           steps.add(ColorProfileOffset3.create(
