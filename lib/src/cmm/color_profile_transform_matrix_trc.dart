@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
 import 'package:icc_parser/src/cmm/color_profile_transform.dart';
 import 'package:icc_parser/src/color_profile.dart';
+import 'package:icc_parser/src/error.dart';
 import 'package:icc_parser/src/types/color_profile_header.dart';
 import 'package:icc_parser/src/types/matrix3x3.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tags.dart';
@@ -40,7 +41,7 @@ final class ColorProfileTransformMatrixTRC extends ColorProfileTransform {
 
     var xyz = _getColumn(profile, ICCColorProfileTag.icSigRedMatrixColumnTag);
     if (xyz == null) {
-      throw Exception('Missing required tag: icSigRedMatrixColumnTag');
+      throw MissingTagException(ICCColorProfileTag.icSigRedMatrixColumnTag);
     }
     matrix.m00 = xyz.xyz[0].x.value;
     matrix.m10 = xyz.xyz[0].y.value;
@@ -48,7 +49,7 @@ final class ColorProfileTransformMatrixTRC extends ColorProfileTransform {
 
     xyz = _getColumn(profile, ICCColorProfileTag.icSigGreenMatrixColumnTag);
     if (xyz == null) {
-      throw Exception('Missing required tag: icSigRedMatrixColumnTag');
+      throw MissingTagException(ICCColorProfileTag.icSigRedMatrixColumnTag);
     }
     matrix.m01 = xyz.xyz[0].x.value;
     matrix.m11 = xyz.xyz[0].y.value;
@@ -56,7 +57,7 @@ final class ColorProfileTransformMatrixTRC extends ColorProfileTransform {
 
     xyz = _getColumn(profile, ICCColorProfileTag.icSigBlueMatrixColumnTag);
     if (xyz == null) {
-      throw Exception('Missing required tag: icSigRedMatrixColumnTag');
+      throw MissingTagException(ICCColorProfileTag.icSigRedMatrixColumnTag);
     }
     matrix.m02 = xyz.xyz[0].x.value;
     matrix.m12 = xyz.xyz[0].y.value;
@@ -68,7 +69,7 @@ final class ColorProfileTransformMatrixTRC extends ColorProfileTransform {
       curves.add(_getCurve(profile, ICCColorProfileTag.icSigBlueTRCTag));
     } else {
       if (profile.header.pcs.value != ColorSpaceSignature.icSigXYZData.code) {
-        throw Exception('Bad space link');
+        throw const BadSpaceLinkException();
       }
       curves.add(_getInvCurve(profile, ICCColorProfileTag.icSigRedTRCTag));
       curves.add(_getInvCurve(profile, ICCColorProfileTag.icSigGreenTRCTag));
@@ -149,7 +150,7 @@ final class ColorProfileTransformMatrixTRC extends ColorProfileTransform {
     if (resolved != null && resolved is ColorProfileCurve) {
       return resolved;
     }
-    throw Exception('Missing required tag: $tag');
+    throw MissingTagException(tag);
   }
 
   static ColorProfileCurve _getInvCurve(

@@ -6,7 +6,7 @@ import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-final class ColorProfileHeader {
+class ColorProfileHeader {
   final Unsigned32Number size;
   final Uint8List cmmType;
   final Unsigned32Number version;
