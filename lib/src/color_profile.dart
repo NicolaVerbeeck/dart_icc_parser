@@ -15,7 +15,7 @@ import 'package:meta/meta.dart';
 /// Note: Color profiles hold on the the [stream] that was used to create them
 /// to support lazy loading the right data when creating transformations
 @immutable
-final class ColorProfile {
+class ColorProfile {
   /// The stream that was used to create this color profile.
   final DataStream stream;
 

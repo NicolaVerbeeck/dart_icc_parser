@@ -10,11 +10,14 @@ import 'package:meta/meta.dart';
 
 @immutable
 class ColorProfilePCSTransform extends ColorProfileTransform {
-  final List<_ColorProfilePcsStep> _steps;
+  final List<ColorProfilePcsStep> _steps;
+
+  @visibleForTesting
+  List<ColorProfilePcsStep> get steps => _steps;
 
   const ColorProfilePCSTransform({
     required super.profile,
-    required List<_ColorProfilePcsStep> steps,
+    required List<ColorProfilePcsStep> steps,
   })  : _steps = steps,
         super(
             pcsOffset: null,
@@ -31,100 +34,14 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
     }
 
     final sourceSpace = source.getDestinationColorSpace();
-    final destSpace = destination.getSourceColorSpace();
 
-    final steps = <_ColorProfilePcsStep>[];
-
+    var steps = <ColorProfilePcsStep>[];
     switch (sourceSpace) {
       case ColorSpaceSignature.icSigLabData:
-        switch (destSpace) {
-          case ColorSpaceSignature.icSigLabData:
-            if (source.useLegacyPCS) {
-              steps.add(_ColorProfileLab2ToXyz.create(source.profile));
-            } else {
-              steps.add(_ColorProfileLabToXyz.create(source.profile));
-            }
-            if (source.doAdjustPCS) {
-              steps.add(_ColorProfileScale3.create(
-                source.pcsScale![0],
-                source.pcsScale![1],
-                source.pcsScale![2],
-              ));
-              steps.add(_ColorProfileOffset3.create(
-                source.pcsOffset![0],
-                source.pcsOffset![1],
-                source.pcsOffset![2],
-              ));
-            }
-            final xyzConvertStep = _ColorProfileXYZConvertStep.create(
-              source,
-              destination,
-            );
-            if (xyzConvertStep != null) {
-              steps.add(xyzConvertStep);
-            }
-            if (destination.doAdjustPCS) {
-              steps.add(_ColorProfileOffset3.create(
-                destination.pcsOffset![0] / destination.pcsScale![0],
-                destination.pcsOffset![1] / destination.pcsScale![1],
-                destination.pcsOffset![2] / destination.pcsScale![2],
-              ));
-              steps.add(_ColorProfileScale3.create(
-                destination.pcsScale![0],
-                destination.pcsScale![1],
-                destination.pcsScale![2],
-              ));
-            }
-            if (destination.useLegacyPCS) {
-              steps.add(_ColorProfileXyzToLab2.create(destination.profile));
-            } else {
-              steps.add(_ColorProfileXyzToLab.create(destination.profile));
-            }
-            break;
-          case ColorSpaceSignature.icSigXYZData:
-            if (source.useLegacyPCS) {
-              steps.add(_ColorProfileLab2ToXyz.create(source.profile));
-            } else {
-              steps.add(_ColorProfileLabToXyz.create(source.profile));
-            }
-            if (source.doAdjustPCS) {
-              steps.add(_ColorProfileScale3.create(
-                source.pcsScale![0],
-                source.pcsScale![1],
-                source.pcsScale![2],
-              ));
-              steps.add(_ColorProfileOffset3.create(
-                source.pcsOffset![0],
-                source.pcsOffset![1],
-                source.pcsOffset![2],
-              ));
-            }
-            final xyzConvertStep = _ColorProfileXYZConvertStep.create(
-              source,
-              destination,
-            );
-            if (xyzConvertStep != null) {
-              steps.add(xyzConvertStep);
-            }
-            if (destination.doAdjustPCS) {
-              steps.add(_ColorProfileOffset3.create(
-                destination.pcsOffset![0] / destination.pcsScale![0],
-                destination.pcsOffset![1] / destination.pcsScale![1],
-                destination.pcsOffset![2] / destination.pcsScale![2],
-              ));
-              steps.add(_ColorProfileScale3.create(
-                destination.pcsScale![0],
-                destination.pcsScale![1],
-                destination.pcsScale![2],
-              ));
-            }
-            const scale = 32768 / 65535;
-            steps.add(_ColorProfileScale3.create(scale, scale, scale));
-            break;
-          // ignore: no_default_cases
-          default:
-            break;
-        }
+        steps = _createStepsForSourceLabSpace(source, destination);
+        break;
+      case ColorSpaceSignature.icSigXYZData:
+        steps = _createStepsForSourceXYZSpace(source, destination);
         break;
       // ignore: no_default_cases
       default:
@@ -135,6 +52,197 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
       profile: source.profile,
       steps: steps,
     );
+  }
+
+  static List<ColorProfilePcsStep> _createStepsForSourceLabSpace(
+    ColorProfileTransform source,
+    ColorProfileTransform destination,
+  ) {
+    final steps = <ColorProfilePcsStep>[];
+
+    final destSpace = destination.getSourceColorSpace();
+
+    switch (destSpace) {
+      case ColorSpaceSignature.icSigLabData:
+        if (source.useLegacyPCS) {
+          steps.add(ColorProfileLab2ToXyz.create(source.profile));
+        } else {
+          steps.add(ColorProfileLabToXyz.create(source.profile));
+        }
+        if (source.doAdjustPCS) {
+          steps.add(ColorProfileScale3.create(
+            source.pcsScale![0],
+            source.pcsScale![1],
+            source.pcsScale![2],
+          ));
+          steps.add(ColorProfileOffset3.create(
+            source.pcsOffset![0],
+            source.pcsOffset![1],
+            source.pcsOffset![2],
+          ));
+        }
+        final xyzConvertStep = ColorProfileXYZConvertStep.create(
+          source,
+          destination,
+        );
+        if (xyzConvertStep != null) {
+          steps.add(xyzConvertStep);
+        }
+        if (destination.doAdjustPCS) {
+          steps.add(ColorProfileOffset3.create(
+            destination.pcsOffset![0] / destination.pcsScale![0],
+            destination.pcsOffset![1] / destination.pcsScale![1],
+            destination.pcsOffset![2] / destination.pcsScale![2],
+          ));
+          steps.add(ColorProfileScale3.create(
+            destination.pcsScale![0],
+            destination.pcsScale![1],
+            destination.pcsScale![2],
+          ));
+        }
+        if (destination.useLegacyPCS) {
+          steps.add(ColorProfileXyzToLab2.create(destination.profile));
+        } else {
+          steps.add(ColorProfileXyzToLab.create(destination.profile));
+        }
+        break;
+      case ColorSpaceSignature.icSigXYZData:
+        if (source.useLegacyPCS) {
+          steps.add(ColorProfileLab2ToXyz.create(source.profile));
+        } else {
+          steps.add(ColorProfileLabToXyz.create(source.profile));
+        }
+        if (source.doAdjustPCS) {
+          steps.add(ColorProfileScale3.create(
+            source.pcsScale![0],
+            source.pcsScale![1],
+            source.pcsScale![2],
+          ));
+          steps.add(ColorProfileOffset3.create(
+            source.pcsOffset![0],
+            source.pcsOffset![1],
+            source.pcsOffset![2],
+          ));
+        }
+        final xyzConvertStep = ColorProfileXYZConvertStep.create(
+          source,
+          destination,
+        );
+        if (xyzConvertStep != null) {
+          steps.add(xyzConvertStep);
+        }
+        if (destination.doAdjustPCS) {
+          steps.add(ColorProfileOffset3.create(
+            destination.pcsOffset![0] / destination.pcsScale![0],
+            destination.pcsOffset![1] / destination.pcsScale![1],
+            destination.pcsOffset![2] / destination.pcsScale![2],
+          ));
+          steps.add(ColorProfileScale3.create(
+            destination.pcsScale![0],
+            destination.pcsScale![1],
+            destination.pcsScale![2],
+          ));
+        }
+        const scale = 32768 / 65535;
+        steps.add(ColorProfileScale3.create(scale, scale, scale));
+        break;
+      // ignore: no_default_cases
+      default:
+        break;
+    }
+    return steps;
+  }
+
+  static List<ColorProfilePcsStep> _createStepsForSourceXYZSpace(
+    ColorProfileTransform source,
+    ColorProfileTransform destination,
+  ) {
+    final steps = <ColorProfilePcsStep>[];
+
+    final destSpace = destination.getSourceColorSpace();
+    switch (destSpace) {
+      case ColorSpaceSignature.icSigLabData:
+        const scale = 65535 / 32768;
+        steps.add(ColorProfileScale3.create(scale, scale, scale));
+        if (source.doAdjustPCS) {
+          steps.add(ColorProfileScale3.create(
+            source.pcsScale![0],
+            source.pcsScale![1],
+            source.pcsScale![2],
+          ));
+          steps.add(ColorProfileOffset3.create(
+            source.pcsOffset![0],
+            source.pcsOffset![1],
+            source.pcsOffset![2],
+          ));
+        }
+        final xyzConvertStep = ColorProfileXYZConvertStep.create(
+          source,
+          destination,
+        );
+        if (xyzConvertStep != null) {
+          steps.add(xyzConvertStep);
+        }
+        if (destination.doAdjustPCS) {
+          steps.add(ColorProfileOffset3.create(
+            destination.pcsOffset![0] / destination.pcsScale![0],
+            destination.pcsOffset![1] / destination.pcsScale![1],
+            destination.pcsOffset![2] / destination.pcsScale![2],
+          ));
+          steps.add(ColorProfileScale3.create(
+            destination.pcsScale![0],
+            destination.pcsScale![1],
+            destination.pcsScale![2],
+          ));
+        }
+        if (destination.useLegacyPCS) {
+          steps.add(ColorProfileXyzToLab2.create(destination.profile));
+        } else {
+          steps.add(ColorProfileXyzToLab.create(destination.profile));
+        }
+        break;
+      case ColorSpaceSignature.icSigXYZData:
+        const scale = 65535 / 32768;
+        steps.add(ColorProfileScale3.create(scale, scale, scale));
+        if (source.doAdjustPCS) {
+          steps.add(ColorProfileScale3.create(
+            source.pcsScale![0],
+            source.pcsScale![1],
+            source.pcsScale![2],
+          ));
+          steps.add(ColorProfileOffset3.create(
+            source.pcsOffset![0],
+            source.pcsOffset![1],
+            source.pcsOffset![2],
+          ));
+        }
+        final xyzConvertStep = ColorProfileXYZConvertStep.create(
+          source,
+          destination,
+        );
+        if (xyzConvertStep != null) {
+          steps.add(xyzConvertStep);
+        }
+        if (destination.doAdjustPCS) {
+          steps.add(ColorProfileOffset3.create(
+            destination.pcsOffset![0] / destination.pcsScale![0],
+            destination.pcsOffset![1] / destination.pcsScale![1],
+            destination.pcsOffset![2] / destination.pcsScale![2],
+          ));
+          steps.add(ColorProfileScale3.create(
+            destination.pcsScale![0],
+            destination.pcsScale![1],
+            destination.pcsScale![2],
+          ));
+        }
+        const scale2 = 32768 / 65535;
+        steps.add(ColorProfileScale3.create(scale2, scale2, scale2));
+        break;
+      // ignore: no_default_cases
+      default:
+        break;
+    }
+    return steps;
   }
 
   @override
@@ -157,26 +265,28 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
   }
 }
 
-abstract interface class _ColorProfilePcsStep {
+@visibleForTesting
+abstract interface class ColorProfilePcsStep {
   void apply({
     required Float64List source,
     required Float64List destination,
   });
 }
 
+@visibleForTesting
 @immutable
-final class _ColorProfileLab2ToXyz implements _ColorProfilePcsStep {
+final class ColorProfileLab2ToXyz implements ColorProfilePcsStep {
   final Float64List xyzWhite;
 
-  const _ColorProfileLab2ToXyz({
+  const ColorProfileLab2ToXyz({
     required this.xyzWhite,
   });
 
-  factory _ColorProfileLab2ToXyz.create(
+  factory ColorProfileLab2ToXyz.create(
     ColorProfile profile,
   ) {
     final xyzWhite = profile.getNormIlluminantXYZ();
-    return _ColorProfileLab2ToXyz(
+    return ColorProfileLab2ToXyz(
       xyzWhite: Float64List.fromList(xyzWhite.map((e) => e.value).toList()),
     );
   }
@@ -196,19 +306,20 @@ final class _ColorProfileLab2ToXyz implements _ColorProfilePcsStep {
   }
 }
 
+@visibleForTesting
 @immutable
-final class _ColorProfileXyzToLab2 implements _ColorProfilePcsStep {
+final class ColorProfileXyzToLab2 implements ColorProfilePcsStep {
   final Float64List xyzWhite;
 
-  const _ColorProfileXyzToLab2({
+  const ColorProfileXyzToLab2({
     required this.xyzWhite,
   });
 
-  factory _ColorProfileXyzToLab2.create(
+  factory ColorProfileXyzToLab2.create(
     ColorProfile profile,
   ) {
     final xyzWhite = profile.getNormIlluminantXYZ();
-    return _ColorProfileXyzToLab2(
+    return ColorProfileXyzToLab2(
       xyzWhite: Float64List.fromList(xyzWhite.map((e) => e.value).toList()),
     );
   }
@@ -228,19 +339,20 @@ final class _ColorProfileXyzToLab2 implements _ColorProfilePcsStep {
   }
 }
 
+@visibleForTesting
 @immutable
-final class _ColorProfileLabToXyz implements _ColorProfilePcsStep {
+final class ColorProfileLabToXyz implements ColorProfilePcsStep {
   final Float64List xyzWhite;
 
-  const _ColorProfileLabToXyz({
+  const ColorProfileLabToXyz({
     required this.xyzWhite,
   });
 
-  factory _ColorProfileLabToXyz.create(
+  factory ColorProfileLabToXyz.create(
     ColorProfile profile,
   ) {
     final xyzWhite = profile.getNormIlluminantXYZ();
-    return _ColorProfileLabToXyz(
+    return ColorProfileLabToXyz(
       xyzWhite: Float64List.fromList(xyzWhite.map((e) => e.value).toList()),
     );
   }
@@ -260,19 +372,20 @@ final class _ColorProfileLabToXyz implements _ColorProfilePcsStep {
   }
 }
 
+@visibleForTesting
 @immutable
-final class _ColorProfileXyzToLab implements _ColorProfilePcsStep {
+final class ColorProfileXyzToLab implements ColorProfilePcsStep {
   final Float64List xyzWhite;
 
-  const _ColorProfileXyzToLab({
+  const ColorProfileXyzToLab({
     required this.xyzWhite,
   });
 
-  factory _ColorProfileXyzToLab.create(
+  factory ColorProfileXyzToLab.create(
     ColorProfile profile,
   ) {
     final xyzWhite = profile.getNormIlluminantXYZ();
-    return _ColorProfileXyzToLab(
+    return ColorProfileXyzToLab(
       xyzWhite: Float64List.fromList(xyzWhite.map((e) => e.value).toList()),
     );
   }
@@ -292,20 +405,21 @@ final class _ColorProfileXyzToLab implements _ColorProfilePcsStep {
   }
 }
 
+@visibleForTesting
 @immutable
-final class _ColorProfileScale3 implements _ColorProfilePcsStep {
+final class ColorProfileScale3 implements ColorProfilePcsStep {
   final Float64List scale;
 
-  const _ColorProfileScale3({
+  const ColorProfileScale3({
     required this.scale,
   });
 
-  factory _ColorProfileScale3.create(
+  factory ColorProfileScale3.create(
     double v1,
     double v2,
     double v3,
   ) {
-    return _ColorProfileScale3(
+    return ColorProfileScale3(
       scale: threeDoubles(v1, v2, v3),
     );
   }
@@ -321,22 +435,23 @@ final class _ColorProfileScale3 implements _ColorProfilePcsStep {
   }
 }
 
+@visibleForTesting
 @immutable
-final class _ColorProfileOffset3 implements _ColorProfilePcsStep {
+final class ColorProfileOffset3 implements ColorProfilePcsStep {
   final Float64List offset;
 
-  const _ColorProfileOffset3({
+  const ColorProfileOffset3({
     required this.offset,
   });
 
-  factory _ColorProfileOffset3.create(
+  factory ColorProfileOffset3.create(
     double v1,
     double v2,
     double v3, [
     bool convertIntXyzOffset = true,
   ]) {
     if (convertIntXyzOffset) {
-      return _ColorProfileOffset3(
+      return ColorProfileOffset3(
         offset: threeDoubles(
           v1 * 65535.0 / 32768.0,
           v2 * 65535.0 / 32768.0,
@@ -344,7 +459,7 @@ final class _ColorProfileOffset3 implements _ColorProfilePcsStep {
         ),
       );
     }
-    return _ColorProfileOffset3(
+    return ColorProfileOffset3(
       offset: threeDoubles(v1, v2, v3),
     );
   }
@@ -360,11 +475,12 @@ final class _ColorProfileOffset3 implements _ColorProfilePcsStep {
   }
 }
 
+@visibleForTesting
 @immutable
-final class _ColorProfileXYZConvertStep implements _ColorProfilePcsStep {
-  const _ColorProfileXYZConvertStep._();
+final class ColorProfileXYZConvertStep implements ColorProfilePcsStep {
+  const ColorProfileXYZConvertStep._();
 
-  static _ColorProfileXYZConvertStep? create(
+  static ColorProfileXYZConvertStep? create(
     ColorProfileTransform source,
     ColorProfileTransform destination,
   ) {
