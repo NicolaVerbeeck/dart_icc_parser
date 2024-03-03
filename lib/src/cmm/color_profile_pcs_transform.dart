@@ -478,7 +478,8 @@ final class ColorProfileOffset3 implements ColorProfilePcsStep {
 @visibleForTesting
 @immutable
 final class ColorProfileXYZConvertStep implements ColorProfilePcsStep {
-  const ColorProfileXYZConvertStep._();
+  @visibleForTesting
+  const ColorProfileXYZConvertStep();
 
   static ColorProfileXYZConvertStep? create(
     ColorProfileTransform source,
@@ -494,7 +495,9 @@ final class ColorProfileXYZConvertStep implements ColorProfilePcsStep {
   void apply({
     required Float64List source,
     required Float64List destination,
-  }) {}
+  }) {
+    destination.copyFrom(source);
+  }
 }
 
 bool _isEquivalentPcc(
