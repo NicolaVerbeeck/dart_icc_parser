@@ -131,5 +131,19 @@ void main() {
       step.apply(source: source, destination: dest);
       expect(source, dest);
     });
+
+    test('ColorProfileOffset3 does not convert when not required', () {
+      final step = ColorProfileOffset3.create(1, 2, 3, false);
+      expect(step.offset, [1, 2, 3]);
+    });
+
+    test('ColorProfileOffset3 does convert when required', () {
+      final step = ColorProfileOffset3.create(1, 2, 3, true);
+      expect(step.offset, [
+        1 * 65535.0 / 32768.0,
+        2 * 65535.0 / 32768.0,
+        3 * 65535.0 / 32768.0,
+      ]);
+    });
   });
 }
