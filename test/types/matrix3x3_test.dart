@@ -31,7 +31,7 @@ void main() {
         expect(sut.m21, equals(8.0));
         expect(sut.m22, equals(9.0));
 
-        expect(sut.asString(),
+        expect(sut.toString(),
             equals('[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]'));
       });
 

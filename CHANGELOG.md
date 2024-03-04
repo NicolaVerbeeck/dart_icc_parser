@@ -1,3 +1,8 @@
+## 0.1.3
+
+- Roll back dart 3.3 requirement
+- Un-extension type the matrix as this causes issues on flutter web
+
 ## 0.1.2
 
 - Added more tests and better error reporting

@@ -8,7 +8,7 @@ class MatrixCannotBeInvertedException implements Exception {
 
   @override
   String toString() {
-    return "Matrix can't be inverted: ${matrix.asString()}";
+    return "Matrix can't be inverted: $matrix";
   }
 }
 
