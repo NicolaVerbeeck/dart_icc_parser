@@ -18,7 +18,7 @@ void main(List<String> args) {
     return ColorProfileTransform.create(
       profile: profile,
       isInput: index == 0,
-      intent: ColorProfileRenderingIntent.perceptual,
+      intent: ColorProfileRenderingIntent.icRelativeColorimetric,
       interpolation: ColorProfileInterpolation.tetrahedral,
       lutType: ColorProfileTransformLutType.color,
       useD2BTags: true,
@@ -32,7 +32,7 @@ void main(List<String> args) {
     return ColorProfileTransform.create(
       profile: profile,
       isInput: index == 0,
-      intent: ColorProfileRenderingIntent.perceptual,
+      intent: ColorProfileRenderingIntent.icRelativeColorimetric,
       interpolation: ColorProfileInterpolation.tetrahedral,
       lutType: ColorProfileTransformLutType.color,
       useD2BTags: true,
@@ -48,7 +48,7 @@ void main(List<String> args) {
   print("Got transformations: $finalTransformations");
   print("Got reverse transformations: $finalReverseTransformations");
 
-  final input1CMYK = Float64List.fromList([0.61, 0.06, 0, 0]);
+  final input1CMYK = Float64List.fromList([0.16, 0.32, 1, 0.61]);
   final input2CMYK = Float64List.fromList([0.2, 0.63, 0.45, 0.06]);
   final input3CMYK = Float64List.fromList([0, 0, 0, 1]);
 

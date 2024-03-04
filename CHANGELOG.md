@@ -1,3 +1,7 @@
+## 0.1.5
+
+- Add experimental support for relative colorimetric intent
+
 ## 0.1.4
 
 - Fixed bug when reading XYZ tags when asserts are disabled
