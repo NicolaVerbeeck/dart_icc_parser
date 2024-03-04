@@ -110,5 +110,14 @@ class Matrix3x3 {
           _matrix[8] == other._matrix[8];
 
   @override
-  int get hashCode => _matrix.hashCode;
+  int get hashCode =>
+      _matrix[0].hashCode ^
+      _matrix[1].hashCode ^
+      _matrix[2].hashCode ^
+      _matrix[3].hashCode ^
+      _matrix[4].hashCode ^
+      _matrix[5].hashCode ^
+      _matrix[6].hashCode ^
+      _matrix[7].hashCode ^
+      _matrix[8].hashCode;
 }
