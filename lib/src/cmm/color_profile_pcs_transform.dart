@@ -1,9 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:icc_parser/src/cmm/color_profile_cmm.dart';
+import 'package:icc_parser/icc_parser.dart';
 import 'package:icc_parser/src/cmm/color_profile_pcs.dart';
-import 'package:icc_parser/src/cmm/color_profile_transform.dart';
-import 'package:icc_parser/src/color_profile.dart';
 import 'package:icc_parser/src/types/color_profile_header.dart';
 import 'package:icc_parser/src/utils/list_utils.dart';
 import 'package:meta/meta.dart';
@@ -30,7 +28,7 @@ class ColorProfilePCSTransform extends ColorProfileTransform {
     ColorProfileTransform destination,
   ) {
     if (!source.isInput || (destination.isInput && !destination.isAbstract)) {
-      throw Exception('Bad space link');
+      throw const BadSpaceLinkException();
     }
 
     final sourceSpace = source.getDestinationColorSpace();
@@ -478,7 +476,8 @@ final class ColorProfileOffset3 implements ColorProfilePcsStep {
 @visibleForTesting
 @immutable
 final class ColorProfileXYZConvertStep implements ColorProfilePcsStep {
-  const ColorProfileXYZConvertStep._();
+  @visibleForTesting
+  const ColorProfileXYZConvertStep();
 
   static ColorProfileXYZConvertStep? create(
     ColorProfileTransform source,
@@ -494,7 +493,9 @@ final class ColorProfileXYZConvertStep implements ColorProfilePcsStep {
   void apply({
     required Float64List source,
     required Float64List destination,
-  }) {}
+  }) {
+    destination.copyFrom(source);
+  }
 }
 
 bool _isEquivalentPcc(

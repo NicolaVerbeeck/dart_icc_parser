@@ -88,7 +88,7 @@ class _TransformationStepHolder {
 
 /// A single step in the color profile transformation.
 @immutable
-final class ColorProfileTransformationStep {
+class ColorProfileTransformationStep {
   /// The transformation to apply.
   final ColorProfileTransform transform;
 

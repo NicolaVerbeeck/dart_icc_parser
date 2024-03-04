@@ -144,6 +144,7 @@ abstract class ColorProfileTransform {
   bool get useLegacyPCS => false;
 
   @protected
+  @visibleForTesting
   bool get isAbstract =>
       profile.header.resolvedDeviceClass == DeviceClass.abstract;
 
