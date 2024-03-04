@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Added more tests and better error reporting
+
 ## 0.1.1
 
 - Add missing support for PCS connection with target XYZ from lab
