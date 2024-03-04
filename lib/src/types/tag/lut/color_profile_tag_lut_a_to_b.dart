@@ -1,3 +1,4 @@
+import 'package:icc_parser/src/error.dart';
 import 'package:icc_parser/src/types/color_profile_matrix.dart';
 import 'package:icc_parser/src/types/tag/clut/color_profile_clut.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
@@ -48,7 +49,10 @@ class ColorProfileTagLutAToB extends ColorProfileMBB {
     final start = data.position;
     final end = start + size;
     final signature = data.readUnsigned32Number();
-    assert(signature.value == type.code);
+    if (signature.value != type.code) {
+      throw InvalidSignatureException(
+          expected: type.code, got: signature.value);
+    }
 
     // 4 reserved bytes
     data.skip(4);

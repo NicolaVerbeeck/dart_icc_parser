@@ -81,6 +81,56 @@ void main() {
         expect(sut.m21, 17 / 201);
         expect(sut.m22, -22 / 201);
       });
+      test('same values give same hash code and equals', () {
+        final matrix1 = Matrix3x3();
+        final matrix2 = Matrix3x3();
+        matrix1.m00 = 1.0;
+        matrix1.m01 = 2.0;
+        matrix1.m02 = 3.0;
+        matrix1.m10 = 4.0;
+        matrix1.m11 = 5.0;
+        matrix1.m12 = 6.0;
+        matrix1.m20 = 7.0;
+        matrix1.m21 = 8.0;
+        matrix1.m22 = 9.0;
+        matrix2.m00 = 1.0;
+        matrix2.m01 = 2.0;
+        matrix2.m02 = 3.0;
+        matrix2.m10 = 4.0;
+        matrix2.m11 = 5.0;
+        matrix2.m12 = 6.0;
+        matrix2.m20 = 7.0;
+        matrix2.m21 = 8.0;
+        matrix2.m22 = 9.0;
+
+        expect(matrix1.hashCode, matrix2.hashCode);
+        expect(matrix1, matrix2);
+      });
+      test('different values give same hash code and equals', () {
+        final matrix1 = Matrix3x3();
+        final matrix2 = Matrix3x3();
+        matrix1.m00 = 1.0;
+        matrix1.m01 = 2.0;
+        matrix1.m02 = 3.0;
+        matrix1.m10 = 4.0;
+        matrix1.m11 = 5.0;
+        matrix1.m12 = 6.0;
+        matrix1.m20 = 7.0;
+        matrix1.m21 = 8.0;
+        matrix1.m22 = 9.0;
+        matrix2.m00 = 1.0;
+        matrix2.m01 = 2.0;
+        matrix2.m02 = 3.0;
+        matrix2.m10 = 4.0;
+        matrix2.m11 = 5.0;
+        matrix2.m12 = 6.0;
+        matrix2.m20 = 7.0;
+        matrix2.m21 = 8.0;
+        matrix2.m22 = 10.0;
+
+        expect(matrix1.hashCode, isNot(matrix2.hashCode));
+        expect(matrix1, isNot(matrix2));
+      });
     });
   });
 }
