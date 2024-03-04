@@ -14,6 +14,7 @@ void main(List<String> args) {
     final stream =
         DataStream(data: bytes, offset: 0, length: bytes.lengthInBytes);
     final profile = ColorProfile.fromBytes(stream);
+    print('Loading from $e');
     return ColorProfileTransform.create(
       profile: profile,
       isInput: index == 0,

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:icc_parser/src/error.dart';
 import 'package:icc_parser/src/types/tag/clut/color_profile_clut.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
@@ -34,7 +35,10 @@ final class ColorProfileTagLut8 extends ColorProfileMBB {
 
   factory ColorProfileTagLut8.fromBytes(DataStream data) {
     final signature = data.readUnsigned32Number();
-    assert(signature.value == 0x6D667431);
+    if (signature.value != 0x6D667431) {
+      throw InvalidSignatureException(
+          expected: 0x6D667431, got: signature.value);
+    }
     // 4 reserved bytes
     data.skip(4);
     final inputChannelCount = data.readUnsigned8Number();

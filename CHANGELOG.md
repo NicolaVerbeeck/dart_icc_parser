@@ -1,3 +1,7 @@
+## 0.1.4
+
+- Fixed bug when reading XYZ tags when asserts are disabled
+
 ## 0.1.3
 
 - Roll back dart 3.3 requirement

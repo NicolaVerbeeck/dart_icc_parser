@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:icc_parser/src/error.dart';
 import 'package:icc_parser/src/types/tag/color_profile_tag_type.dart';
 import 'package:icc_parser/src/types/tag/curve/color_profile_curve.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
@@ -28,7 +29,12 @@ final class ColorProfileTagParametricCurve extends ColorProfileCurve {
     required int size,
   }) {
     final signature = data.readUnsigned32Number().value;
-    assert(signature == ColorProfileTagType.icSigParametricCurveType.code);
+    if (signature != ColorProfileTagType.icSigParametricCurveType.code) {
+      throw InvalidSignatureException(
+        expected: ColorProfileTagType.icSigParametricCurveType.code,
+        got: signature,
+      );
+    }
 
     data.skip(4);
     final functionType = data.readUnsigned16Number().value;

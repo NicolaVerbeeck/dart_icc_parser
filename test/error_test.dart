@@ -14,5 +14,10 @@ void main() {
       const exception = BadSpaceLinkException();
       expect(exception.toString(), "Bad space link");
     });
+
+    test('Test InvalidSignatureException', () {
+      const exception = InvalidSignatureException(expected: 1, got: 2);
+      expect(exception.toString(), "Invalid signature: expected 1, got 2");
+    });
   });
 }

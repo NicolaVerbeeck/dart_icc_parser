@@ -31,3 +31,15 @@ class BadSpaceLinkException implements Exception {
     return "Bad space link";
   }
 }
+
+class InvalidSignatureException implements Exception {
+  final int expected;
+  final int got;
+
+  const InvalidSignatureException({required this.expected, required this.got});
+
+  @override
+  String toString() {
+    return "Invalid signature: expected $expected, got $got";
+  }
+}
