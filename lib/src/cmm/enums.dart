@@ -7,6 +7,7 @@ enum ColorProfileTransformType {
 /// Which rendering intent to use
 enum ColorProfileRenderingIntent {
   perceptual(0), // We only support this for now
+  icRelativeColorimetric(1),
   ;
 
   final int offset;

@@ -1,6 +1,6 @@
 name: icc_parser
 description: A pure-dart library used to parse ICC profiles and create color transformations based on them
-version: 0.1.4
+version: 0.1.5
 repository: https://github.com/NicolaVerbeeck/dart_icc_parser
 
 environment:
