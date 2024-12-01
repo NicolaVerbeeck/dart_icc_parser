@@ -10,7 +10,7 @@ void main() {
       final data = _dataStreamOf(List.generate(12 * 4, (index) => index));
       final matrix = ColorProfileMatrix.fromBytes(data);
       data.seek(0);
-      expect(matrix.matrix, [
+      expect(matrix.values, [
         data.readSigned15Fixed16Number().value,
         data.readSigned15Fixed16Number().value,
         data.readSigned15Fixed16Number().value,
@@ -29,17 +29,17 @@ void main() {
       expect(
           ColorProfileMatrix(
                   Float64List.fromList([1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]))
-              .isIdentity(),
+              .isIdentity,
           true);
       expect(
           ColorProfileMatrix(
                   Float64List.fromList([2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]))
-              .isIdentity(),
+              .isIdentity,
           false);
       expect(
           ColorProfileMatrix(
                   Float64List.fromList([1, 0, 0, 0, 1, 2, 0, 0, 1, 0, 0, 0]))
-              .isIdentity(),
+              .isIdentity,
           false);
     });
     test('Test apply', () {

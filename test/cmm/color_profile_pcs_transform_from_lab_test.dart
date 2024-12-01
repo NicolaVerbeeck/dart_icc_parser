@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:icc_parser/icc_parser.dart';
 import 'package:icc_parser/src/cmm/color_profile_pcs_transform.dart';
+import 'package:icc_parser/src/cmm/enums.dart';
 import 'package:icc_parser/src/types/color_profile_header.dart';
 import 'package:icc_parser/src/types/color_profile_primitives.dart';
 import 'package:mocktail/mocktail.dart';
