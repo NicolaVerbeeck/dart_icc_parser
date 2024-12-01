@@ -1,3 +1,8 @@
+## 0.2.0
+
+- Export more classes, update documentation. Fixes #20
+- **Potentially breaking** ColorProfileMatrix.isIdentity is now a getter
+
 ## 0.1.5
 
 - Add experimental support for relative colorimetric intent

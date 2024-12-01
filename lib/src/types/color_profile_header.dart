@@ -5,33 +5,71 @@ import 'package:icc_parser/src/types/color_profile_primitives.dart';
 import 'package:icc_parser/src/utils/data_stream.dart';
 import 'package:meta/meta.dart';
 
+/// Header of a color profile file
 @immutable
 class ColorProfileHeader {
+  /// Size of the header
   final Unsigned32Number size;
+
+  /// Raw CMM type
   final Uint8List cmmType;
+
+  /// Version of the profile
   final Unsigned32Number version;
+
+  /// Raw device class
   final Unsigned32Number deviceClass;
+
+  /// Raw color space
   final Unsigned32Number colorSpace;
+
+  /// Raw PCS
   final Unsigned32Number pcs;
+
+  /// Date and time of profile creation
   final DateTimeNumber dateTime;
+
+  /// Signature of the profile
   final Unsigned32Number signature;
+
+  /// Raw platform
   final Unsigned32Number platform;
+
+  /// Flags
   final Unsigned32Number flags;
+
+  /// Manufacturer
   final Unsigned32Number manufacturer;
+
+  /// Model
   final Unsigned32Number model;
+
+  /// Attributes
   final Unsigned64Number attributes;
+
+  /// Rendering intent
   final Unsigned32Number renderingIntent;
+
+  /// Illuminant
   final XYZNumber illuminant;
+
+  /// Creator
   final Unsigned32Number creator;
+
+  /// Profile ID
   final Uint8List profileID;
 
+  /// Resolved device class
   DeviceClass get resolvedDeviceClass => resolveDeviceClass(deviceClass);
 
+  /// Resolved color space
   ColorSpaceSignature get resolvedColorSpace =>
       resolveColorSpaceSignature(colorSpace);
 
+  /// Resolved platform
   PlatformSignature get resolvedPlatform => resolvePlatform(platform);
 
+  /// Creates a new color profile header
   const ColorProfileHeader({
     required this.size,
     required this.cmmType,
@@ -52,6 +90,7 @@ class ColorProfileHeader {
     required this.profileID,
   });
 
+  /// Creates a new color profile header by parsing it from the given [bytes].
   factory ColorProfileHeader.fromBytes(DataStream bytes) {
     return ColorProfileHeader(
       size: bytes.readUnsigned32Number(),
@@ -165,6 +204,7 @@ class ColorProfileHeader {
   }
 }
 
+/// Resolves the device class from the raw [deviceClass] value.
 DeviceClass resolveDeviceClass(Unsigned32Number deviceClass) {
   final rawValue = deviceClass.value;
   return DeviceClass.values.firstWhere(
@@ -173,6 +213,7 @@ DeviceClass resolveDeviceClass(Unsigned32Number deviceClass) {
   );
 }
 
+/// Resolves the color space from the raw [colorSpace] value.
 ColorSpaceSignature resolveColorSpaceSignature(
   Unsigned32Number colorSpace,
 ) {
@@ -182,6 +223,7 @@ ColorSpaceSignature resolveColorSpaceSignature(
   );
 }
 
+/// Resolves the platform from the raw [platform] value.
 PlatformSignature resolvePlatform(Unsigned32Number platform) {
   final rawValue = platform.value;
   return PlatformSignature.values.firstWhere(
@@ -190,6 +232,7 @@ PlatformSignature resolvePlatform(Unsigned32Number platform) {
   );
 }
 
+/// Device class of a color profile
 enum DeviceClass {
   input(0x73636E72),
   display(0x6D6E7472),
@@ -206,82 +249,128 @@ enum DeviceClass {
   const DeviceClass(this.code);
 }
 
+/// Color space signature of a color profile
 enum ColorSpaceSignature {
-  /* 'XYZ ' */
+  /// 'XYZ '
   icSigXYZData(0x58595A20, 3),
-  /* 'Lab ' */
+
+  /// 'Lab '
   icSigLabData(0x4C616220, 3),
-  /* 'Luv ' */
+
+  /// 'Luv '
   icSigLuvData(0x4C757620, 3),
-  /* 'YCbr' */
+
+  /// 'YCbr'
   icSigYCbCrData(0x59436272, 3),
-  /* 'Yxy ' */
+
+  /// 'Yxy '
   icSigYxyData(0x59787920, 3),
-  /* 'RGB ' */
+
+  /// 'RGB '
   icSigRgbData(0x52474220, 3),
-  /* 'GRAY' */
+
+  /// 'GRAY'
   icSigGrayData(0x47524159, 1),
-  /* 'HSV ' */
+
+  /// 'HSV '
   icSigHsvData(0x48535620, 3),
-  /* 'HLS ' */
+
+  /// 'HLS '
   icSigHlsData(0x484C5320, 3),
-  /* 'CMYK' */
+
+  /// 'CMYK'
   icSigCmykData(0x434D594B, 4),
-  /* 'CMY ' */
+
+  /// 'CMY '
   icSigCmyData(0x434D5920, 3),
-  /* '1CLR' */
+
+  /// '1CLR'
   icSig1colorData(0x31434C52, 1),
-  /* '2CLR' */
+
+  /// '2CLR'
   icSig2colorData(0x32434C52, 2),
-  /* '3CLR' */
+
+  /// '3CLR'
   icSig3colorData(0x33434C52, 3),
-  /* '4CLR' */
+
+  /// '4CLR'
   icSig4colorData(0x34434C52, 4),
-  /* '5CLR' */
+
+  /// '5CLR'
   icSig5colorData(0x35434C52, 5),
-  /* '6CLR' */
+
+  /// '6CLR'
   icSig6colorData(0x36434C52, 6),
-  /* '7CLR' */
+
+  /// '7CLR'
   icSig7colorData(0x37434C52, 7),
-  /* '8CLR' */
+
+  /// '8CLR'
   icSig8colorData(0x38434C52, 8),
-  /* '9CLR' */
+
+  /// '9CLR'
   icSig9colorData(0x39434C52, 9),
-  /* 'ACLR' */
+
+  /// 'ACLR'
   icSig10colorData(0x41434C52, 10),
-  /* 'BCLR' */
+
+  /// 'BCLR'
   icSig11colorData(0x42434C52, 11),
-  /* 'CCLR' */
+
+  /// 'CCLR'
   icSig12colorData(0x43434C52, 12),
-  /* 'DCLR' */
+
+  /// 'DCLR'
   icSig13colorData(0x44434C52, 13),
-  /* 'ECLR' */
+
+  /// 'ECLR'
   icSig14colorData(0x45434C52, 14),
-  /* 'FCLR' */
+
+  /// 'FCLR'
   icSig15colorData(0x46434C52, 15),
-  /* 'nmcl' */
+
+  /// 'nmcl'
   icSigNamedData(0x6e6d636c, -1),
-  /* "nc0000" */
+
+  /// "nc0000"
   icSigNChannelData(0x6e630000, -1),
-  /* "mc0000" */
+
+  /// "mc0000"
   icSigSrcMCSChannelData(0x6d630000, -1),
   ;
 
+  /// The raw spec identifier
   final int code;
+
+  /// Number of samples in the color space
   final int numSamples;
 
+  /// Creates a new color space signature
   const ColorSpaceSignature(this.code, this.numSamples);
 }
 
+/// Platform signature of a color profile
 enum PlatformSignature {
+  /// 'APPL'
   apple(0x4150504C),
+
+  /// 'MSFT'
   microsoft(0x4D534654),
+
+  /// 'SGI '
   siliconGraphics(0x53474920),
+
+  /// 'SUNW'
   sunMicrosystems(0x53554E57),
+
+  /// Undefined
   undefined(0),
+
+  /// Not found
   unknown(-1),
   ;
 
+  /// The raw spec identifier
   final int code;
 
   const PlatformSignature(this.code);

@@ -201,7 +201,7 @@ final class ColorProfileTransform3DLut extends ColorProfileTransform {
     ColorProfileMatrix? usedMatrix;
     final matrix = tag.matrix;
     if (matrix != null) {
-      if (!matrix.isIdentity()) {
+      if (!matrix.isIdentity) {
         usedMatrix = matrix;
       }
     }
