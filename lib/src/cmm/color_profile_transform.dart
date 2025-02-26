@@ -71,7 +71,7 @@ abstract class ColorProfileTransform {
           interpolation: interpolation,
           useD2BTags: useD2BTags,
         );
-      // ignore: no_default_cases
+      // ignore: no_default_cases, unreachable_switch_default
       default:
         throw ArgumentError('Unsupported lut type: $lutType');
     }
